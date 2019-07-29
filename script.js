@@ -42,9 +42,6 @@ var upcomingShape;
 var score = 0;
 var speed = 500;
 var changeSpeed = false;
-var saveState;
-var roundState;
-var speeds = [500,100,1,0];
 var speedIndex = 0;
 var movesTaken = 0;
 var moveLimit = 5000;
@@ -66,10 +63,16 @@ let archive = {
 
 class Genome {
     constructor() {
+        this.id = Math.random();
         this.inputNodes = 256;
         this.outputNodes = 7;
-        this.neuralNet = [...Array(this.inputNodes).keys()].map(i => Array(this.outputNodes));
+        this.neuralNet = [...Array(this.outputNodes).keys()].map(i => Array(this.inputNodes));
         this.fitness = -1;
+        for (let i = 0; i < this.outputNodes; i++) {
+            for (let j = 0; j < this.inputNodes; j++) {
+                this.neuralNet = Math.random() - 0.5;
+            }
+        }
     }
 }
 
@@ -77,47 +80,27 @@ function initialize() {
     archive.populationSize = populationSize;
     nextShape();
 	applyShape();
-	saveState = getState();
-	roundState = getState();
 	createInitialPopulation();
 	var loop = function(){
 		if (changeSpeed) {
 			clearInterval(interval);
-			interval = setInterval(loop, speed);
+			interval = setInterval(loop, 5);
 			changeInterval = false;
-		}
-		if (speed === 0) {
-			draw = false;
-			update();
-			update();
-			update();
-		} else {
-			draw = true;
-		}
-		update();
-		if (speed === 0) {
-			draw = true;
-		}
+        }
+        
+        draw = true;
+        for (let zz = 0; zz < 5; zz++) {
+            update();
+        }
 	};
-	var interval = setInterval(loop, speed);
+	let interval = setInterval(loop, 5);
 }
 document.onLoad = initialize();
 
 function createInitialPopulation() {
-    //inits the array
     genomes = [];
-    //for a given population size
     for (var i = 0; i < populationSize; i++) {
-        var genome = {
-            id: Math.random(),
-            rowsCleared: Math.random() - 0.5,
-            weightedHeight: Math.random() - 0.5,
-            cumulativeHeight: Math.random() - 0.5,
-            relativeHeight: Math.random() - 0.5,
-            holes: Math.random() * 0.5,
-            roughness: Math.random() - 0.5,
-        };
-        genomes.push(genome);
+        genomes.push(new Genome());
     }
     evaluateNextGenome();
 }
@@ -127,7 +110,6 @@ function evaluateNextGenome() {
     if (currentGenome == genomes.length) {
         evolve();
     }
-    loadState(roundState);
     movesTaken = 0;
     makeNextMove();
 }
@@ -203,7 +185,6 @@ function makeChild(mum, dad) {
 }
 
 function getAllPossibleMoves() {
-    var lastState = getState();
     var possibleMoves = [];
     var possibleMoveRatings = [];
     var iterations = 0;
@@ -281,7 +262,6 @@ function makeNextMove() {
         genomes[currentGenome].fitness = clone(score);
         evaluateNextGenome();
     } else {
-
         var oldDraw = clone(draw);
         draw = false;
         var possibleMoves = getAllPossibleMoves();
@@ -485,26 +465,6 @@ function output() {
         }
         output.innerHTML = html;
     }
-}
-
-function getState() {
-    var state = {
-        grid: clone(grid),
-        currentShape: clone(currentShape),
-        upcomingShape: clone(upcomingShape),
-        rndSeed: clone(rndSeed),
-        score: clone(score)
-    };
-    return state;
-}
-
-function loadState(state) {
-    grid = clone(state.grid);
-    currentShape = clone(state.currentShape);
-    upcomingShape = clone(state.upcomingShape);
-    rndSeed = clone(state.rndSeed);
-    score = clone(state.score);
-    output();
 }
 
 function clone(obj) {
