@@ -211,14 +211,7 @@ function getAllPossibleMoves() {
                 while (moveDownResults.moved) {
                     moveDownResults = moveDown();
                 }
-                var algorithm = {
-                    rowsCleared: moveDownResults.rowsCleared,
-                    weightedHeight: Math.pow(getHeight(), 1.5),
-                    cumulativeHeight: getCumulativeHeight(),
-                    relativeHeight: getRelativeHeight(),
-                    holes: getHoles(),
-                    roughness: getRoughness()
-                };
+                
                 var rating = 0;
                 rating += algorithm.rowsCleared * genomes[currentGenome].rowsCleared;
                 rating += algorithm.weightedHeight * genomes[currentGenome].weightedHeight;
