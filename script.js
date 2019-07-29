@@ -69,6 +69,7 @@ class Genome {
         this.inputNodes = 256;
         this.outputNodes = 7;
         this.neuralNet = [...Array(this.inputNodes).keys()].map(i => Array(this.outputNodes));
+        this.fitness = -1;
     }
 }
 
@@ -430,34 +431,9 @@ function removeShape() {
 }
 
 function nextShape() {
-    bagIndex += 1;
-    if (bag.length === 0 || bagIndex == bag.length) {
-        generateBag();
-    }
-    if (bagIndex == bag.length - 1) {
-        var prevSeed = rndSeed;
-        upcomingShape = randomProperty(shapes);
-        rndSeed = prevSeed;
-    } else {
-        upcomingShape = shapes[bag[bagIndex + 1]];
-    }
-    currentShape.shape = shapes[bag[bagIndex]];
+    currentShape.shape = randomKey(shapes);
     currentShape.x = Math.floor(grid[0].length / 2) - Math.ceil(currentShape.shape[0].length / 2);
     currentShape.y = 0;
-}
-
-function generateBag() {
-    bag = [];
-    var contents = "";
-    for (var i = 0; i < 7; i++) {
-        var shape = randomKey(shapes);
-        while(contents.indexOf(shape) != -1) {
-            shape = randomKey(shapes);
-        }
-        bag[i] = shape;
-        contents += shape;
-    }
-    bagIndex = 0;
 }
 
 function collides(scene, object) {
