@@ -492,8 +492,6 @@ function getState() {
         grid: clone(grid),
         currentShape: clone(currentShape),
         upcomingShape: clone(upcomingShape),
-        bag: clone(bag),
-        bagIndex: clone(bagIndex),
         rndSeed: clone(rndSeed),
         score: clone(score)
     };
@@ -504,8 +502,6 @@ function loadState(state) {
     grid = clone(state.grid);
     currentShape = clone(state.currentShape);
     upcomingShape = clone(state.upcomingShape);
-    bag = clone(state.bag);
-    bagIndex = clone(state.bagIndex);
     rndSeed = clone(state.rndSeed);
     score = clone(state.score);
     output();
