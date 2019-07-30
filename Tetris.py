@@ -1,11 +1,12 @@
 import numpy as np
-import random
+import random 
+import numpy.random as rand
 
 class Genome:
     inputNodes = 256
     outputNodes = 7
     neuralNet = np.zeros((outputNodes, inputNodes))
-    fitness = np.random.randint(10, size=1)[0]
+    fitness = -1
 
 populationSize = 50
 generation = 0
@@ -31,11 +32,16 @@ archive = {
     "genomes": []
 }
 
+rand.seed(0)
 
 archive["popSize"] = populationSize
 genomes = []
+arr = rand.randint(10, size=populationSize)
 for x in range(populationSize):
-    genomes.append(Genome())
+    temp = Genome()
+    temp.fitness = arr[x]
+    genomes.append(temp)
+
     
 currentGenome+=1
 
@@ -47,6 +53,6 @@ if True:
     moves = 0
 
     genomes.sort(key=lambda x: x.fitness, reverse=True)
-    print(genomes[0].fitness)
-    print(genomes[0].fitness)
+    for x in range(populationSize):
+        print(genomes[x].fitness)
 
