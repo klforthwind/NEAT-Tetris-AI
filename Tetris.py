@@ -46,7 +46,7 @@ for x in range(populationSize):
     
 currentGenome+=1
 
-if True:
+if currentGenome == genomes.length:
     print("Generation ",generation," evaluated.")
     currentGenome = 0
     generation += 1
@@ -61,10 +61,13 @@ if True:
     temp.fitness = genomes[0].fitness
     temp.neuralNet = genomes[0].neuralNet
     archive["elites"].append(temp)
-    del temp
 
     while genomes.length > populationSize / 2:
         genomes.pop(genomes.length-1)
+
+    children = []
+    children.append(temp)
+    del temp
 
     
 
