@@ -41,6 +41,7 @@ for x in range(populationSize):
     temp = Genome()
     temp.fitness = arr[x]
     genomes.append(temp)
+    del temp
 
     
 currentGenome+=1
@@ -53,6 +54,17 @@ if True:
     moves = 0
 
     genomes.sort(key=lambda x: x.fitness, reverse=True)
-    for x in range(populationSize):
-        print(genomes[x].fitness)
+    # for x in range(populationSize):
+    #     print(genomes[x].fitness)
+    print("Elite Fitness: ",genomes[0].fitness)
+    temp = Genome()
+    temp.fitness = genomes[0].fitness
+    temp.neuralNet = genomes[0].neuralNet
+    archive["elites"].append(temp)
+    del temp
+
+    while genomes.length > populationSize / 2:
+        genomes.pop(genomes.length-1)
+
+    
 
