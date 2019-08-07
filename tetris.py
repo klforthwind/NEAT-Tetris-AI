@@ -10,22 +10,43 @@ generation = 0
 genomes = []
 currentGenome = -1
 
-zeroShape = None
-oneShape = None
-twoShape = None
-threeShape = None
-fourShape = None
-fiveShape = None
-
 score = 0
 moves = 0
 
-archive = {
-    "popSize": 0,
-    "currGen": 0,
-    "elites": [],
-    "genomes": []
-}
+# Create the initial genomes
+for g in range(populationSize):
+    temp = Genome()
+    temp.mutate()
+    genomes.append(temp)
+    del temp
+
+# Make genome index 0
+currentGenome+=1
+trash = True
+while (trash):
+    trash = False
+    if currentGenome == len(genomes):
+        print("Generation ", generation ," evaluated.")
+        currentGenome = 0
+        generation += 1
+        score = 0
+        moves = 0
+
+        genomes.sort(key=lambda x: x.fitness, reverse=True)
+        # for x in range(populationSize):
+        #     print(genomes[x].fitness)
+        print("Elite Fitness: ", genomes[0].fitness)
+        for o in range(7):
+            print(genomes[0].neuralNet[o])
+
+        while len(genomes) > populationSize / 2:
+            genomes.pop(len(genomes)-1)
+
+        children = []
+        children.append(temp)
+        del temp
+
+    
 
 # Controlled randomness
 rand.seed(0)
@@ -44,41 +65,4 @@ def makeChild(mom, dad):
     return child
 
 
-archive["popSize"] = populationSize
-genomes = []
-arr = rand.randint(10, size=populationSize)
-for x in range(populationSize):
-    temp = Genome()
-    temp.mutate()
-    temp.fitness = arr[x]
-    genomes.append(temp)
-    del temp
-
-    
-currentGenome+=1
-
-if currentGenome == len(genomes):
-    print("Generation ",generation," evaluated.")
-    currentGenome = 0
-    generation += 1
-    score = 0
-    moves = 0
-
-    genomes.sort(key=lambda x: x.fitness, reverse=True)
-    # for x in range(populationSize):
-    #     print(genomes[x].fitness)
-    print("Elite Fitness: ", genomes[0].fitness)
-    temp = Genome()
-    temp.fitness = genomes[0].fitness
-    temp.neuralNet = genomes[0].neuralNet
-    archive["elites"].append(temp)
-
-    while len(genomes) > populationSize / 2:
-        genomes.pop(len(genomes)-1)
-
-    children = []
-    children.append(temp)
-    del temp
-
-    
 
