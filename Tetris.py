@@ -3,10 +3,19 @@ import random
 import numpy.random as rand
 
 class Genome:
-    inputNodes = 256
-    outputNodes = 7
-    neuralNet = np.zeros((outputNodes, inputNodes))
-    fitness = -1
+    def __init__(self):
+        self.inputNodes = 256
+        self.outputNodes = 7
+        self.neuralNet = np.zeros((outputNodes, inputNodes))
+        self.fitness = -1
+
+    def mutate(self):
+        for o in range(self.outputNodes):
+            for i in range(self.inputNodes):
+                isMutating = rand.random()
+                if isMutating < mutationRate:
+                    self.neuralNet[o][i] += (rand.random()-0.5) * mutationStep
+    
 
 populationSize = 50
 generation = 0
@@ -39,6 +48,7 @@ genomes = []
 arr = rand.randint(10, size=populationSize)
 for x in range(populationSize):
     temp = Genome()
+    temp.mutate()
     temp.fitness = arr[x]
     genomes.append(temp)
     del temp
@@ -46,7 +56,7 @@ for x in range(populationSize):
     
 currentGenome+=1
 
-if currentGenome == genomes.length:
+if currentGenome == len(genomes):
     print("Generation ",generation," evaluated.")
     currentGenome = 0
     generation += 1
@@ -62,8 +72,8 @@ if currentGenome == genomes.length:
     temp.neuralNet = genomes[0].neuralNet
     archive["elites"].append(temp)
 
-    while genomes.length > populationSize / 2:
-        genomes.pop(genomes.length-1)
+    while len(genomes) > populationSize / 2:
+        genomes.pop(len(genomes)-1)
 
     children = []
     children.append(temp)
