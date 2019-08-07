@@ -20,6 +20,27 @@ for g in range(populationSize):
     genomes.append(temp)
     del temp
 
+    
+
+# Controlled randomness
+rand.seed(0)
+
+# Returns a number between min and max that is more likely to be skewed towards min
+def randWeightedNumBetween(min, max):
+    return np.floor(np.power(rand.random(), 2) * (max - min + 1) + min)
+
+def randChoice():
+    return genomes[randWeightedNumBetween(0, len(genomes))]
+
+# Makes a child genome from parent genomes + random mutations
+def makeChild(mom, dad):
+    child = Genome()
+    for o in range(child.outputNodes):
+        for i in range(child.inputNodes):
+            child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
+    child.mutate()
+    return child
+
 # Make genome index 0
 currentGenome+=1
 trash = True
@@ -43,26 +64,10 @@ while (trash):
             genomes.pop(len(genomes)-1)
 
         children = []
-        children.append(temp)
-        del temp
+        children.append(genomes[0])
+        for c in range(populationSize - 1):
+            children.append(randChoice())
 
-    
-
-# Controlled randomness
-rand.seed(0)
-
-# Returns a number between min and max that is more likely to be skewed towards min
-def randWeightedNumBetween(min, max):
-    return np.floor(np.power(rand.random(), 2) * (max - min + 1) + min)
-
-# Makes a child genome from parent genomes + random mutations
-def makeChild(mom, dad):
-    child = Genome()
-    for o in range(child.outputNodes):
-        for i in range(child.inputNodes):
-            child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
-    child.mutate()
-    return child
 
 
 
