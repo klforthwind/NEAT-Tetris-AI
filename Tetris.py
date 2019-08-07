@@ -30,6 +30,7 @@ def makeChild(mom, dad):
     for o in range(child.outputNodes):
         for i in range(child.inputNodes):
             child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
+    return child
 
 zeroShape = None
 oneShape = None
