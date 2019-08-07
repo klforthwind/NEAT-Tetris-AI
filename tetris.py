@@ -4,21 +4,11 @@ import numpy.random as rand
 from genome import Genome
 from shape import Shape
 
+# Initialize variables
 populationSize = 50
 generation = 0
 genomes = []
 currentGenome = -1
-
-def randWeightedNumBetween(min, max):
-    return np.floor(np.power(rand.random(), 2) * (max - min + 1) + min)
-
-def makeChild(mom, dad):
-    child = Genome()
-    for o in range(child.outputNodes):
-        for i in range(child.inputNodes):
-            child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
-    child.mutate()
-    return child
 
 zeroShape = None
 oneShape = None
@@ -37,7 +27,22 @@ archive = {
     "genomes": []
 }
 
+# Controlled randomness
 rand.seed(0)
+
+# Returns a number between min and max that is more likely to be skewed towards min
+def randWeightedNumBetween(min, max):
+    return np.floor(np.power(rand.random(), 2) * (max - min + 1) + min)
+
+# Makes a child genome from parent genomes + random mutations
+def makeChild(mom, dad):
+    child = Genome()
+    for o in range(child.outputNodes):
+        for i in range(child.inputNodes):
+            child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
+    child.mutate()
+    return child
+
 
 archive["popSize"] = populationSize
 genomes = []
