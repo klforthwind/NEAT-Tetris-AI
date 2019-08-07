@@ -3,18 +3,11 @@ import random
 import numpy.random as rand
 
 class Genome:
-    inputNodes = 256
-    outputNodes = 7
-    def __init__(self, nNet = np.zeros((outputNodes, inputNodes))):
-        self.neuralNet = nNet
+    def __init__(self):
+        self.inputNodes = 256
+        self.outputNodes = 7
+        self.neuralNet = np.zeros((self.outputNodes, self.inputNodes))
         self.fitness = -1
-
-    def makeChild():
-        child = Genome()
-        for o in range(self.outputNodes):
-            for i in range(self.inputNodes):
-                child.neuralNet[o][i] += (rand.random()-0.5) * mutationStep
-
 
     def mutate(self):
         for o in range(self.outputNodes):
@@ -31,6 +24,12 @@ genomes = []
 currentGenome = -1
 mutationRate = 0.05
 mutationStep = 0.2
+
+def makeChild(mom, dad):
+    child = Genome()
+    for o in range(child.outputNodes):
+        for i in range(child.inputNodes):
+            child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
 
 zeroShape = None
 oneShape = None
