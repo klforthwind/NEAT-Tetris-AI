@@ -67,6 +67,11 @@ while (trash):
         children.append(genomes[0])
         for c in range(populationSize - 1):
             children.append(randChoice())
+        
+        genomes = children
+        print(genomes)
+        del children
+        print(genomes)
 
 
 
