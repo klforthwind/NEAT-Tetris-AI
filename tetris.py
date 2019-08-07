@@ -2,6 +2,7 @@ import numpy as np
 import random 
 import numpy.random as rand
 from genome import Genome
+from shape import Shape
 
 populationSize = 50
 generation = 0
