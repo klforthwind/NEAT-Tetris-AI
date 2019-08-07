@@ -46,6 +46,10 @@ currentGenome+=1
 trash = True
 while (trash):
     trash = False
+
+    
+
+
     if currentGenome == len(genomes):
         print("Generation ", generation ," evaluated.")
         currentGenome = 0
