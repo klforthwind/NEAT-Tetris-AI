@@ -6,7 +6,7 @@ class Genome:
     def __init__(self):
         self.inputNodes = 256
         self.outputNodes = 7
-        self.neuralNet = np.zeros((outputNodes, inputNodes))
+        self.neuralNet = np.zeros((self.outputNodes, self.inputNodes))
         self.fitness = -1
 
     def mutate(self):
@@ -14,6 +14,7 @@ class Genome:
             for i in range(self.inputNodes):
                 isMutating = rand.random()
                 if isMutating < mutationRate:
+                    print(isMutating)
                     self.neuralNet[o][i] += (rand.random()-0.5) * mutationStep
     
 
