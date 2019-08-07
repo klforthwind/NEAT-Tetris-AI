@@ -25,6 +25,9 @@ currentGenome = -1
 mutationRate = 0.01
 mutationStep = 0.2
 
+def randWeightedNumBetween(min, max):
+    return np.floor(np.power(rand.random(), 2) * (max - min + 1) + min)
+
 def makeChild(mom, dad):
     child = Genome()
     for o in range(child.outputNodes):
