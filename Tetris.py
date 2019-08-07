@@ -22,7 +22,7 @@ populationSize = 50
 generation = 0
 genomes = []
 currentGenome = -1
-mutationRate = 0.05
+mutationRate = 0.01
 mutationStep = 0.2
 
 def makeChild(mom, dad):
@@ -30,6 +30,7 @@ def makeChild(mom, dad):
     for o in range(child.outputNodes):
         for i in range(child.inputNodes):
             child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
+    child.mutate()
     return child
 
 zeroShape = None
