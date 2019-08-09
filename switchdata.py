@@ -3,8 +3,7 @@ import cv2
 import serial
 import time
 
-class SwitchData
-
+class SwitchData:
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
         print(self.cap.set(3,1280))
