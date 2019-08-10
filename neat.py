@@ -16,7 +16,7 @@ class NEAT:
         self.popSize = populationSize
         self.generation = 0
         self.genomes = []
-        self.currentGenome = -1
+        self.currentGenome = 0
 
         self.score = 0
         self.moves = 0
@@ -43,26 +43,30 @@ class NEAT:
         # for x in range(populationSize):
         #     print(genomes[x].fitness)
 
-    def checkToIncreaseGen(self):
-        if self.currentGenome == len(self.genomes):
-            print("Generation ", generation ," evaluated.")
-            self.currentGenome = 0
-            self.generation += 1
-            self.score = 0
-            self.moves = 0
-    
+    def increaseGeneration(self):
+        print("Generation ", generation ," evaluated.")
+        
+        self.currentGenome = 0
+        self.generation += 1
+        self.score = 0
+        self.moves = 0
             
-            print("Elite Fitness: ", self.genomes[0].fitness)
-            for o in range(7):
-                print(self.genomes[0].neuralNet[o])
+        print("Elite Fitness: ", self.genomes[0].fitness)
+        for o in range(7):
+            print(self.genomes[0].neuralNet[o])
     
-            while len(self.genomes) > self.populationSize / 2:
-                self.genomes.pop(len(self.genomes)-1)
+        while len(self.genomes) > self.populationSize / 2:
+            self.genomes.pop(len(self.genomes)-1)
     
-            children = []
-            children.append(genomes[0])
-            for c in range(self.populationSize - 1):
-                children.append(self.randChoice())
+        children = []
+        children.append(genomes[0])
+        for c in range(self.populationSize - 1):
+            children.append(makeChild(self.randChoice(),self.randChoice()))
             
-            self.genomes = children
-            del children
+        self.genomes = children
+        del children
+
+        def loop(self):
+            self.currentGenome += 1
+            if self.currentGenome == len(self.genomes):
+                increaseGeneration()
