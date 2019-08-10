@@ -20,8 +20,6 @@ for g in range(populationSize):
     genomes.append(temp)
     del temp
 
-    
-
 # Controlled randomness
 rand.seed(0)
 
