@@ -1,28 +1,41 @@
-import numpy as np
+import threading
 import cv2
-import serial
-import time
 
 class SwitchData:
-    def __init__(self):
-        self.cap = cv2.VideoCapture(0)
-        print(self.cap.set(3,1280))
-        print(self.cap.set(4,720))
+    def __init__(self, src=0, width=640, height=360):
+        self.src = src
+        self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        self.grabbed, self.frame = self.cap.read()
+        self.started = False
+        self.read_lock = threading.Lock()
 
+    def set(self, var1, var2):
+        self.cap.set(var1, var2)
+
+    def start(self):
+        self.started = True
+        self.thread = threading.Thread(target=self.update, args=())
+        self.thread.start()
+        return self
 
     def update(self):
-        # Capture frame-by-frame
-        self.ret, self.frame = self.cap.read()
+        while self.started:
+            grabbed, frame = self.cap.read()
+            with self.read_lock:
+                self.grabbed = grabbed
+                self.frame = frame
 
-    def show(self):
-        cv2.imshow('frame', self.frame)
+    def read(self):
+        with self.read_lock:
+            frame = self.frame
+            grabbed = self.grabbed
+        return grabbed, frame
 
-    def specialAnalysis(self):
-        s = self.frame[507:587, 1051:1235]
-        s = cv2.cvtColor(s, cv2.COLOR_BGR2GRAY)
-        self.ret, s = cv2.threshold(s, 200, 255, cv2.THRESH_BINARY)
-        cv2.imshow('frame', self.frame)
-        cv2.imshow('frame', s)
+    def stop(self):
+        self.started = False
+        self.thread.join()
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            return False
+    def __exit__(self, exec_type, exc_value, traceback):
+        self.cap.release()
