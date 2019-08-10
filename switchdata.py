@@ -53,6 +53,7 @@ class SwitchData:
         queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
         queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
         cv2.imshow('Queue', queue)
+        # print(board[624][16]) #prints 255 if occupied, 0 if empty
 
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
