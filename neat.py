@@ -10,6 +10,7 @@ class NEAT:
         self.genomes = []
         self.currentGenome = 0
         self.nextBlock = np.array([])
+        self.blockChanged = False
         
     # Create the initial genomes
     def createPopulation(self):
@@ -24,9 +25,15 @@ class NEAT:
         if self.nextBlock.size == 0 or not np.array_equal(self.nextBlock, queueArr):
             self.genomes[self.currentGenome].fitness += 1
             self.nextBlock = queueArr
+            self.blockChanged = True
             del queueArr
         temp = self.genomes[self.currentGenome]
         return temp.getButtons(inputNodes)
+    
+    def didBlockChange(self):
+        tmp = self.blockChanged
+        self.blockChanged = False
+        return tmp
 
     def loop(self):
         self.currentGenome += 1

@@ -11,6 +11,7 @@ class SwitchData:
         self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
+        self.lastBoard = np.array([])
 
     def set(self, var1, var2):
         self.cap.set(var1, var2)
@@ -78,12 +79,27 @@ class SwitchData:
     def getHoldValue(self, y, x):
         return 1 if self.hold[20 * y + 10][18 * x + 9] > 0 else 0
 
-    def getInputNodes(self):
+    def getInputNodes(self, newBlock):
         # Begin input nodes of neat
         inputNodes = np.empty(256)
+        xx = 0
+        yy = 0
+        if newBlock:
+            self.lastBoard = np.array([])
         for y in range(20):
             for x in range(10):
-                np.append(inputNodes, self.getBoardValue(y, x))
+                filled = self.getBoardValue(y, x)
+                np.append(inputNodes, filled)
+                if y > 1 and newBlock:
+                    np.append(self.lastBoard, filled)
+                if  xx == 0 and filled and y < 2:
+                    xx = x + 1
+                    yy = y + 1
+                elif xx == 0 and filled and y > 1:
+                    if self.lastBoard[y*10+x]==0:
+                        xx = x + 1
+                        yy = y + 1
+                
         for i in range(17):
             # level = 0
             for j in range(4):
@@ -96,7 +112,22 @@ class SwitchData:
             for x in range(4):
                 np.append(inputNodes, self.getHoldValue(y, x))
         # Add X and Y as input nodes
+        np.append(inputNodes, xx)
+        np.append(inputNodes, yy)
         # Add 16 input nodes for the block being placed
+        for m in range(4):
+            for n in range(4):
+                if yy + m - 1 >= 20 or xx + n - 1 >= 20:
+                    np.append(inputNodes, 0)
+                elif yy + m - 1 < 2:
+                    filled = self.getBoardValue(yy + m - 1, xx + n - 1)
+                    np.append(inputNodes, filled)
+                elif yy + m - 1 > 1:
+                    filled = self.getBoardValue(yy + m - 1, xx + n - 1)
+                    if filled and self.lastBoard[(yy + m - 1)*10+xx+n-1]==1:
+                        np.append(inputNodes, filled)
+                    else:
+                        np.append(inputNodes, 0)
         return inputNodes
 
     def shouldQuit(self):

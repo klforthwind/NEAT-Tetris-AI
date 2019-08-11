@@ -259,7 +259,7 @@ class Emulator:
 
     def nextGenome(self):
         send_input(BTN_A)
-        wait(5)
+        wait(2.5)
         send_input()
     
     def close():

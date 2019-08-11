@@ -34,7 +34,7 @@ while True:
     capture.processCapture()
 
     # Get the needed input nodes from 
-    inputNodes = capture.getInputNodes()
+    inputNodes = capture.getInputNodes(neat.didBlockChange())
 
     # Check to see if genome is dead
     if capture.isDead():
