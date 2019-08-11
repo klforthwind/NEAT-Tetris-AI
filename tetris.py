@@ -21,7 +21,7 @@ neat.createPopulation()
 
 #Get connected to an emulator
 port = "COM0"
-emulator = Emulator(port)
+# emulator = Emulator(port)
 
 # Main code loop
 while True:
@@ -30,21 +30,21 @@ while True:
     if (capture.shouldQuit()):
         break
 
-    # Check to see if genome is dead
-    if capture.isDead():
-        #Loop through genomes
-        neat.loop()
-        emulator.nextGenome()
-
     # Process the capture to get the images that we need
     capture.processCapture()
 
     # Get the needed input nodes from 
     inputNodes = capture.getInputNodes()
+
+    # Check to see if genome is dead
+    if capture.isDead():
+        #Loop through genomes
+        neat.loop()
+        # emulator.nextGenome()
     
     # Send the correct button inputs
     btnArr = neat.processGenome(inputNodes)
-    emulator.emulateTetris(btnArr)
+    # emulator.emulateTetris(btnArr)
     wait(0.1)
 
 # Stop the capture thread
