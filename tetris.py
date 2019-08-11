@@ -1,6 +1,7 @@
 # Import packages and files
 from switchdata import SwitchData
 from emulator import Emulator
+from emulator import wait
 import numpy.random as rng
 from neat import NEAT
 import time
@@ -29,19 +30,22 @@ while True:
     if (capture.shouldQuit()):
         break
 
+    # Check to see if genome is dead
+    if capture.isDead():
+        #Loop through genomes
+        neat.loop()
+        emulator.nextGenome()
+
     # Process the capture to get the images that we need
     capture.processCapture()
 
     # Get the needed input nodes from 
     inputNodes = capture.getInputNodes()
     
-    # Check to see if genome is dead
-    if capture.isDead():
-        #Loop through genomes
-        neat.loop()
-    
+    # Send the correct button inputs
     btnArr = neat.processGenome(inputNodes)
     emulator.emulateTetris(btnArr)
+    wait(0.1)
 
 # Stop the capture thread
 capture.stop()

@@ -9,6 +9,7 @@ class NEAT:
         self.generation = 0
         self.genomes = []
         self.currentGenome = 0
+        self.nextBlock = np.array([])
         
     # Create the initial genomes
     def createPopulation(self):
@@ -19,6 +20,11 @@ class NEAT:
             del temp
 
     def processGenome(self, inputNodes):
+        queueArr = np.take(inputNodes, [200,201,202,203,204,205,206,207])
+        if self.nextBlock.size == 0 or not np.array_equal(self.nextBlock, queueArr):
+            self.genomes[self.currentGenome].fitness += 1
+            self.nextBlock = queueArr
+            del queueArr
         temp = self.genomes[self.currentGenome]
         return temp.getButtons(inputNodes)
 
@@ -38,6 +44,7 @@ class NEAT:
         
         self.currentGenome = 0
         self.generation += 1
+        self.nextBlock = np.empty(8)
             
         print("Elite Fitness: ", self.genomes[0].fitness)
         for o in range(7):
@@ -47,7 +54,9 @@ class NEAT:
             self.genomes.pop(len(self.genomes)-1)
     
         children = []
-        children.append(genomes[0])
+        child = Genome()
+        child.neuralNet = genomes[0].neuralNet
+        children.append(child)
         for c in range(self.populationSize - 1):
             children.append(self.makeChild(self.randChoice(),self.randChoice()))
             

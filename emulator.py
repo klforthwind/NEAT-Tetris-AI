@@ -256,6 +256,11 @@ class Emulator:
         self.runButton(arr[8], rstick_angle(90, 0xFF))
         self.runButton(arr[9], rstick_angle(180, 0xFF))
         self.runButton(arr[10], rstick_angle(270, 0xFF))
+
+    def nextGenome(self):
+        send_input(BTN_A)
+        wait(5)
+        send_input()
     
     def close():
         self.ser.close
