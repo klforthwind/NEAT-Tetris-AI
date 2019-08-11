@@ -84,6 +84,8 @@ class SwitchData:
         for y in range(2):
             for x in range(4):
                 inputNodes.append(self.getHoldValue(y, x))
+        # Add X and Y as input nodes
+        # Add 16 input nodes for the block being placed
         return inputNodes
 
     def shouldQuit(self):
