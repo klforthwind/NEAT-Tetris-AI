@@ -22,7 +22,7 @@ capture = SwitchData(0)
 capture.start()
 
 # Begin our population
-neat = NEAT(2)
+neat = NEAT(50)
 neat.createPopulation()
 
 #Get connected to an emulator

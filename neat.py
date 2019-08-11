@@ -1,6 +1,7 @@
 import numpy as np
 from genome import Genome
 import random as rand
+import time
 
 class NEAT:
 
@@ -12,6 +13,7 @@ class NEAT:
         self.currentGenome = 0
         self.nextBlock = np.array([])
         self.blockChanged = False
+        self.t = time.time()
         
     # Create the initial genomes
     def createPopulation(self):
@@ -22,13 +24,8 @@ class NEAT:
             del temp
 
     def processGenome(self, inputNodes):
-        queueArr = np.take(inputNodes, [200,201,202,203,204,205,206,207])
-        if self.nextBlock.size == 0 or not np.array_equal(self.nextBlock, queueArr):
-            self.genomes[self.currentGenome].fitness += 1
-            print(self.genomes[self.currentGenome].fitness)
-            self.nextBlock = queueArr
-            self.blockChanged = True
-            del queueArr
+        self.genomes[self.currentGenome].fitness = np.floor(time.time()-self.t)
+        print(self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
         return temp.getButtons(inputNodes)
     
@@ -42,6 +39,7 @@ class NEAT:
         if self.currentGenome == len(self.genomes):
             self.sortGenomes()
             self.increaseGeneration()
+        self.t = time.time()
     
     def sortGenomes(self):
         self.genomes.sort(key=lambda x: x.fitness, reverse=True)
