@@ -57,8 +57,9 @@ class NEAT:
             
         fitt = self.genomes[0].fitness
         print("Elite Fitness: ", fitt)
-        txt = "tetris"+str(fitt)+".txt"
-        np.savetxt(txt, self.genomes[0].neuralNet, fmt="%s")
+        for z in range(11):
+            txt = "tetris"+str(fitt)+str(z)+str(z)+"-"+".txt"
+            np.savetxt(txt, self.genomes[0].neuralNet[z], fmt="%f")
     
         while len(self.genomes) > self.popSize / 2:
             self.genomes.pop(len(self.genomes)-1)

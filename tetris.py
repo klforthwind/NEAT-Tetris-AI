@@ -34,6 +34,7 @@ while True:
     
     # Check to see if we should end the program
     if (capture.shouldQuit()):
+        emulator.send_input()
         break
 
     # Process the capture to get the images that we need
