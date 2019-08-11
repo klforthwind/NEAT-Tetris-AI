@@ -25,7 +25,7 @@ class NEAT:
 
     def processGenome(self, inputNodes):
         self.genomes[self.currentGenome].fitness = np.floor(time.time()-self.t)
-        print(self.genomes[self.currentGenome].fitness)
+        print("  ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
         return temp.getButtons(inputNodes)
     
