@@ -53,9 +53,10 @@ class NEAT:
         self.generation += 1
         self.nextBlock = np.empty(8)
             
-        print("Elite Fitness: ", self.genomes[0].fitness)
-        for o in range(7):
-            print(self.genomes[0].neuralNet[o])
+        fitt = self.genomes[0].fitness
+        print("Elite Fitness: ", fitt)
+        txt = "tetris"+str(fitt)
+        np.savetxt(txt, self.genomes[0].neuralNet, fmt="%s")
     
         while len(self.genomes) > self.populationSize / 2:
             self.genomes.pop(len(self.genomes)-1)
