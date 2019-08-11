@@ -6,14 +6,17 @@ from switchdata import SwitchData
 # Controlled randomness
 rng.seed(0)
 
-cap = SwitchData(0)
+capture = SwitchData(0)
 t0 = time.time()
-cap.start()
+capture.start()
 while True:
-    cap.handleCapture()
-    if (cap.shouldQuit()):
+    capture.handleCapture()
+    # if time.time()-t0 > 10:
+        # t0 = time.time()
+        # capture.getInputNodes()
+    if (capture.shouldQuit()):
         break
-cap.stop()
+capture.stop()
 
 
     

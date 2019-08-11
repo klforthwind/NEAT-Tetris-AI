@@ -45,19 +45,39 @@ class SwitchData:
         board = frame[40:680, 480:800]
         board = cv2.cvtColor(board, cv2.COLOR_BGR2HLS)
         self.board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
-        # cv2.imshow('Board', board)
+        cv2.imshow('Board', self.board)
         # hold = frame[40:180, 380:480]
         # hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
         # hold = cv2.inRange(hold, np.array([0,54,0]), np.array([255,255,255]))
         # cv2.imshow('Hold', hold)
-        queue = frame[60:400, 800:880]
+        queue = frame[80:390, 815:880]
         queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
         self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
-        # cv2.imshow('Queue', queue)
+        cv2.imshow('Queue', self.queue)
         # print(board[624][16]) #prints 255 if occupied, 0 if empty
 
+    def getBoardValue(self, y, x):
+        return 1 if self.board[32 * y + 16][32 * x + 16] > 0 else 0
+    
+    def getQueueValue(self, y, x):
+        return 1 if self.queue[18 * y + 9][16 * x + 8] > 0 else 0
+
     def getInputNodes(self):
+        print(20292)
         # Begin input nodes of neat
+        inputNodes = []
+        for y in range(20):
+            for x in range(10):
+                inputNodes.append(self.getBoardValue(y, x))
+        for i in range(17):
+            level = 0
+            for j in range(4):
+                if (i + 1) % 3 == 0:
+                    continue
+                level += self.getQueueValue(i, j)
+                inputNodes.append(self.getQueueValue(i, j))
+            print(level)
+        del inputNodes
 
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
