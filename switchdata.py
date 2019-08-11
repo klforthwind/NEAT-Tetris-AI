@@ -41,10 +41,10 @@ class SwitchData:
     
     def handleCapture(self):
         _, frame = self.read()
-        board = frame[40:680, 480:800]
         cv2.imshow('Frame', frame)
+        board = frame[40:680, 480:800]
         board = cv2.cvtColor(board, cv2.COLOR_BGR2HLS)
-        board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
+        self.board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
         # cv2.imshow('Board', board)
         # hold = frame[40:180, 380:480]
         # hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
@@ -52,9 +52,12 @@ class SwitchData:
         # cv2.imshow('Hold', hold)
         queue = frame[60:400, 800:880]
         queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
-        queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
+        self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
         # cv2.imshow('Queue', queue)
         # print(board[624][16]) #prints 255 if occupied, 0 if empty
+
+    def getInputNodes(self):
+        # Begin input nodes of neat
 
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
