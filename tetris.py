@@ -28,10 +28,3 @@ while True:
 
 # Stop the capture thread
 capture.stop()
-
-
-    
-
-
-
-
