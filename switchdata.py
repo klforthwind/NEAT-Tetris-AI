@@ -60,10 +60,10 @@ class SwitchData:
     def isDead(self):
         isDead = True
         for x in range(10):
-            if self.getBoardValue(10, x) == 0:
+            if self.getBoardValue(18, x) == 0:
                 isDead = False
                 break
-            if self.getBoardValue(0, x) == 0:
+            if self.getBoardValue(19, x) == 0:
                 isDead = False
                 break
         return isDead
