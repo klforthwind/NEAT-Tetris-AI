@@ -11,10 +11,7 @@ t0 = time.time()
 capture.start()
 while True:
     capture.handleCapture()
-    if time.time()-t0 > 10:
-        print(time.time())
-        t0 = time.time()
-        capture.getInputNodes()
+    inputNodes = capture.getInputNodes()
     if (capture.shouldQuit()):
         break
 capture.stop()
