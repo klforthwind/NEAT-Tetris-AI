@@ -64,15 +64,11 @@ class NEAT:
         while len(self.genomes) > self.popSize / 2:
             self.genomes.pop(len(self.genomes)-1)
     
-        children = []
-        child = Genome()
-        child.neuralNet = self.genomes[0].neuralNet
-        children.append(child)
         for c in range(self.popSize - 1):
-            children.append(self.makeChild(self.randChoice(),self.randChoice()))
-            
-        self.genomes = children
-        del children
+            self.genomes.append(self.makeChild(self.randChoice(),self.randChoice()))
+
+        for z in range(self.popSize):
+            self.genomes[z].fitness = 0
 
     # Makes a child genome from parent genomes + random mutations
     def makeChild(self, mom, dad):
