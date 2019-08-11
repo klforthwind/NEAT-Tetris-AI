@@ -174,54 +174,6 @@ def send_cmd(command=NO_INPUT):
     commandSuccess = send_packet(packet)
     return commandSuccess
 
-# # Test Left Analog Stick
-# def testbench_lstick():
-
-#     # 360 Circle @ Full Intensity
-#     for i in range(0,721):
-#         cmd = lstick_angle(i + 90, 0xFF)
-#         send_cmd(cmd)
-#         p_wait(0.001)
-#     send_cmd(LSTICK_CENTER) ; p_wait(0.5)
-
-#     # 360 Circle @ Partial Intensity
-#     for i in range(0,721):
-#         cmd = lstick_angle(i + 90, 0x80)
-#         send_cmd(cmd)
-#         p_wait(0.001)
-#     send_cmd(LSTICK_CENTER) ; p_wait(0.5)
-
-# Test Packet Speed
-def testbench_packet_speed(count=100, debug=False):
-    sum = 0
-    min = 999
-    max = 0
-    avg = 0
-    err = 0
-
-    for i in range(0, count + 1):
-
-        # Send packet and check time
-        t0 = time.perf_counter()
-        status = send_packet()
-        t1 = time.perf_counter()
-
-        # Count errors
-        if not status:
-            err += 1
-            print('Packet Error!')
-
-        # Compute times
-        delta = t1 - t0
-        if delta < min:
-            min = delta
-        if delta > max:
-            max = delta
-        sum = sum + (t1 - t0)
-
-    avg = sum / i
-    print('Min =', '{:.3f}'.format(min), 'Max =', '{:.3}'.format(max), 'Avg =', '{:.3f}'.format(avg), 'Errors =', err)
-
 # Wait for data to be available on the serial port
 def wait_for_data(timeout = 1.0, sleepTime = 0.1):
     t0 = time.perf_counter()
