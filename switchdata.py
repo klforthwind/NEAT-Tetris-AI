@@ -39,7 +39,7 @@ class SwitchData:
         self.thread.join()
         cv2.destroyAllWindows()
     
-    def handleCapture(self):
+    def processCapture(self):
         _, frame = self.read()
         cv2.imshow('Frame', frame)
         board = frame[40:680, 480:800]
