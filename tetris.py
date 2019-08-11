@@ -63,7 +63,7 @@ while True:
     if res or start:
         emulator.send_input(BTN_A)
     
-    if (time.time()-t0 > 1) and not res:
+    if (time.time()-t0 > 0.15) and not res:
         t0 = time.time()
         # Send the correct button inputs
         btnArr = neat.processGenome(inputNodes)
