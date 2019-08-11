@@ -258,4 +258,4 @@ class Emulator:
     def send_input(self, command=NO_INPUT):
         if not self.send_cmd(command):
             print('Packet Error!')
-            exit()
+            # exit()

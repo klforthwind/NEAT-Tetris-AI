@@ -11,7 +11,7 @@ class Genome:
         self.neuralNet = np.zeros((self.outputNodes, self.inputNodes))
         self.mutationRate = 0.01
         self.mutationStep = 0.2
-        self.fitness = -1
+        self.fitness = -2
 
     # Mutate values within the neural network
     def mutate(self):
