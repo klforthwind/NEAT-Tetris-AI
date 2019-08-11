@@ -79,7 +79,7 @@ class SwitchData:
                 level += self.getQueueValue(i, j)
                 inputNodes.append(self.getQueueValue(i, j))
             # print(level)
-        del inputNodes
+        return inputNodes
 
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
