@@ -1,14 +1,6 @@
-import argparse
 import serial
-import select
-import struct
-import sys
 import time
 import math
-
-parser = argparse.ArgumentParser('Client for sending controller commands to a controller emulator')
-parser.add_argument('port')
-args = parser.parse_args()
 
 # Switch Button Values
 BTN_NONE         = 0x0000000000000000
@@ -282,16 +274,18 @@ def send_input(command=NO_INPUT):
 
 # --------------------------------------------------------
 
-ser = serial.Serial(port=args.port, baudrate=19200,timeout=1)
+class Emulator:
 
-# Attempt to sync with the MCU
-if not sync():
-    print('Could not sync!')
-    exit()
+    def __init__(self, serialPort):
+        self.ser = serial.Serial(port=serialPort, baudrate=19200,timeout=1)
 
-send_input()
-
-# Successfully connected if we've reached this line
-print('Successful Connection!')
-
-ser.close
+        # Attempt to sync with the MCU
+        if not sync():
+            print('Could not sync!')
+            exit()
+    
+        # Successfully connected if we've reached this line
+        print('Successful Connection!')
+    
+    def close():
+        self.ser.close
