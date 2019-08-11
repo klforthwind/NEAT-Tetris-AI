@@ -83,7 +83,7 @@ class SwitchData:
         inputNodes = np.empty(256)
         for y in range(20):
             for x in range(10):
-                inputNodes.append(self.getBoardValue(y, x))
+                np.append(inputNodes, self.getBoardValue(y, x))
         for i in range(17):
             # level = 0
             for j in range(4):
