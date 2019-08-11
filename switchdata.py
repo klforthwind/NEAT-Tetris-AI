@@ -81,22 +81,28 @@ class SwitchData:
 
     def getInputNodes(self, newBlock):
         # Begin input nodes of neat
-        inputNodes = np.empty(256)
+        inputNodes = np.array([])
         xx = 0
         yy = 0
+        if self.lastBoard.size == 0:
+            newBlock = True
         if newBlock:
             self.lastBoard = np.array([])
+        if newBlock:
+            for y in range(20):
+                for x in range(10):
+                    if y > 1:
+                        filled = self.getBoardValue(y, x)
+                        self.lastBoard = np.append(self.lastBoard, filled)
         for y in range(20):
             for x in range(10):
                 filled = self.getBoardValue(y, x)
-                np.append(inputNodes, filled)
-                if y > 1 and newBlock:
-                    np.append(self.lastBoard, filled)
+                inputNodes = np.append(inputNodes, filled)
                 if  xx == 0 and filled and y < 2:
                     xx = x + 1
                     yy = y + 1
                 elif xx == 0 and filled and y > 1:
-                    if self.lastBoard[y*10+x]==0:
+                    if self.lastBoard[(y-2)*10+x]==0:
                         xx = x + 1
                         yy = y + 1
                 
@@ -106,28 +112,30 @@ class SwitchData:
                 if (i + 1) % 3 == 0:
                     continue
                 # level += self.getQueueValue(i, j)
-                np.append(inputNodes, self.getQueueValue(i, j))
+                inputNodes = np.append(inputNodes, self.getQueueValue(i, j))
             # print(level)
         for y in range(2):
             for x in range(4):
-                np.append(inputNodes, self.getHoldValue(y, x))
+                inputNodes = np.append(inputNodes, self.getHoldValue(y, x))
+        
         # Add X and Y as input nodes
-        np.append(inputNodes, xx)
-        np.append(inputNodes, yy)
+        inputNodes = np.append(inputNodes, xx)
+        inputNodes = np.append(inputNodes, yy)
         # Add 16 input nodes for the block being placed
         for m in range(4):
             for n in range(4):
-                if yy + m - 1 >= 20 or xx + n - 1 >= 20:
-                    np.append(inputNodes, 0)
+                if yy + m - 1 >= 20 or xx + n - 1 >= 10:
+                    inputNodes = np.append(inputNodes, 0)
                 elif yy + m - 1 < 2:
                     filled = self.getBoardValue(yy + m - 1, xx + n - 1)
-                    np.append(inputNodes, filled)
+                    inputNodes = np.append(inputNodes, filled)
                 elif yy + m - 1 > 1:
                     filled = self.getBoardValue(yy + m - 1, xx + n - 1)
                     if filled and self.lastBoard[(yy + m - 1)*10+xx+n-1]==1:
-                        np.append(inputNodes, filled)
+                        inputNodes = np.append(inputNodes, filled)
                     else:
-                        np.append(inputNodes, 0)
+                        inputNodes = np.append(inputNodes, 0)
+        
         return inputNodes
 
     def shouldQuit(self):
