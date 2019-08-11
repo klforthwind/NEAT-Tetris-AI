@@ -45,16 +45,15 @@ class SwitchData:
         board = frame[40:680, 480:800]
         board = cv2.cvtColor(board, cv2.COLOR_BGR2HLS)
         self.board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
-        cv2.imshow('Board', self.board)
-        # hold = frame[40:180, 380:480]
-        # hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
-        # hold = cv2.inRange(hold, np.array([0,54,0]), np.array([255,255,255]))
-        # cv2.imshow('Hold', hold)
+        # cv2.imshow('Board', self.board)
+        hold = frame[80:120, 396:468]
+        hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
+        self.hold = cv2.inRange(hold, np.array([0,54,0]), np.array([255,255,255]))
+        # cv2.imshow('Hold', self.hold)
         queue = frame[80:390, 815:880]
-        # queue = frame[143:160, 815:880]
         queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
         self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
-        cv2.imshow('Queue', self.queue)
+        # cv2.imshow('Queue', self.queue)
         # print(board[624][16]) #prints 255 if occupied, 0 if empty
 
     def getBoardValue(self, y, x):
@@ -64,6 +63,9 @@ class SwitchData:
         # arr = [16,16,26,15,15,26,15,15,26,15,15,26,15,15,26,15,15]
         arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,241,256,282,297]
         return 1 if self.queue[arr2[y] + 8][16 * x + 8] > 0 else 0
+
+    def getHoldValue(self, y, x):
+        return 1 if self.hold[20 * y + 10][18 * x + 9] > 0 else 0
 
     def getInputNodes(self):
         # Begin input nodes of neat
@@ -76,9 +78,12 @@ class SwitchData:
             for j in range(4):
                 if (i + 1) % 3 == 0:
                     continue
-                level += self.getQueueValue(i, j)
+                # level += self.getQueueValue(i, j)
                 inputNodes.append(self.getQueueValue(i, j))
             # print(level)
+        for y in range(2):
+            for x in range(4):
+                inputNodes.append(self.getHoldValue(y, x))
         return inputNodes
 
     def shouldQuit(self):
