@@ -286,6 +286,24 @@ class Emulator:
     
         # Successfully connected if we've reached this line
         print('Successful Connection!')
+
+    def runButton(self, outputNode, cmd):
+        if outputNode == 1:
+            send_input(cmd)
+
+    def emulateTetris(self, arr):
+        send_input()
+        self.runButton(arr[0], DPAD_U)
+        self.runButton(arr[1], DPAD_R)
+        self.runButton(arr[2], DPAD_D)
+        self.runButton(arr[3], DPAD_L)
+        self.runButton(arr[4], BTN_L)
+        self.runButton(arr[5], BTN_Y)
+        self.runButton(arr[6], BTN_B)
+        self.runButton(arr[7], rstick_angle(0, 0xFF))
+        self.runButton(arr[8], rstick_angle(90, 0xFF))
+        self.runButton(arr[9], rstick_angle(180, 0xFF))
+        self.runButton(arr[10], rstick_angle(270, 0xFF))
     
     def close():
         self.ser.close
