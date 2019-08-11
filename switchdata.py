@@ -55,6 +55,17 @@ class SwitchData:
         self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
         # cv2.imshow('Queue', self.queue)
         # print(board[624][16]) #prints 255 if occupied, 0 if empty
+    
+    def isDead(self):
+        isDead = True
+        for x in range(10):
+            if self.getBoardValue(10, x) == 0:
+                isDead = False
+                break
+            if self.getBoardValue(0, x) == 0:
+                isDead = False
+                break
+        return isDead
 
     def getBoardValue(self, y, x):
         return 1 if self.board[32 * y + 16][32 * x + 16] > 0 else 0
