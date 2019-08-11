@@ -80,7 +80,7 @@ class SwitchData:
 
     def getInputNodes(self):
         # Begin input nodes of neat
-        inputNodes = []
+        inputNodes = np.empty(256)
         for y in range(20):
             for x in range(10):
                 inputNodes.append(self.getBoardValue(y, x))
@@ -90,11 +90,11 @@ class SwitchData:
                 if (i + 1) % 3 == 0:
                     continue
                 # level += self.getQueueValue(i, j)
-                inputNodes.append(self.getQueueValue(i, j))
+                np.append(inputNodes, self.getQueueValue(i, j))
             # print(level)
         for y in range(2):
             for x in range(4):
-                inputNodes.append(self.getHoldValue(y, x))
+                np.append(inputNodes, self.getHoldValue(y, x))
         # Add X and Y as input nodes
         # Add 16 input nodes for the block being placed
         return inputNodes

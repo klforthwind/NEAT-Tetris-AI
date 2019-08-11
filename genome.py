@@ -6,7 +6,7 @@ class Genome:
 
     # Initialize some values
     def __init__(self):
-        self.inputNodes = 272
+        self.inputNodes = 256
         self.outputNodes = 11
         self.neuralNet = np.zeros((self.outputNodes, self.inputNodes))
         self.mutationRate = 0.01

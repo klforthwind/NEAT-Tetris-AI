@@ -35,6 +35,8 @@ while True:
         #Loop through genomes
         neat.loop()
     
+    
+    
 
 # Stop the capture thread
 capture.stop()
