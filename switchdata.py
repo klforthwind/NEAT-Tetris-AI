@@ -131,7 +131,7 @@ class SwitchData:
                     inputNodes = np.append(inputNodes, filled)
                 elif yy + m - 1 > 1:
                     filled = self.getBoardValue(yy + m - 1, xx + n - 1)
-                    if filled and self.lastBoard[(yy + m - 2)*10+xx+n-2]==1:
+                    if filled and self.lastBoard[(yy + m - 3)*10+xx+n-3]==1:
                         inputNodes = np.append(inputNodes, filled)
                     else:
                         inputNodes = np.append(inputNodes, 0)

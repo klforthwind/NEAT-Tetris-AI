@@ -19,16 +19,36 @@ BTN_RCLICK       = 0x0000000000000800
 BTN_HOME         = 0x0000000000001000
 BTN_CAPTURE      = 0x0000000000002000
 
-# Switch DPAD Values
-DPAD_U         = 0x00
-DPAD_U_R       = 0x01
-DPAD_R         = 0x02
-DPAD_D_R       = 0x03
-DPAD_D         = 0x04
-DPAD_D_L       = 0x05
-DPAD_L         = 0x06
-DPAD_U_L       = 0x07
-DPAD_CENTER    = 0x08
+# Actual Switch DPAD Values
+A_DPAD_CENTER    = 0x08
+A_DPAD_U         = 0x00
+A_DPAD_U_R       = 0x01
+A_DPAD_R         = 0x02
+A_DPAD_D_R       = 0x03
+A_DPAD_D         = 0x04
+A_DPAD_D_L       = 0x05
+A_DPAD_L         = 0x06
+A_DPAD_U_L       = 0x07
+
+# Enum DIR Values
+DIR_CENTER    = 0x00
+DIR_U         = 0x01
+DIR_R         = 0x02
+DIR_D         = 0x04
+DIR_L         = 0x08
+DIR_U_R       = DIR_U + DIR_R
+DIR_D_R       = DIR_D + DIR_R
+DIR_U_L       = DIR_U + DIR_L
+DIR_D_L       = DIR_D + DIR_L
+DPAD_CENTER      = 0x0000000000000000
+DPAD_U           = 0x0000000000010000
+DPAD_R           = 0x0000000000020000
+DPAD_D           = 0x0000000000040000
+DPAD_L           = 0x0000000000080000
+DPAD_U_R         = DPAD_U + DPAD_R
+DPAD_D_R         = DPAD_D + DPAD_R
+DPAD_U_L         = DPAD_U + DPAD_L
+DPAD_D_L         = DPAD_D + DPAD_L
 
 LSTICK_CENTER    = 0x0000000000000000
 LSTICK_R         = 0x00000000FF000000 #   0 (000)
@@ -86,10 +106,11 @@ class Emulator:
             self.send_input(cmd)
 
     def emulateTetris(self, arr):
-        self.send_input()
+        self.send_input(DPAD_CENTER)
+        self.send_input(NO_INPUT)
         self.runButton(arr[0], DPAD_U)
         self.runButton(arr[1], DPAD_R)
-        self.runButton(arr[2], DPAD_D)
+        self.runButton(arr[2], DPAD_U)
         self.runButton(arr[3], DPAD_L)
         self.runButton(arr[4], BTN_L)
         self.runButton(arr[5], BTN_Y)
@@ -193,8 +214,30 @@ class Emulator:
             commandSuccess = True
         return commandSuccess
 
-    # Send a formatted controller command to the MCU
-    def send_cmd(self, command=NO_INPUT):
+    # Convert DPAD value to actual DPAD value used by Switch
+    def decrypt_dpad(self, dpad):
+        if dpad == DIR_U:
+            dpadDecrypt = A_DPAD_U
+        elif dpad == DIR_R:
+            dpadDecrypt = A_DPAD_R
+        elif dpad == DIR_D:
+            dpadDecrypt = A_DPAD_D
+        elif dpad == DIR_L:
+            dpadDecrypt = A_DPAD_L
+        elif dpad == DIR_U_R:
+            dpadDecrypt = A_DPAD_U_R
+        elif dpad == DIR_U_L:
+            dpadDecrypt = A_DPAD_U_L
+        elif dpad == DIR_D_R:
+            dpadDecrypt = A_DPAD_D_R
+        elif dpad == DIR_D_L:
+            dpadDecrypt = A_DPAD_D_L
+        else:
+            dpadDecrypt = A_DPAD_CENTER
+        return dpadDecrypt
+
+    # Convert CMD to a packet
+    def cmd_to_packet(self, command):
         cmdCopy = command
         low              =  (cmdCopy & 0xFF)  ; cmdCopy = cmdCopy >>  8
         high             =  (cmdCopy & 0xFF)  ; cmdCopy = cmdCopy >>  8
@@ -203,11 +246,17 @@ class Emulator:
         lstick_angle     =  (cmdCopy & 0xFFF) ; cmdCopy = cmdCopy >> 12
         rstick_intensity =  (cmdCopy & 0xFF)  ; cmdCopy = cmdCopy >>  8
         rstick_angle     =  (cmdCopy & 0xFFF)
+        dpad = self.decrypt_dpad(dpad)
         left_x, left_y   = self.angle(lstick_angle, lstick_intensity)
         right_x, right_y = self.angle(rstick_angle, rstick_intensity)
 
         packet = [high, low, dpad, left_x, left_y, right_x, right_y, 0x00]
-        commandSuccess = self.send_packet(packet)
+        # print (hex(command), packet, lstick_angle, lstick_intensity, rstick_angle, rstick_intensity)
+        return packet
+
+    # Send a formatted controller command to the MCU
+    def send_cmd(self, command=NO_INPUT):
+        commandSuccess = self.send_packet(self.cmd_to_packet(command))
         return commandSuccess
 
     # Wait for data to be available on the serial port
