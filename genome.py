@@ -24,8 +24,26 @@ class Genome:
     # Get all buttons and whether they should be pushed
     def getButtons(self, inputNodes):
         arr = np.empty(11)
+        fitDiff = {
+                    0: 25,
+                    1: 0.2,
+                    2: 2,
+                    3: 0.2,
+                    4: 0,
+                    5: -0.3,
+                    6: -0.3,
+                    7: -1,
+                    8: -1,
+                    9: -1,
+                    10: -1
+                }
         for b in range(self.outputNodes):
             val = np.sum(np.multiply(inputNodes, self.neuralNet[b]))
-            arr[b] = 1 if val > 0 else 0
+            if val > 0:
+                arr[b] = 1
+                # print("dwajdiwoajdoi")
+                self.fitness+=fitDiff[b]
+            else:
+                arr[b] = 0
         return arr
 
