@@ -22,11 +22,16 @@ class NEAT:
             temp.mutate()
             self.genomes.append(temp)
             del temp
+        #Let's save some stats
+        for g in range(len(self.genomes)):
+            for z in range(self.genomes[0].outputNodes):
+                txt = "data/"+str(self.generation)+"-"+str(g)+"-"+str(z)+".txt"
+                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
 
     def processGenome(self, inputNodes):
         self.genomes[self.currentGenome].fitness += time.time()-self.t
         self.t = time.time()
-        print("  ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
+        print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
         return temp.getButtons(inputNodes)
     
@@ -42,6 +47,7 @@ class NEAT:
             self.increaseGeneration()
         self.t = time.time()
     
+    # Sorts genomes by fitness, such that arr[0] has the highest fitness
     def sortGenomes(self):
         self.genomes.sort(key=lambda x: x.fitness, reverse=True)
         # for x in range(popSize):
@@ -49,25 +55,30 @@ class NEAT:
     
     def increaseGeneration(self):
         print("Generation ", self.generation ," evaluated.")
-        
         self.currentGenome = 0
         self.generation += 1
         self.nextBlock = np.empty(8)
-            
-        fitt = self.genomes[0].fitness
-        print("Elite Fitness: ", fitt)
-        for z in range(11):
-            txt = "tetris"+str(fitt)+str(z)+str(z)+"-"+".txt"
-            np.savetxt(txt, self.genomes[0].neuralNet[z], fmt="%f")
+        
+        # for z in range(11):lines = [line.rstrip('\n') for line in file]
+        #     txt = "data/"+str(fitt)+str(z)+str(z)+"-"+".txt"
+        #     np.savetxt(txt, self.genomes[0].neuralNet[z], fmt="%f")
     
         while len(self.genomes) > self.popSize / 2:
             self.genomes.pop(len(self.genomes)-1)
-    
+            
+        children = []
+        children.append(self.genomes[0])
         for c in range(self.popSize - 1):
-            self.genomes.append(self.makeChild(self.randChoice(),self.randChoice()))
+            children.append(self.makeChild(self.randChoice(),self.randChoice()))
+        
+        self.genomes = children
 
-        for z in range(self.popSize):
-            self.genomes[z].fitness = 0
+        #Let's save some stats
+        for g in range(len(self.genomes)):
+            for z in range(self.genomes[0].outputNodes):
+                txt = "data/"+str(self.generation)+"-"+str(g)+"-"+str(z)+".txt"
+                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
+
 
     # Makes a child genome from parent genomes + random mutations
     def makeChild(self, mom, dad):

@@ -91,6 +91,7 @@ RESP_SYNC_OK       = 0x33
 class Emulator:
 
     def __init__(self, serialPort):
+        # Create the serial connection to the arduino pro micro
         self.ser = serial.Serial(port=serialPort, baudrate=19200,timeout=1)
 
         # Attempt to sync with the MCU
@@ -101,6 +102,11 @@ class Emulator:
         # Successfully connected if we've reached this line
         print('Successful Connection!')
 
+    def nextGenome(self):
+        tt = time.time()
+        while(time.time() - tt < 3):
+            self.send_input(BTN_A)
+
     def runButton(self, outputNode, cmd):
         if outputNode == 1:
             self.send_input(cmd)
@@ -110,15 +116,15 @@ class Emulator:
         self.send_input(NO_INPUT)
         self.runButton(arr[0], DPAD_U)
         self.runButton(arr[1], DPAD_R)
-        self.runButton(arr[2], DPAD_U)
+        self.runButton(arr[2], DPAD_D)
         self.runButton(arr[3], DPAD_L)
         self.runButton(arr[4], BTN_L)
         self.runButton(arr[5], BTN_Y)
         self.runButton(arr[6], BTN_B)
-        self.runButton(arr[7], self.rstick_angle(0, 0xFF))
-        self.runButton(arr[8], self.rstick_angle(90, 0xFF))
-        self.runButton(arr[9], self.rstick_angle(180, 0xFF))
-        self.runButton(arr[10], self.rstick_angle(270, 0xFF))
+        # self.runButton(arr[7], self.rstick_angle(0, 0xFF))
+        # self.runButton(arr[8], self.rstick_angle(90, 0xFF))
+        # self.runButton(arr[9], self.rstick_angle(180, 0xFF))
+        # self.runButton(arr[10], self.rstick_angle(270, 0xFF))
     
     def close(self):
         self.ser.close

@@ -91,20 +91,17 @@ class SwitchData:
         if newBlock:
             for y in range(20):
                 for x in range(10):
-                    if y > 1:
+                    if y > 2:
                         filled = self.getBoardValue(y, x)
                         self.lastBoard = np.append(self.lastBoard, filled)
         for y in range(20):
             for x in range(10):
                 filled = self.getBoardValue(y, x)
                 inputNodes = np.append(inputNodes, filled)
-                if  xx == 0 and filled and y < 2:
-                    xx = x + 1
-                    yy = y + 1
-                elif xx == 0 and filled and y > 1:
-                    if self.lastBoard[(y-2)*10+x]==0:
-                        xx = x + 1
-                        yy = y + 1
+                if xx == 0 and filled and y > 2:
+                    if self.lastBoard[(y-3)*10+x]==0:
+                        xx = x
+                        yy = y
                 
         for i in range(17):
             # level = 0
@@ -124,14 +121,14 @@ class SwitchData:
         # Add 16 input nodes for the block being placed
         for m in range(4):
             for n in range(4):
-                if yy + m - 1 >= 20 or xx + n - 1 >= 10:
+                if yy + m >= 20 or xx + n >= 10:
                     inputNodes = np.append(inputNodes, 0)
-                elif yy + m - 1 < 2:
-                    filled = self.getBoardValue(yy + m - 1, xx + n - 1)
+                elif yy + m < 2:
+                    filled = self.getBoardValue(yy + m , xx + n )
                     inputNodes = np.append(inputNodes, filled)
-                elif yy + m - 1 > 1:
-                    filled = self.getBoardValue(yy + m - 1, xx + n - 1)
-                    if filled and self.lastBoard[(yy + m - 3)*10+xx+n-3]==1:
+                elif yy + m > 1:
+                    filled = self.getBoardValue(yy + m, xx + n - 1)
+                    if filled and self.lastBoard[(yy + m - 2)*10+xx+n-2]==1:
                         inputNodes = np.append(inputNodes, filled)
                     else:
                         inputNodes = np.append(inputNodes, 0)
@@ -140,6 +137,9 @@ class SwitchData:
 
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
+
+    def shouldPressA(self):
+        return cv2.waitKey(1) & 0xFF == ord('a')
 
     def __exit__(self, exec_type, exc_value, traceback):
         self.cap.release()

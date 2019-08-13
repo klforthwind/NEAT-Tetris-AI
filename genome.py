@@ -7,7 +7,7 @@ class Genome:
     # Initialize some values
     def __init__(self):
         self.inputNodes = 274
-        self.outputNodes = 11
+        self.outputNodes = 7
         self.neuralNet = np.zeros((self.outputNodes, self.inputNodes))
         self.mutationRate = 0.01
         self.mutationStep = 0.2
@@ -23,12 +23,12 @@ class Genome:
 
     # Get all buttons and whether they should be pushed
     def getButtons(self, inputNodes):
-        arr = np.zeros(11)
+        arr = np.zeros(self.outputNodes)
         fitDiff = {
-            0: 2,
+            0: 0,
             1: 0.2,
-            2: 2,
-            3: 0.2,
+            2: 0,
+            3: 0.4,
             4: 0,
             5: -0.3,
             6: -0.3,

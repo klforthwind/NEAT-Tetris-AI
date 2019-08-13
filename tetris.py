@@ -7,13 +7,10 @@ from neat import NEAT
 import time
 
 # Controlled randomness
-rng.seed(42069666)
+rng.seed(66669420)
+
+# Get a relative point of time
 t0 = time.time()
-t1 = time.time()
-t2 = time.time()
-res = False
-once = False
-start = True
 
 # Connect to the Switch Capture
 capture = SwitchData(0)
@@ -32,43 +29,32 @@ emulator = Emulator(port)
 # Main code loop
 while True:
     
-    # Check to see if we should end the program
+    # Check to see if we should end the program (if we pressed q)
     if (capture.shouldQuit()):
         emulator.send_input()
         break
+
+    # Check to see if we should press A (genome over, and it won't go to next genome)
+    if (capture.shouldPressA()):
+        emulator.nextGenome()
+        neat.loop()
 
     # Process the capture to get the images that we need
     capture.processCapture()
 
     # Get the needed input nodes from 
     inputNodes = capture.getInputNodes(neat.didBlockChange())
-    
-    if time.time()-t2 > 1:
-        # Check to see if genome is dead
-        if capture.isDead():
-            t2 = time.time()
-            if once:
-                once = False
-                res = True
-        else:
-            if res:
-                res = False
-                #Loop through genomes
-                neat.loop()
-    
-    if not capture.isDead():
-        start = False
-        once = True
 
-    if res or start:
-        emulator.send_input(BTN_A)
-    
-    if (time.time()-t0 > 0.15) and not res:
+    # Check to see if genome is dead
+    if capture.isDead():
+        emulator.nextGenome()
+        neat.loop()
+
+    if (time.time()-t0 > 0.25):
         t0 = time.time()
         # Send the correct button inputs
         btnArr = neat.processGenome(inputNodes)
         emulator.emulateTetris(btnArr)
-
 
 # Stop the capture thread
 capture.stop()
