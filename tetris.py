@@ -5,6 +5,7 @@ from emulator import BTN_A
 import numpy.random as rng
 from neat import NEAT
 import time
+import os
 
 # Controlled randomness
 rng.seed(66669420)
@@ -20,7 +21,17 @@ capture.start()
 
 # Begin our population
 neat = NEAT(50)
-neat.createPopulation()
+
+gen = 0
+if os.path.isfile('data/0-0-0.txt'):
+    while(os.path.isfile('data/'+str(gen)+'-0-0.txt')):
+        hasData = os.path.isfile('data/'+str(gen)+'-0-0.txt')
+        if hasData:
+            gen += 1
+    gen -= 1
+    neat.repopulate(gen)
+else:
+    neat.createPopulation()
 
 #Get connected to an emulator
 port = "COM3"

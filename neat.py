@@ -28,6 +28,21 @@ class NEAT:
                 txt = "data/"+str(self.generation)+"-"+str(g)+"-"+str(z)+".txt"
                 np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
 
+    def repopulate(self, gen):
+        for g in range(self.popSize):
+            temp = Genome()
+            for o in range(7):
+                filename = "data/"+str(gen)+"-"+str(g)+"-"+str(o)+".txt"
+                f = open(filename, "r")
+                dttt = f.read().splitlines()
+                for l in range(274):
+                    temp.neuralNet[o][l] = float(dttt[l])
+                del dttt
+                f.close()
+            self.genomes.append(temp)
+            del temp
+        self.generation = gen
+
     def processGenome(self, inputNodes):
         self.genomes[self.currentGenome].fitness += time.time()-self.t
         self.t = time.time()
@@ -67,6 +82,7 @@ class NEAT:
             self.genomes.pop(len(self.genomes)-1)
             
         children = []
+        self.genomes[0].fitness = 0
         children.append(self.genomes[0])
         for c in range(self.popSize - 1):
             children.append(self.makeChild(self.randChoice(),self.randChoice()))
