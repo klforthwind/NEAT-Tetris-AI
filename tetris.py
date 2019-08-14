@@ -64,7 +64,7 @@ while True:
         neat.loop()
 
         
-    if (time.time()-t1 > 4000 and capture.isLevelingUp()):
+    if (time.time()-t1 > 400 and capture.isLevelingUp()):
         emulator.nextGenome()
         neat.loop()
 
