@@ -12,6 +12,7 @@ rng.seed(66669420)
 
 # Get a relative point of time
 t0 = time.time()
+t1 = time.time()
 
 # Connect to the Switch Capture
 capture = SwitchData(0)
@@ -58,11 +59,12 @@ while True:
 
     # Check to see if genome is dead
     if capture.isDead():
+        t1 = time.time()
         emulator.nextGenome()
         neat.loop()
 
         
-    if (not capture.isDead() and capture.isLevelingUp()):
+    if (time.time()-t1 > 4000 and capture.isLevelingUp()):
         emulator.nextGenome()
         neat.loop()
 

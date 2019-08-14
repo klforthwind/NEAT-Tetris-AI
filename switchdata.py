@@ -69,12 +69,15 @@ class SwitchData:
         return isDead
 
     def isLevelingUp(self):
-        isLevelingUp = True
-        for y in range(6):
-            for x in range(320):
-                if self.board[639-y][x] == 0:
+        levelUp = False
+        for z in range(13):
+            isLevelingUp = True
+            for x in range(10):
+                if self.getBoardValue(z, x) == 0:
                     isLevelingUp = False
-        return isLevelingUp
+            if (isLevelingUp):
+                levelUp = True
+        return levelUp
 
     def getBoardValue(self, y, x):
         return 1 if self.board[32 * y + 16][32 * x + 16] > 0 else 0
