@@ -61,6 +61,11 @@ while True:
         emulator.nextGenome()
         neat.loop()
 
+        
+    if (not capture.isDead() and capture.isLevelingUp()):
+        emulator.nextGenome()
+        neat.loop()
+
     if (time.time()-t0 > 0.25):
         t0 = time.time()
         # Send the correct button inputs
