@@ -45,7 +45,10 @@ class SwitchData:
         cv2.imshow('Frame', frame)
         board = frame[40:680, 480:800]
         board = cv2.cvtColor(board, cv2.COLOR_BGR2HLS)
-        self.board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
+        board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
+        self.frameMat = np.zeros((640, 320))
+        self.createBoard(board)
+        self.board = self.frameMat
         cv2.imshow('Board', self.board)
         hold = frame[80:120, 396:468]
         hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
@@ -78,6 +81,36 @@ class SwitchData:
             if (isLevelingUp):
                 levelUp = True
         return levelUp
+
+    def colorMat(self, x, y, val):
+        for m in range(32):
+            for n in range(32):
+                self.frameMat[y * 32 + m][x * 32 + n] = val
+        if x != 9 and y != 19:
+            self.frameMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
+
+    def createBoard(self, source):
+        for y in range(20):
+            for x in range(10):
+                val = 0
+                if y == 0:
+                    val = source[4][32 * x + 16]
+                elif y == 1:
+                    val = source[4][32 * x + 16]
+                elif y == 2 and (x == 0 or x == 1 or x == 2):
+                    val = source[32 * y + 29][32 * x + 16]
+                elif y == 2 and x == 3:
+                    val = source[32 * y + 20][32 * x + 16]
+                elif y == 2:
+                    val = source[32 * y + 16][32 * x + 16]
+                elif y == 3:
+                    val = source[32 * y + 30][32 * x + 16]
+                elif y == 4 and (x == 5 or x == 4):
+                    val = source[32 * y + 29][32 * x + 16]
+                else:
+                    val = source[32 * y + 16][32 * x + 16]
+
+                self.colorMat(x, y, val)
 
     def getBoardValue(self, y, x):
         return 1 if self.board[32 * y + 16][32 * x + 16] > 0 else 0
