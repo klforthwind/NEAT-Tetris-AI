@@ -72,7 +72,7 @@ while True:
     for x in range(10):
         for y in range(20):
             if(inputNodes[x + 10 * y] == 1):
-                neat.genomes[neat.currentGenome].fitness += y / 500
+                neat.genomes[neat.currentGenome].fitness += y / 2000
                 break
 
     if (time.time()-t0 > 0.25):
