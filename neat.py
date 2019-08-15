@@ -73,10 +73,6 @@ class NEAT:
         self.currentGenome = 0
         self.generation += 1
         self.nextBlock = np.empty(8)
-        
-        # for z in range(11):lines = [line.rstrip('\n') for line in file]
-        #     txt = "data/"+str(fitt)+str(z)+str(z)+"-"+".txt"
-        #     np.savetxt(txt, self.genomes[0].neuralNet[z], fmt="%f")
     
         while len(self.genomes) > self.popSize / 2:
             self.genomes.pop(len(self.genomes)-1)
