@@ -11,7 +11,7 @@ class NEAT:
         self.generation = 0
         self.genomes = []
         self.currentGenome = 0
-        self.nextBlock = np.array([])
+        self.nextBlock = np.empty(8)
         self.blockChanged = False
         self.t = time.time()
         
@@ -46,6 +46,12 @@ class NEAT:
     def processGenome(self, inputNodes):
         self.genomes[self.currentGenome].fitness += time.time()-self.t
         self.t = time.time()
+
+        for z in range(8):
+            if inputNodes[208+z] != self.nextBlock[z]:
+                self.blockChanged = True
+            inputNodes[208+z] = self.nextBlock[z]
+
         print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
         return temp.getButtons(inputNodes)

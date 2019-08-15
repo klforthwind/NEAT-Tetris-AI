@@ -12,6 +12,8 @@ class SwitchData:
         self.started = False
         self.read_lock = threading.Lock()
         self.lastBoard = np.array([])
+        self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
+        self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
 
     def set(self, var1, var2):
         self.cap.set(var1, var2)
@@ -40,14 +42,14 @@ class SwitchData:
         self.thread.join()
         cv2.destroyAllWindows()
     
-    def processCapture(self):
+    def processCapture(self, neuralNet):
         _, frame = self.read()
         cv2.imshow('Frame', frame)
         board = frame[40:680, 480:800]
         board = cv2.cvtColor(board, cv2.COLOR_BGR2HLS)
         board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
         self.frameMat = np.zeros((640, 320))
-        self.createBoard(board)
+        self.createBoard(board, neuralNet)
         self.board = self.frameMat
         cv2.imshow('Board', self.board)
         hold = frame[80:120, 396:468]
@@ -57,6 +59,9 @@ class SwitchData:
         queue = frame[80:390, 815:880]
         queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
         self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
+        self.queueMat = np.zeros((310, 65))
+        self.createQueue(queue)
+        self.queue = self.queueMat
         cv2.imshow('Queue', self.queue)
         # print(board[624][16]) #prints 255 if occupied, 0 if empty
     
@@ -82,14 +87,14 @@ class SwitchData:
                 levelUp = True
         return levelUp
 
-    def colorMat(self, x, y, val):
+    def colorMat(self, x, y, val, neuralNet):
         for m in range(32):
             for n in range(32):
                 self.frameMat[y * 32 + m][x * 32 + n] = val
         if x != 9 and y != 19:
             self.frameMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
 
-    def createBoard(self, source):
+    def createBoard(self, source, neuralNet):
         for y in range(20):
             for x in range(10):
                 val = 0
@@ -110,15 +115,29 @@ class SwitchData:
                 else:
                     val = source[32 * y + 16][32 * x + 16]
 
-                self.colorMat(x, y, val)
+                self.colorMat(x, y, val, neuralNet)
 
     def getBoardValue(self, y, x):
         return 1 if self.board[32 * y + 16][32 * x + 16] > 0 else 0
     
+    def createQueue(self, queue):
+        for i in range(17):
+            # level = 0
+            for j in range(4):
+                if (i + 1) % 3 == 0:
+                    continue
+                val = self.getQueueValue(i, j)
+                self.colorQueueMat(j, i, val)
+
     def getQueueValue(self, y, x):
         # arr = [16,16,26,15,15,26,15,15,26,15,15,26,15,15,26,15,15]
-        arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,241,256,282,297]
-        return 1 if self.queue[arr2[y] + 8][16 * x + 8] > 0 else 0
+        # arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,241,256,282,297]
+        return 1 if self.queue[self.arr2[y] + 8][16 * x + 8] > 0 else 0
+
+    def colorQueueMat(self, x, y, val):
+        for m in range(self.arr[y]):
+            for n in range(16):
+                self.queueMat[self.arr2[y] + m][x * 16 + n] = val
 
     def getHoldValue(self, y, x):
         return 1 if self.hold[20 * y + 10][18 * x + 9] > 0 else 0

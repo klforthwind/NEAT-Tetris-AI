@@ -52,7 +52,7 @@ while True:
         neat.loop()
 
     # Process the capture to get the images that we need
-    capture.processCapture()
+    capture.processCapture(neat.genomes[neat.currentGenome].neuralNet)
 
     # Get the needed input nodes from 
     inputNodes = capture.getInputNodes(neat.didBlockChange())
@@ -67,6 +67,13 @@ while True:
     if (time.time()-t1 > 400 and capture.isLevelingUp()):
         emulator.nextGenome()
         neat.loop()
+    
+
+    for x in range(10):
+        for y in range(20):
+            if(inputNodes[x + 10 * y] == 1):
+                neat.genomes[neat.currentGenome].fitness += y / 500
+                break
 
     if (time.time()-t0 > 0.25):
         t0 = time.time()
