@@ -19,7 +19,8 @@ capture = SwitchData()
 capture.start()
 
 # Begin our population
-neat = NEAT(50)
+populationSize = 50
+neat = NEAT(populationSize)
 
 gen = 0
 if os.path.isfile('data/0-0-0.txt'):
