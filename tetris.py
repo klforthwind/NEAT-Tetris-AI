@@ -15,7 +15,7 @@ t0 = time.time()
 t1 = time.time()
 
 # Connect to the Switch Capture
-capture = SwitchData(0)
+capture = SwitchData()
 
 # Start the Switch Capture Thread, running asynchronous
 capture.start()
