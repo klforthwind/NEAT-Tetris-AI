@@ -14,10 +14,8 @@ rng.seed(66669420)
 t0 = time.time()
 t1 = time.time()
 
-# Connect to the Switch Capture
+# Connect to the Switch Capture, and run it asynchronous
 capture = SwitchData()
-
-# Start the Switch Capture Thread, running asynchronous
 capture.start()
 
 # Begin our population
