@@ -6,9 +6,13 @@ class Genome:
 
     # Initialize some values
     def __init__(self):
+
+        # Set a blank neural network
         self.inputNodes = 274
         self.outputNodes = 7
         self.neuralNet = np.zeros((self.outputNodes, self.inputNodes))
+
+        # Set mutation rate, step, and fitness
         self.mutationRate = 0.01
         self.mutationStep = 0.2
         self.fitness = -2
