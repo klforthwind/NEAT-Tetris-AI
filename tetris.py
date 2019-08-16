@@ -24,9 +24,10 @@ neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
 gen = 0
-if isfile('data/0-0-0.txt'):
-    while(isfile('data/'+str(gen)+'-0-0.txt')):
-        hasData = isfile('data/'+str(gen)+'-0-0.txt')
+zeroGenome = '/0-0.txt'
+if isfile('data/0'+zeroGenome):
+    while(isfile('data/'+str(gen)+zeroGenome)):
+        hasData = isfile('data/'+str(gen)+zeroGenome)
         if hasData:
             gen += 1
     gen -= 1
