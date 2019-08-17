@@ -200,14 +200,21 @@ class SwitchData:
         if xPos > 1:
             for n in range(2):
                 for m in range(4):
-                    if self.lastBoard[yPos + m][xPos - n - 1] == 0 and self.getBoardValue(yPos + m, xPos - n - 1) == 1:
-                        xPos -= (n + 1)
+                    if yPos + m >= 20:
                         continue
+                    else:
+                        lastBoardEmpty = self.lastBoard[yPos + m][xPos - n - 1] == 0
+                        if lastBoardEmpty and self.getBoardValue(yPos + m, xPos - n - 1) == 1:
+                            xPos -= (n + 1)
+                            continue
         elif xPos == 1:
             for m in range(4):
-                if self.lastBoard[yPos + m][xPos - 1] == 0 and self.getBoardValue(yPos + m, xPos - 1) == 1:
-                    xPos -= 1
+                if yPos + m >= 20:
                     continue
+                else:
+                    if self.lastBoard[yPos + m][xPos - 1] == 0 and self.getBoardValue(yPos + m, xPos - 1) == 1:
+                        xPos -= 1
+                        continue
                 
         # Add X and Y as hidden nodes
         hiddenNodes = np.append(hiddenNodes, xPos)
