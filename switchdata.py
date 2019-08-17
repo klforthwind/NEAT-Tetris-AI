@@ -14,6 +14,9 @@ class SwitchData:
         self.lastBoard = np.zeros((20, 10))
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
+        self.boardArr = np.zeros((20, 10))
+        self.queueArr = np.zeros((17, 4))
+        self.holdArr = np.zeros((2, 4))
 
     def set(self, var1, var2):
         self.cap.set(var1, var2)
@@ -49,11 +52,12 @@ class SwitchData:
         # Show the capture card
         cv2.imshow('Frame', frame)
 
-        self.__makeBoard()
-        self.__makeHold()
-        self.__makeQueue()
+        # Process the board, hold, and queue
+        self.__makeBoard(frame)
+        self.__makeHold(frame)
+        self.__makeQueue(frame)
 
-    def __makeBoard(self):
+    def __makeBoard(self, frame):
         # Make a mat that only shows the board
         board = frame[40:680, 480:800]
 
@@ -62,17 +66,28 @@ class SwitchData:
 
         # Only get the luminant parts of the board
         board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
-        self.frameMat = np.zeros((640, 320))
-        self.createBoard(board)
-        self.board = self.frameMat
-        cv2.imshow('Board', self.board)
+        boardMat = np.zeros((640, 320))
+        for y in range(20):
+            for x in range(10):
+                val = 255 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 4] > 0 and 
+                    board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 4] > 0 else 0
+                self.boardArr[y][x] = val
+                for m in range(32):
+                    if val == 0:
+                        break
+                    for n in range(32):
+                        boardMat[y * 32 + m][x * 32 + n] = val
+                if x != 9 and y != 19:
+                    boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
+        cv2.imshow('Board', boardMat)
 
-    def __makeHold(self):
+    def __makeHold(self, frame):
+        # Naje a mat that only shows the hold
         hold = frame[80:120, 396:468]
         hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
         self.hold = cv2.inRange(hold, np.array([0,54,0]), np.array([255,255,255]))
 
-    def __makeQueue(self):
+    def __makeQueue(self, frame):
         queue = frame[80:390, 815:880]
         queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
         self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
@@ -102,36 +117,7 @@ class SwitchData:
             if (isLevelingUp):
                 levelUp = True
         return levelUp
-
-    def colorMat(self, x, y, val):
-        for m in range(32):
-            for n in range(32):
-                self.frameMat[y * 32 + m][x * 32 + n] = val
-        if x != 9 and y != 19:
-            self.frameMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
-
-    def createBoard(self, source):
-        for y in range(20):
-            for x in range(10):
-                val = 0
-                if y == 0:
-                    val = source[4][32 * x + 16]
-                elif y == 1:
-                    val = source[4][32 * x + 16]
-                elif y == 2 and (x == 0 or x == 1 or x == 2):
-                    val = source[32 * y + 29][32 * x + 16]
-                elif y == 2 and x == 3:
-                    val = source[32 * y + 20][32 * x + 16]
-                elif y == 2:
-                    val = source[32 * y + 16][32 * x + 16]
-                elif y == 3:
-                    val = source[32 * y + 30][32 * x + 16]
-                elif y == 4 and (x == 5 or x == 4):
-                    val = source[32 * y + 29][32 * x + 16]
-                else:
-                    val = source[32 * y + 16][32 * x + 16]
-
-                self.colorMat(x, y, val)
+               
 
     def getBoardValue(self, y, x):
         return 1 if self.board[32 * y + 16][32 * x + 16] > 0 else 0
