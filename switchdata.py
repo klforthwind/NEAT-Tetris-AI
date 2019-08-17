@@ -43,19 +43,36 @@ class SwitchData:
         cv2.destroyAllWindows()
     
     def processCapture(self):
+        # Read the capture card
         _, frame = self.read()
+
+        # Show the capture card
         cv2.imshow('Frame', frame)
+
+        self.__makeBoard()
+        self.__makeHold()
+        self.__makeQueue()
+
+    def __makeBoard(self):
+        # Make a mat that only shows the board
         board = frame[40:680, 480:800]
+
+        # Convert the board to Hue Luminance and Saturation Mode
         board = cv2.cvtColor(board, cv2.COLOR_BGR2HLS)
+
+        # Only get the luminant parts of the board
         board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
         self.frameMat = np.zeros((640, 320))
         self.createBoard(board)
         self.board = self.frameMat
         cv2.imshow('Board', self.board)
+
+    def __makeHold(self):
         hold = frame[80:120, 396:468]
         hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
         self.hold = cv2.inRange(hold, np.array([0,54,0]), np.array([255,255,255]))
-        # cv2.imshow('Hold', self.hold)
+
+    def __makeQueue(self):
         queue = frame[80:390, 815:880]
         queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
         self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
@@ -63,8 +80,7 @@ class SwitchData:
         self.createQueue(queue)
         self.queue = self.queueMat
         cv2.imshow('Queue', self.queue)
-        # print(board[624][16]) #prints 255 if occupied, 0 if empty
-    
+
     def isDead(self):
         isDead = True
         for x in range(10):

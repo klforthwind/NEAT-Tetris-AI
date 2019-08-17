@@ -12,6 +12,7 @@ class NEAT:
         self.genomes = []
         self.currentGenome = 0
         self.lastQueue = np.zeros((17, 4))
+        self.t = time.time()
         
     # Create the initial genomes
     def createPopulation(self):
@@ -53,7 +54,12 @@ class NEAT:
         self.generation = gen
 
     def processGenome(self, inputNodes, hiddenNodes):
-        return self.genomes[self.currentGenome].getButtons(inputNodes, hiddenNodes)
+        self.genomes[self.currentGenome].fitness += time.time()-self.t
+        self.t = time.time()
+
+        print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
+        temp = self.genomes[self.currentGenome]
+        return temp.getButtons(inputNodes, hiddenNodes)
     
     def didBlockChange(self, captura):
         qChange = 0
@@ -72,6 +78,7 @@ class NEAT:
         if self.currentGenome == len(self.genomes):
             self.sortGenomes()
             self.increaseGeneration()
+        self.t = time.time()
     
     # Sorts genomes by fitness, such that arr[0] has the highest fitness
     def sortGenomes(self):

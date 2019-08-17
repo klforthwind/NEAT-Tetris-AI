@@ -18,16 +18,13 @@ t1 = time.time()
 capture = SwitchData()
 capture.start()
 
-# Add height variable
-maxHeight = 0
-
 # Begin our population
-populationSize = 26
+populationSize = 50
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
 gen = 0
-zeroGenome = '0-0-h-0.txt'
+zeroGenome = '-0-0.txt'
 if isfile('data/0'+zeroGenome):
     while(isfile('data/'+str(gen)+zeroGenome)):
         hasData = isfile('data/'+str(gen)+zeroGenome)
@@ -76,7 +73,6 @@ while True:
         if (20 - heightFromTop < maxHeight and maxHeight - (20 - heightFromTop) <= 4):
             neat.genomes[neat.currentGenome].fitness += 50
             maxHeight = 20 - heightFromTop
-        print(" ",neat.generation, " - ", neat.currentGenome, " - ", neat.genomes[neat.currentGenome].fitness)
 
     # Check to see if genome is dead
     if capture.isDead():
@@ -93,7 +89,8 @@ while True:
     if (time.time()-t0 > 0.25):
         t0 = time.time()
         # Send the correct button inputs
-        emulator.emulateTetris(neat.genomes[neat.currentGenome].getButtons(inputNodes, hiddenNodes))
+        btnArr = neat.processGenome(inputNodes, hiddenNodes)
+        emulator.emulateTetris(btnArr)
 
 # Stop the capture thread
 capture.stop()
