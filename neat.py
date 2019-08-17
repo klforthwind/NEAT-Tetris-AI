@@ -117,10 +117,10 @@ class NEAT:
         child = Genome()
         for o in range(child.outputNodes):
             for h in range(child.hiddenNodes):
-                child.rightNeuralNet[o][h] = mom.neuralNet[o][h] if rand.random() < 0.5 else dad.neuralNet[o][h]
+                child.rightNeuralNet[o][h] = mom.rightNeuralNet[o][h] if rand.random() < 0.5 else dad.rightNeuralNet[o][h]
         for h in range(child.hiddenNodes):
             for i in range(child.inputNodes):
-                child.rightNeuralNet[h][i] = mom.neuralNet[h][i] if rand.random() < 0.5 else dad.neuralNet[h][i]    
+                child.rightNeuralNet[h][i] = mom.leftNeuralNet[h][i] if rand.random() < 0.5 else dad.leftNeuralNet[h][i]    
         child.mutate()
         return child
 

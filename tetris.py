@@ -22,7 +22,7 @@ capture.start()
 maxHeight = 0
 
 # Begin our population
-populationSize = 50
+populationSize = 26
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
@@ -70,7 +70,7 @@ while True:
         for x in range(10):
             for y in range(20):
                 if y > 1 and capture.lastBoard[y][x] == 1 and y < heightFromTop:
-                    y = heightFromTop
+                    heightFromTop = y
                 if(capture.lastBoard[y][x] == 1):
                     neat.genomes[neat.currentGenome].fitness += y / 20
                     break
