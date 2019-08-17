@@ -26,7 +26,7 @@ RSTICK_D_L       = 0x0E1FF00000000000 # 225 (0E1)
 RSTICK_D         = 0x10EFF00000000000 # 270 (10E)
 RSTICK_D_R       = 0x13BFF00000000000 # 315 (13B)
 
-NO_INPUT         = BTN_NONE + DPAD_CENTER + LSTICK_CENTER + RSTICK_CENTER
+NO_INPUT         = BTN_NONE + DPAD_CENTER + RSTICK_CENTER
 
 # Commands to send to MCU
 COMMAND_NOP        = 0x00
@@ -84,6 +84,8 @@ class Emulator:
     
     def close(self):
         self.ser.close
+
+# --------------------------------------------------------
 
         # Compute x and y based on angle and intensity
     def angle(self, angle, intensity):

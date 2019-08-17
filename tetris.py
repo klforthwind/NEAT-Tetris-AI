@@ -76,6 +76,7 @@ while True:
         if (20 - heightFromTop < maxHeight and maxHeight - (20 - heightFromTop) <= 4):
             neat.genomes[neat.currentGenome].fitness += 50
             maxHeight = 20 - heightFromTop
+        print(" ",neat.generation, " - ", neat.currentGenome, " - ", neat.genomes[neat.currentGenome].fitness)
 
     # Check to see if genome is dead
     if capture.isDead():
@@ -92,8 +93,7 @@ while True:
     if (time.time()-t0 > 0.25):
         t0 = time.time()
         # Send the correct button inputs
-        btnArr = neat.processGenome(inputNodes, hiddenNodes)
-        emulator.emulateTetris(btnArr)
+        emulator.emulateTetris(neat.genomes[neat.currentGenome].getButtons(inputNodes, hiddenNodes))
 
 # Stop the capture thread
 capture.stop()
