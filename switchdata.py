@@ -14,9 +14,9 @@ class SwitchData:
         self.lastBoard = np.zeros((20, 10))
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
-        self.boardArr = np.zeros((20, 10))
-        self.queueArr = np.zeros((17, 4))
-        self.holdArr = np.zeros((2, 4))
+        self.__boardArr = np.zeros((20, 10))
+        self.__queueArr = np.zeros((17, 4))
+        self.__holdArr = np.zeros((2, 4))
 
     def set(self, var1, var2):
         self.cap.set(var1, var2)
@@ -45,6 +45,7 @@ class SwitchData:
         self.thread.join()
         cv2.destroyAllWindows()
     
+    # Process the capture card
     def processCapture(self):
         # Read the capture card
         _, frame = self.read()
@@ -62,39 +63,72 @@ class SwitchData:
         board = frame[40:680, 480:800]
 
         # Convert the board to Hue Luminance and Saturation Mode
-        board = cv2.cvtColor(board, cv2.COLOR_BGR2HLS)
+        board = self.__hls(board)
 
         # Only get the luminant parts of the board
-        board = cv2.inRange(board, np.array([0,54,0]), np.array([255,255,255]))
+        board = self.__mask(board)
+
+        # Attempt to apply 
         boardMat = np.zeros((640, 320))
         for y in range(20):
             for x in range(10):
-                val = 255 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 4] > 0 and 
-                    board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 4] > 0 else 0
-                self.boardArr[y][x] = val
+                val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and 
+                    board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
+                self.__boardArr[y][x] = val
                 for m in range(32):
                     if val == 0:
                         break
                     for n in range(32):
-                        boardMat[y * 32 + m][x * 32 + n] = val
+                        boardMat[y * 32 + m][x * 32 + n] = 255
                 if x != 9 and y != 19:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
         cv2.imshow('Board', boardMat)
 
     def __makeHold(self, frame):
-        # Naje a mat that only shows the hold
+        # Make a mat that only shows the hold
         hold = frame[80:120, 396:468]
-        hold = cv2.cvtColor(hold, cv2.COLOR_BGR2HLS)
-        self.hold = cv2.inRange(hold, np.array([0,54,0]), np.array([255,255,255]))
+
+        # Convert the hold to Hue Luminance and Saturation Mode
+        hold = self.__hls(hold)
+
+        # Only get the luminant parts of the board
+        hold = self.__mask(hold)
+
+        for y in range(2):
+            for x in range(4):
+                self.__holdArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
 
     def __makeQueue(self, frame):
+        # Make a mat that only shows the queue
         queue = frame[80:390, 815:880]
-        queue = cv2.cvtColor(queue, cv2.COLOR_BGR2HLS)
-        self.queue = cv2.inRange(queue, np.array([0,54,0]), np.array([255,255,255]))
-        self.queueMat = np.zeros((310, 65))
-        self.createQueue(queue)
-        self.queue = self.queueMat
-        cv2.imshow('Queue', self.queue)
+
+        # Convert the queue to Hue Luminance and Saturation Mode
+        queue = self.__hls(queue)
+
+        # Only get the luminant parts of the board
+        queue = self.__mask(queue)
+        
+        queueMat = np.zeros((310, 65))
+        for i in range(17):
+            # level = 0
+            for j in range(4):
+                if (i + 1) % 3 == 0:
+                    continue
+                val = 1 if queue[self.arr2[y] + 8][16 * x + 8] > 0 else 0
+                self.__queueArr[i][j] = val
+                for m in range(self.arr[y]):
+                    if val == 0:
+                        break
+                    for n in range(16):
+                        queueMat[self.arr2[y] + m][x * 16 + n] = 255
+        
+        cv2.imshow('Queue', queueMat)
+
+    def __hls(self, mat):
+        return cv2.cvtColor(mat, cv2.COLOR_BGR2HLS)
+
+    def __mask(self, mat):
+        return cv2.inRange(mat, np.array([0,54,0]), np.array([255,255,255]))
 
     def isDead(self):
         isDead = True
@@ -105,44 +139,16 @@ class SwitchData:
             if self.getBoardValue(10, x) == 0:
                 isDead = False
                 break
-        return isDead
+        return isDead               
 
-    def isLevelingUp(self):
-        levelUp = False
-        for z in range(13):
-            isLevelingUp = True
-            for x in range(10):
-                if self.getBoardValue(z, x) == 0:
-                    isLevelingUp = False
-            if (isLevelingUp):
-                levelUp = True
-        return levelUp
-               
+    def getBoardPos(self, y, x):
+        return self.__boardArr[y][x]
 
-    def getBoardValue(self, y, x):
-        return 1 if self.board[32 * y + 16][32 * x + 16] > 0 else 0
-    
-    def createQueue(self, queue):
-        for i in range(17):
-            # level = 0
-            for j in range(4):
-                if (i + 1) % 3 == 0:
-                    continue
-                val = self.getQueueValue(i, j)
-                self.colorQueueMat(j, i, val)
+    def getQueuePos(self, y, x):
+        return self.__queueArr[y][x]
 
-    def getQueueValue(self, y, x):
-        # arr = [16,16,26,15,15,26,15,15,26,15,15,26,15,15,26,15,15]
-        # arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,241,256,282,297]
-        return 1 if self.queue[self.arr2[y] + 8][16 * x + 8] > 0 else 0
-
-    def colorQueueMat(self, x, y, val):
-        for m in range(self.arr[y]):
-            for n in range(16):
-                self.queueMat[self.arr2[y] + m][x * 16 + n] = val
-
-    def getHoldValue(self, y, x):
-        return 1 if self.hold[20 * y + 10][18 * x + 9] > 0 else 0
+    def getHoldPos(self, y, x):
+        return self.__holdArr[y][x]
 
     def getInputNodes(self):
 
@@ -165,7 +171,7 @@ class SwitchData:
         # Add the hold value tiles to inputNodes
         for y in range(2):
             for x in range(4):
-                inputNodes = np.append(inputNodes, self.getHoldValue(y, x))
+                inputNodes = np.append(inputNodes, self.holdArr[y][x]
         
         return inputNodes
     

@@ -12,7 +12,6 @@ rng.seed(420)
 
 # Get a relative point of time
 t0 = time.time()
-t1 = time.time()
 
 # Connect to the Switch Capture, and run it asynchronous
 capture = SwitchData()
@@ -24,7 +23,7 @@ neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
 gen = 0
-zeroGenome = '-0-0.txt'
+zeroGenome = '-0.txt'
 if isfile('data/0'+zeroGenome):
     while(isfile('data/'+str(gen)+zeroGenome)):
         hasData = isfile('data/'+str(gen)+zeroGenome)
@@ -80,11 +79,6 @@ while True:
         emulator.nextGenome()
         neat.loop()
         capture.resetBoard()
-
-        
-    if (time.time()-t1 > 400 and capture.isLevelingUp()):
-        emulator.nextGenome()
-        neat.loop()
 
     if (time.time()-t0 > 0.25):
         t0 = time.time()
