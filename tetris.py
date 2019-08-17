@@ -8,7 +8,7 @@ import time
 from os.path import isfile
 
 # Controlled randomness
-rng.seed(66669420)
+rng.seed(420)
 
 # Get a relative point of time
 t0 = time.time()

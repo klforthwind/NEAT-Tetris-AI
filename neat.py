@@ -106,10 +106,10 @@ class NEAT:
         for g in range(len(self.genomes)):
             for o in range(self.genomes[0].outputNodes): 
                 txt = "data/"+str(self.generation)+"-"+str(g)+"-o-"+str(o)+".txt"
-                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
+                np.savetxt(txt, self.genomes[g].rightNeuralNet[o], fmt="%f")
             for h in range(self.genomes[0].hiddenNodes): 
                 txt = "data/"+str(self.generation)+"-"+str(g)+"-h-"+str(o)+".txt"
-                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
+                np.savetxt(txt, self.genomes[g].leftNeuralNet[h], fmt="%f")
 
 
     # Makes a child genome from parent genomes + random mutations
@@ -120,7 +120,7 @@ class NEAT:
                 child.rightNeuralNet[o][h] = mom.rightNeuralNet[o][h] if rand.random() < 0.5 else dad.rightNeuralNet[o][h]
         for h in range(child.hiddenNodes):
             for i in range(child.inputNodes):
-                child.rightNeuralNet[h][i] = mom.leftNeuralNet[h][i] if rand.random() < 0.5 else dad.leftNeuralNet[h][i]    
+                child.leftNeuralNet[h][i] = mom.leftNeuralNet[h][i] if rand.random() < 0.5 else dad.leftNeuralNet[h][i]    
         child.mutate()
         return child
 
