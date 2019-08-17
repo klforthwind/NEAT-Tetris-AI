@@ -24,7 +24,7 @@ neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
 gen = 0
-zeroGenome = '/0-0.txt'
+zeroGenome = '/0/hidden/0.txt'
 if isfile('data/0'+zeroGenome):
     while(isfile('data/'+str(gen)+zeroGenome)):
         hasData = isfile('data/'+str(gen)+zeroGenome)
@@ -53,16 +53,18 @@ while True:
         neat.loop()
 
     # Process the capture to get the images that we need
-    capture.processCapture(neat.genomes[neat.currentGenome].neuralNet)
+    capture.processCapture()
 
     # Get the needed input nodes from 
-    inputNodes = capture.getInputNodes(neat.didBlockChange())
+    inputNodes = capture.getInputNodes()
+    hiddenNodes = capture.getHiddenNodes(neat.didBlockChange())
 
     # Check to see if genome is dead
     if capture.isDead():
         t1 = time.time()
         emulator.nextGenome()
         neat.loop()
+        capture.resetBoard()
 
         
     if (time.time()-t1 > 400 and capture.isLevelingUp()):

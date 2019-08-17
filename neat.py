@@ -24,19 +24,30 @@ class NEAT:
             del temp
         #Let's save some stats
         for g in range(len(self.genomes)):
-            for z in range(self.genomes[0].outputNodes):
-                txt = "data/"+str(self.generation)+"-"+str(g)+"-"+str(z)+".txt"
+            for h in range(self.genomes[0].outputNodes): 
+                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"hidden/"+str(h)+".txt"
+                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
+            for o in range(self.genomes[0].outputNodes): 
+                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"output/"+str(o)+".txt"
                 np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
 
     def repopulate(self, gen):
         for g in range(self.popSize):
             temp = Genome()
-            for o in range(7):
-                filename = "data/"+str(gen)+"-"+str(g)+"-"+str(o)+".txt"
+            for h in range(temp.hiddenNodes):
+                filename = "data/"+str(gen)+"/"+str(g)+"/"+"hidden/"+str(h)+".txt"
                 f = open(filename, "r")
                 dttt = f.read().splitlines()
-                for l in range(274):
-                    temp.neuralNet[o][l] = float(dttt[l])
+                for l in range(temp.inputNodes):
+                    temp.leftNeuralNet[h][l] = float(dttt[l])
+                del dttt
+                f.close()
+            for o in range(temp.outputNodes):
+                filename = "data/"+str(gen)+"/"+str(g)+"/"+"output/"+str(o)+".txt"
+                f = open(filename, "r")
+                dttt = f.read().splitlines()
+                for l in range(temp.hiddenNodes):
+                    temp.rightNeuralNet[o][l] = float(dttt[l])
                 del dttt
                 f.close()
             self.genomes.append(temp)
@@ -93,8 +104,11 @@ class NEAT:
 
         #Let's save some stats
         for g in range(len(self.genomes)):
-            for z in range(self.genomes[0].outputNodes):
-                txt = "data/"+str(self.generation)+"-"+str(g)+"-"+str(z)+".txt"
+            for o in range(self.genomes[0].outputNodes): 
+                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"output/"+str(o)+".txt"
+                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
+            for h in range(self.genomes[0].hiddenNodes): 
+                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"hidden/"+str(h)+".txt"
                 np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
 
 
@@ -102,8 +116,11 @@ class NEAT:
     def makeChild(self, mom, dad):
         child = Genome()
         for o in range(child.outputNodes):
+            for h in range(child.hiddenNodes):
+                child.rightNeuralNet[o][h] = mom.neuralNet[o][h] if rand.random() < 0.5 else dad.neuralNet[o][h]
+        for h in range(child.hiddenNodes):
             for i in range(child.inputNodes):
-                child.neuralNet[o][i] = mom.neuralNet[o][i] if rand.random() < 0.5 else dad.neuralNet[o][i]
+                child.rightNeuralNet[h][i] = mom.neuralNet[h][i] if rand.random() < 0.5 else dad.neuralNet[h][i]    
         child.mutate()
         return child
 
