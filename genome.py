@@ -15,7 +15,7 @@ class Genome:
         self.leftNeuralNet = np.zeros((self.hiddenNodes, self.inputNodes))
 
         # Set mutation rate, step, and fitness
-        self.mutationRate = 0.002
+        self.mutationRate = 0.005
         self.mutationStep = 0.1
         self.fitness = -2
 
