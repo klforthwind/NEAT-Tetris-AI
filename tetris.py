@@ -24,7 +24,7 @@ neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
 gen = 0
-zeroGenome = '/0/hidden/0.txt'
+zeroGenome = '0-0-h-0.txt'
 if isfile('data/0'+zeroGenome):
     while(isfile('data/'+str(gen)+zeroGenome)):
         hasData = isfile('data/'+str(gen)+zeroGenome)
@@ -55,9 +55,18 @@ while True:
     # Process the capture to get the images that we need
     capture.processCapture()
 
+    change = neat.didBlockChange(capture)
+
     # Get the needed input nodes from 
     inputNodes = capture.getInputNodes()
-    hiddenNodes = capture.getHiddenNodes(neat.didBlockChange())
+    hiddenNodes = capture.getHiddenNodes(change)
+    if change:
+        change = False
+        for x in range(10):
+            for y in range(20):
+                if(capture.lastBoard[y][x] == 1):
+                    neat.genomes[neat.currentGenome].fitness += y / 20
+                    break
 
     # Check to see if genome is dead
     if capture.isDead():
@@ -70,18 +79,11 @@ while True:
     if (time.time()-t1 > 400 and capture.isLevelingUp()):
         emulator.nextGenome()
         neat.loop()
-    
-
-    for x in range(10):
-        for y in range(20):
-            if(inputNodes[x + 10 * y] == 1):
-                neat.genomes[neat.currentGenome].fitness += y / 2000
-                break
 
     if (time.time()-t0 > 0.25):
         t0 = time.time()
         # Send the correct button inputs
-        btnArr = neat.processGenome(inputNodes)
+        btnArr = neat.processGenome(inputNodes, hiddenNodes)
         emulator.emulateTetris(btnArr)
 
 # Stop the capture thread

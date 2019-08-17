@@ -11,8 +11,7 @@ class NEAT:
         self.generation = 0
         self.genomes = []
         self.currentGenome = 0
-        self.nextBlock = np.empty(8)
-        self.blockChanged = False
+        self.lastQueue = np.zeros((17, 4))
         self.t = time.time()
         
     # Create the initial genomes
@@ -25,17 +24,17 @@ class NEAT:
         #Let's save some stats
         for g in range(len(self.genomes)):
             for h in range(self.genomes[0].outputNodes): 
-                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"hidden/"+str(h)+".txt"
-                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
+                txt = "data/"+str(self.generation)+"-"+str(g)+"-h-"+str(h)+".txt"
+                np.savetxt(txt, self.genomes[g].leftNeuralNet[h], fmt="%f")
             for o in range(self.genomes[0].outputNodes): 
-                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"output/"+str(o)+".txt"
-                np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
+                txt = "data/"+str(self.generation)+"-"+str(g)+"-o-"+str(o)+".txt"
+                np.savetxt(txt, self.genomes[g].rightNeuralNet[o], fmt="%f")
 
     def repopulate(self, gen):
         for g in range(self.popSize):
             temp = Genome()
             for h in range(temp.hiddenNodes):
-                filename = "data/"+str(gen)+"/"+str(g)+"/"+"hidden/"+str(h)+".txt"
+                filename = "data/"+str(gen)+"-"+str(g)+"-o-"+str(h)+".txt"
                 f = open(filename, "r")
                 dttt = f.read().splitlines()
                 for l in range(temp.inputNodes):
@@ -43,7 +42,7 @@ class NEAT:
                 del dttt
                 f.close()
             for o in range(temp.outputNodes):
-                filename = "data/"+str(gen)+"/"+str(g)+"/"+"output/"+str(o)+".txt"
+                filename = "data/"+str(gen)+"-"+str(g)+"-o-"+str(o)+".txt"
                 f = open(filename, "r")
                 dttt = f.read().splitlines()
                 for l in range(temp.hiddenNodes):
@@ -54,22 +53,24 @@ class NEAT:
             del temp
         self.generation = gen
 
-    def processGenome(self, inputNodes):
+    def processGenome(self, inputNodes, hiddenNodes):
         self.genomes[self.currentGenome].fitness += time.time()-self.t
         self.t = time.time()
 
-        for z in range(8):
-            if inputNodes[208+z] != self.nextBlock[z]:
-                self.blockChanged = True
-            inputNodes[208+z] = self.nextBlock[z]
-
         print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
-        return temp.getButtons(inputNodes)
+        return temp.getButtons(inputNodes, hiddenNodes)
     
-    def didBlockChange(self):
-        tmp = self.blockChanged
-        self.blockChanged = False
+    def didBlockChange(self, captura):
+        qChange = 0
+        for i in range(17):
+            for j in range(4):
+                if (i + 1) % 3 == 0:
+                    continue
+                if captura.getQueueValue(i, j) != self.lastQueue[i][j]:
+                    self.lastQueue[i][j] = captura.getQueueValue(i, j)
+                    qChange += 1
+        tmp = qChange > 10
         return tmp
 
     def loop(self):
@@ -89,7 +90,6 @@ class NEAT:
         print("Generation ", self.generation ," evaluated.")
         self.currentGenome = 0
         self.generation += 1
-        self.nextBlock = np.empty(8)
     
         while len(self.genomes) > self.popSize / 2:
             self.genomes.pop(len(self.genomes)-1)
@@ -105,10 +105,10 @@ class NEAT:
         #Let's save some stats
         for g in range(len(self.genomes)):
             for o in range(self.genomes[0].outputNodes): 
-                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"output/"+str(o)+".txt"
+                txt = "data/"+str(self.generation)+"-"+str(g)+"-o-"+str(o)+".txt"
                 np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
             for h in range(self.genomes[0].hiddenNodes): 
-                txt = "data/"+str(self.generation)+"/"+str(g)+"/"+"hidden/"+str(h)+".txt"
+                txt = "data/"+str(self.generation)+"-"+str(g)+"-h-"+str(o)+".txt"
                 np.savetxt(txt, self.genomes[g].neuralNet[z], fmt="%f")
 
 
