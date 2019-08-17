@@ -33,8 +33,7 @@ if isfile('data/0'+zeroGenome):
         hasData = isfile('data/'+str(gen)+zeroGenome)
         if hasData:
             gen += 1
-    gen -= 1
-    neat.repopulate(gen)
+    neat.repopulate(gen - 1)
 else:
     neat.createPopulation()
 
