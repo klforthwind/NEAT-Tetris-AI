@@ -135,12 +135,12 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
-    def getHeights(self):
+    def getHeights(self, board):
         h = 0
         for y in range(20):
             oneOnThisLevel = False
             for x in range(10):
-                if self.getBoardPos(19 - y, x) == 1:
+                if board[19 - y][x] == 1:
                     oneOnThisLevel = True
                     continue
             if oneOnThisLevel == False:
@@ -150,28 +150,73 @@ class SwitchData:
         for x in range(10):
             high = 0
             for y in range(h):
-                high = y if self.getBoardPos(19 - y, x) == 1
+                high = y if board[19 - y][x] == 1
             heights[x] = high
         return heights
 
     def getBestMoves(self, nodeNet):
-        heights = self.getHeights()
+        heights = self.getHeights(self.__boardArr)
         blocks = self.getQueueBlocks()
         blockBeingPlaced = self.getMovingBlock()
+        fitness = 0
+        arr = np.zeros((4))
         for r1 in range(4):
             b1 = blockBeingPlaced
             b1 = self.rotate(b1, r1)
-            for x in range(10 - len(b1[0])):
+            for x1 in range(10 - len(b1[0])):
                 newBoard = self.__boardArr
-                newBoard = self.getNewBoard(heights, x, b1, newBoard)
+                newBoard = self.getNewBoard(heights, x1, b1, newBoard)
                 for r2 in range(4):
                     b2 = blocks[0]
                     b2 = self.rotate(b1, r2)
-                    for x in range(10 - len(b2[0])):
-                        newBoard = self.getNewBoard(heights, x, b2, newBoard)
+                    for x2 in range(10 - len(b2[0])):
+                        newBoard2 = self.getNewBoard(heights, x2, b2, newBoard)
+                        fit = self.getFitness(newBoard2, nodeNet)
+                        if  fit > fitness:
+                            fitness = fit
+                            arr[0] = x1
+                            arr[1] = r1
+                            arr[2] = x2
+                            arr[3] = r2
+        return arr
+
 
     def getFitness(self, board, nodeNet):
-                
+        fitness = 0
+        heightTotal = 0
+        holes = 0
+        bump = 0
+        heights = self.getHeights(board)
+        for i in range(len(heights)):
+            # Aggregate Height
+            heightTotal += heights[i]
+
+            # Holes
+            for j in range(heights[i]):
+                if board[19-j][i] == 0:
+                    holes += 1
+            
+            #Bumpiness
+            if len(heights) > i + 2
+                bump += abs(heights[i] - heights[i + 1])
+
+        fitness += nodeNet[0] * heightTotal
+        fitness += nodeNet[1] * holes
+        fitness += nodeNet[2] * bump
+
+
+        # Complete Lines
+        lines = 0
+        for y in range(10):
+            c = True
+            for x in range(10):
+                if board[19-y][x] == 0:
+                    c = False
+                    break
+            lines += 1 if c
+        fitness += nodeNet[3] * lines
+
+        return fitness
 
     def getMovingBlock(self):
         current = np.zeros((4,6))

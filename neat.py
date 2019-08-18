@@ -46,10 +46,10 @@ class NEAT:
     def getCurrentNodeNet(self):
         return self.genomes[self.currentGenome].nodeNet
 
-    def processGenome(self, inputNodes, hiddenNodes):
+    def processGenome(self, move):
         print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
-        return temp.getButtons(inputNodes, hiddenNodes)
+        return temp.getButtons(move)
     
     def didBlockChange(self, captura):
         qChange = 0

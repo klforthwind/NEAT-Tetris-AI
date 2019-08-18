@@ -21,3 +21,6 @@ class Genome:
             isMutating = random()
             if isMutating < self.mutationRate:
                 self.nodeNet[n] += (random()-0.5) * self.mutationStep
+
+    def getButtons(self, move):
+        
