@@ -53,13 +53,10 @@ while True:
     # Process the capture to get the images that we need
     capture.processCapture()
 
-    change = neat.didBlockChange(capture)
-
-    # Get the needed input nodes from 
+    # Get the needed input nodes from the capture data
     inputNodes = capture.getInputNodes()
-    hiddenNodes = capture.getHiddenNodes(change)
-    if change:
-        change = False
+
+    if neat.didBlockChange(capture):
         hitWhite = False
         heightFromTop = 20
         for x in range(10):

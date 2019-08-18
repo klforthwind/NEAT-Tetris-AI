@@ -133,10 +133,10 @@ class SwitchData:
     def isDead(self):
         isDead = True
         for x in range(10):
-            if self.getBoardValue(0, x) == 0:
+            if self.getBoardPos(0, x) == 0:
                 isDead = False
                 break
-            if self.getBoardValue(10, x) == 0:
+            if self.getBoardPos(10, x) == 0:
                 isDead = False
                 break
         return isDead               
@@ -155,95 +155,22 @@ class SwitchData:
         # Begin input nodes of neat
         inputNodes = np.array([])
 
-        # Add every tile on the board to inputNodes
-        for y in range(20):
-            for x in range(10):
-                filled = self.getBoardValue(y, x)
-                inputNodes = np.append(inputNodes, filled)
-        
-        # Add the important queue value tiles to inputNodes
-        for i in range(17):
-            for j in range(4):
-                if (i + 1) % 3 == 0:
-                    continue
-                inputNodes = np.append(inputNodes, self.getQueueValue(i, j))
-        
-        # Add the hold value tiles to inputNodes
-        for y in range(2):
-            for x in range(4):
-                inputNodes = np.append(inputNodes, self.holdArr[y][x]
+        # Aggregate Height
+        ah = 0
+        for x in range(10):
+            for y in range(20):
+                if self.__boardArr[y][x] == 1:
+                    ah += 20 - y
+                    break
+        inputNodes = np.append(inputNodes, ah)
+
+        # Complete Lines
+                
         
         return inputNodes
     
     def resetBoard(self):
         self.lastBoard = np.zeros((20, 10))
-
-    def getHiddenNodes(self, newBlock):
-        # Begin input nodes of neat
-        hiddenNodes = np.array([])
-        xPos = -5
-        yPos = -5
-        if self.lastBoard.size == 0:
-            self.lastBoard = np.zeros((200))
-        if newBlock:
-            for y in range(20):
-                for x in range(10):
-                    isFilled = self.getBoardValue(y, x)
-                    if y < 2 and self.lastBoard[y][x] == 0 and isFilled == 1:
-                        if xPos == -5:
-                            xPos = x
-                            yPos = y
-                    else:
-                        self.lastBoard[y][x] = isFilled
-
-        for y in range(20):
-            for x in range(10):
-                isFilled = self.getBoardValue(y, x)
-                if xPos == -5 and isFilled:
-                    if self.lastBoard[y][x]==0:
-                        xPos = x
-                        yPos = y
-        
-        # Test if there is blocks to the left and down
-        if xPos > 1:
-            for n in range(2):
-                for m in range(4):
-                    if yPos + m >= 20:
-                        continue
-                    else:
-                        lastBoardEmpty = self.lastBoard[yPos + m][xPos - n - 1] == 0
-                        if lastBoardEmpty and self.getBoardValue(yPos + m, xPos - n - 1) == 1:
-                            xPos -= (n + 1)
-                            continue
-        elif xPos == 1:
-            for m in range(4):
-                if yPos + m >= 20:
-                    continue
-                else:
-                    if self.lastBoard[yPos + m][xPos - 1] == 0 and self.getBoardValue(yPos + m, xPos - 1) == 1:
-                        xPos -= 1
-                        continue
-                
-        # Add X and Y as hidden nodes
-        hiddenNodes = np.append(hiddenNodes, xPos)
-        hiddenNodes = np.append(hiddenNodes, yPos)
-
-        # Add 16 input nodes for the block being placed
-        for m in range(4):
-            for n in range(4):
-                if yPos + m >= 19 or xPos + n >= 9:
-                    hiddenNodes = np.append(hiddenNodes, 0)
-                elif yPos + m < 2:
-                    filled = self.getBoardValue(yPos + m , xPos + n )
-                    hiddenNodes = np.append(hiddenNodes, filled)
-                elif yPos + m > 1:
-                    filled = self.getBoardValue(yPos + m, xPos + n)
-                    if filled and self.lastBoard[yPos + m][xPos + n]==1:
-                        hiddenNodes = np.append(hiddenNodes, filled)
-                    else:
-                        hiddenNodes = np.append(hiddenNodes, 0)
-        
-        return hiddenNodes
 
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')

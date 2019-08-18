@@ -1,6 +1,6 @@
 import numpy as np
 from genome import Genome
-from random import random
+from numpy.random import random
 import time
 
 class NEAT:
@@ -32,22 +32,13 @@ class NEAT:
     def repopulate(self, gen):
         for g in range(self.popSize):
             temp = Genome()
-            for h in range(temp.hiddenNodes):
-                filename = "data/"+str(gen)+"-"+str(g)+"-o-"+str(h)+".txt"
-                f = open(filename, "r")
-                dttt = f.read().splitlines()
-                for l in range(temp.inputNodes):
-                    temp.leftNeuralNet[h][l] = float(dttt[l])
-                del dttt
-                f.close()
-            for o in range(temp.outputNodes):
-                filename = "data/"+str(gen)+"-"+str(g)+"-o-"+str(o)+".txt"
-                f = open(filename, "r")
-                dttt = f.read().splitlines()
-                for l in range(temp.hiddenNodes):
-                    temp.rightNeuralNet[o][l] = float(dttt[l])
-                del dttt
-                f.close()
+            filename = "data/"+str(gen)+"-"+str(g)+".txt"
+            f = open(filename, "r")
+            foo = f.read().splitlines()
+            for l in range(temp.nodeCount):
+                temp.nodeNet[l] = float(foo[l])
+            del foo
+            f.close()
             self.genomes.append(temp)
             del temp
         self.generation = gen
@@ -63,8 +54,8 @@ class NEAT:
             for j in range(4):
                 if (i + 1) % 3 == 0:
                     continue
-                if captura.getQueueValue(i, j) != self.lastQueue[i][j]:
-                    self.lastQueue[i][j] = captura.getQueueValue(i, j)
+                if captura.getQueuePos(i, j) != self.lastQueue[i][j]:
+                    self.lastQueue[i][j] = captura.getQueuePos(i, j)
                     qChange += 1
         tmp = qChange > 10
         return tmp
