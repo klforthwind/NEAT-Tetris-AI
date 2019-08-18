@@ -180,8 +180,48 @@ class SwitchData:
                     xx = x
                     yy = y
                 current[y - yy][x - xx + 2] = self.__boardArr[y][x]
-        for y in range(4):
-            for x in range(3):
+        nz = np.nonzero(current)
+        lowHor = 4
+        highHor = 0
+        lowVer = 0
+        highVer = 4
+        for i in range(nz[0]):
+            if nz[1][i] > highHor:
+                highHor = nz[1][i]
+            if nz[1][i] < lowHor:
+                lowHor = nz[1][i]
+            if nz[0][i] < highVer:
+                highVer = nz[0][i]
+            if nz[0][i] > lowVer:
+                lowVer = nz[0][i]
+        if highHor - lowHor == 3:
+            if lowVer != 3:
+                return [lowVer:lowVer+2, lowHor:highHor+1]
+            else:
+                return [lowVer-1:lowVer+1, lowHor:highHor+1]
+        elif highHor - lowHor == 2:
+            if lowVer != 3:
+                if highHor != 5:
+                    return [lowVer:lowVer+2, lowHor:highHor+2]
+                else:
+                    return [lowVer:lowVer+2, lowHor-1:highHor+1]     
+            else:
+                if highHor != 5:
+                    return [lowVer:lowVer+2, lowHor:highHor+2]
+                else:
+                    return [lowVer:lowVer+2, lowHor-1:highHor+1] 
+        elif highHor - lowHor == 1:
+            return [0:4, lowHor:highHor+1]
+        elif highHor - lowHor == 0:
+            if lowHor != 0:
+                return [0:4, lowHor-1:highHor+1]
+            else:
+                return [0:4, lowHor:highHor+2]
+        else:
+            print("Fuckkkkkkkkk! 214 SwitchDAta")
+            return
+
+
 
     def getNewBoard(self, heights, x, b1, board):
         maxHeight = 0
