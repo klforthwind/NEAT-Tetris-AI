@@ -139,15 +139,18 @@ class SwitchData:
         self.nodeNet = nn
     
     def asyncMoveFind(self):
-        tmpArr = self.getBestMoves(self.nodeNet)
-        self.bestMoves = tmpArr
-        del tmpArr
+        while self.started2:
+            tmpArr = self.getBestMoves(self.nodeNet)
+            self.bestMoves = tmpArr
+            del tmpArr
 
     def startMoveFind(self):
+        self.started2 = True
         self.thread2 = threading.Thread(target=self.asyncMoveFind, args=())
         self.thread2.start()
 
     def stopMoveFind(self):
+        self.started2 = False
         self.thread2.join()
 
 # --------------------------------------------------------------------
@@ -176,8 +179,11 @@ class SwitchData:
         heights = self.getHeights(self.__boardArr)
         blocks = self.getQueueBlocks()
         tuplew = self.getMovingBlock()
-        fitness = 0
-        arr = np.zeros((7))
+        xx = tuplew[1]
+        yy = tuplew[1]
+        xChange = tuplew[1]
+        fitness = -1
+        arr = np.zeros((8))
         for r1 in range(4):
             b1 = tuplew[0]
             b1 = self.rotate(b1, r1)
@@ -190,15 +196,18 @@ class SwitchData:
                     for x2 in range(10 - len(b2[0])):
                         newBoard2 = self.getNewBoard(heights, x2, b2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
-                        if  fit > fitness:
+                        if  fit >= fitness:
                             fitness = fit
-                            arr[0] = x1
-                            arr[1] = r1
-                            arr[2] = x2
-                            arr[3] = r2
-                            arr[4] = tuplew[1]
-                            arr[5] = tuplew[2]
-                            arr[6] = tuplew[3]
+                            arr[0] = int(x1)
+                            arr[1] = int(r1)
+                            arr[2] = int(x2)
+                            arr[3] = int(r2)
+                            arr[4] = int(xx)
+                            arr[5] = int(yy)
+                            arr[6] = int(xChange)
+                            if tuplew[1] != -1:
+                                arr[7] = 2
+        # print(arr[4])
         return arr
 
 
@@ -258,7 +267,7 @@ class SwitchData:
     
     def getGrid(self, c):
         nz = np.nonzero(c)
-        print(nz)
+        # print(nz)
         lowHor = 4
         highHor = 0
         lowVer = 0
@@ -306,40 +315,40 @@ class SwitchData:
         for y in range(int(maxHeight + 1)):
             if len(b1) == 4:
                 if self.checkVertical(b1, maxHeight - y, x):
-                    for j in range(4):
-                        for i in range(2):
-                            if b1[3-j][i] == 1:
+                    for j in range(len(b1)):
+                        for i in range(len(b1[j])):
+                            if b1[len(b1)-1-j][i] == 1:
                                 board[int(maxHeight - (y + j))][int(x + i)] = 1
                     break
             else:
                 if self.checkHorizontal(b1, maxHeight - y, x):
-                    for j in range(2):
-                        for i in range(4):
-                            if b1[1-j][i] == 1:
+                    for j in range(len(b1)):
+                        for i in range(len(b1[j])):
+                            if b1[len(b1) - 1-j][i] == 1:
                                 board[int(maxHeight - (y + j))][int(x + i)] = 1
                     break
         return board
     
     def checkVertical(self, block, y, x):
-        for j in range(4):
-            for i in range(2):
+        for j in range(len(block)):
+            for i in range(len(block[j])):
                 if block[j][i] == 1 and self.getBoardPos(19 - (y + j), x + i) == 1:
                     return False
-        for j in range(4):
-            for i in range(2):
-                if block[3-j][i] == 1 and (y == 0 or self.getBoardPos(19 - (y + j) + 1, x + i) == 1):
+        for j in range(len(block)):
+            for i in range(len(block[j])):
+                if block[len(block[j])-1-j][i] == 1 and (y == 0 or self.getBoardPos(19 - (y + j) + 1, x + i) == 1):
                     return True
         return False
 
 
     def checkHorizontal(self, block, y, x):
-        for j in range(2):
+        for j in range(len(block)):
             for i in range(4):
                 if block[j][i] == 1 and self.getBoardPos(y + j, x + i) == 1:
                     return False
-        for j in range(2):
+        for j in range(len(block)):
             for i in range(4):
-                if block[1-j][i] == 1 and (y == 0 or self.getBoardPos(19 - (y + j) + 1, x + i) == 1):
+                if block[len(block) - 1 -j][i] == 1 and (y == 0 or self.getBoardPos(19 - (y + j) + 1, x + i) == 1):
                     return True
         return False
 

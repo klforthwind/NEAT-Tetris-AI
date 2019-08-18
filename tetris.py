@@ -72,6 +72,7 @@ while True:
         
         # Send the correct button inputs
         btnArr = neat.processGenome(validMoves)
+        # print(btnArr)
         emulator.emulateTetris(btnArr)
         neat.printFitness(capture.getFitness(capture.getBoard(), neat.getCurrentNodeNet()))
 

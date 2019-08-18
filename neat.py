@@ -12,6 +12,7 @@ class NEAT:
         self.genomes = []
         self.currentGenome = 0
         self.lastQueue = np.zeros((17, 4))
+        self.t = time.time()
         
     # Create the initial genomes
     def createPopulation(self):
@@ -47,7 +48,9 @@ class NEAT:
         return temp.getButtons(move)
     
     def printFitness(self, fitness):
-        print(" ",self.generation, " - ", self.currentGenome, " - ", fitness)
+        self.genomes[self.currentGenome].fitness += time.time() - self.t
+        print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
+        self.t = time.time()
         
     def didBlockChange(self, captura):
         qChange = 0
@@ -63,6 +66,7 @@ class NEAT:
 
     def loop(self):
         self.currentGenome += 1
+        self.t = time.time()
         if self.currentGenome == len(self.genomes):
             self.sortGenomes()
             self.increaseGeneration()
