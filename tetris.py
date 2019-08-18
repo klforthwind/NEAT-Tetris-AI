@@ -53,23 +53,6 @@ while True:
     # Process the capture to get the images that we need
     capture.processCapture()
 
-    # Get the needed input nodes from the capture data
-    inputNodes = capture.getInputNodes()
-
-    if neat.didBlockChange(capture):
-        hitWhite = False
-        heightFromTop = 20
-        for x in range(10):
-            for y in range(20):
-                if y > 1 and capture.lastBoard[y][x] == 1 and y < heightFromTop:
-                    heightFromTop = y
-                if(capture.lastBoard[y][x] == 1):
-                    neat.genomes[neat.currentGenome].fitness += y / 20
-                    break
-        if (20 - heightFromTop < maxHeight and maxHeight - (20 - heightFromTop) <= 4):
-            neat.genomes[neat.currentGenome].fitness += 50
-            maxHeight = 20 - heightFromTop
-
     # Check to see if genome is dead
     if capture.isDead():
         t1 = time.time()
@@ -79,8 +62,12 @@ while True:
 
     if (time.time()-t0 > 0.25):
         t0 = time.time()
+
+        # Get the best move values
+        validMoves = capture.getBestMoves(neat.getCurrentNodeNet())
+        
         # Send the correct button inputs
-        btnArr = neat.processGenome(inputNodes, hiddenNodes)
+        btnArr = neat.processGenome(validMoves)
         emulator.emulateTetris(btnArr)
 
 # Stop the capture thread

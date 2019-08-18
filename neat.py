@@ -43,6 +43,9 @@ class NEAT:
             del temp
         self.generation = gen
 
+    def getCurrentNodeNet(self):
+        return self.genomes[self.currentGenome].nodeNet
+
     def processGenome(self, inputNodes, hiddenNodes):
         print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
