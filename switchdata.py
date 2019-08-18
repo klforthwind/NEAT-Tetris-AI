@@ -180,7 +180,6 @@ class SwitchData:
         arr = np.zeros((7))
         for r1 in range(4):
             b1 = tuplew[0]
-            print(b1)
             b1 = self.rotate(b1, r1)
             for x1 in range(10 - len(b1[0])):
                 newBoard = self.__boardArr
@@ -305,8 +304,6 @@ class SwitchData:
             if maxHeight < heights[x+l]:
                 maxHeight = heights[x+l]
         for y in range(int(maxHeight + 1)):
-            print(b1)
-            print(len(b1))
             if len(b1) == 4:
                 if self.checkVertical(b1, maxHeight - y, x):
                     for j in range(4):
@@ -371,7 +368,7 @@ class SwitchData:
     def isDead(self):
         isDead = True
         for x in range(10):
-            if self.getBoardPos(0, x) == 0:
+            if self.getBoardPos(5, x) == 0:
                 isDead = False
                 break
             if self.getBoardPos(10, x) == 0:
