@@ -159,16 +159,19 @@ class SwitchData:
         blocks = self.getQueueBlocks()
         blockBeingPlaced = self.getMovingBlock()
         for r1 in range(4):
-            b1 = blocks[0]
+            b1 = blockBeingPlaced
             b1 = self.rotate(b1, r1)
             for x in range(10 - len(b1[0])):
                 newBoard = self.__boardArr
                 newBoard = self.getNewBoard(heights, x, b1, newBoard)
                 for r2 in range(4):
-                    b2 = blocks[1]
+                    b2 = blocks[0]
                     b2 = self.rotate(b1, r2)
                     for x in range(10 - len(b2[0])):
                         newBoard = self.getNewBoard(heights, x, b2, newBoard)
+
+    def getFitness(self, board, nodeNet):
+                
 
     def getMovingBlock(self):
         current = np.zeros((4,6))
@@ -219,9 +222,6 @@ class SwitchData:
                 return [0:4, lowHor:highHor+2]
         else:
             print("Fuckkkkkkkkk! 214 SwitchDAta")
-            return
-
-
 
     def getNewBoard(self, heights, x, b1, board):
         maxHeight = 0
