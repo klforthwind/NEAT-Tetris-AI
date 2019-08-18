@@ -12,8 +12,8 @@ class Genome:
         self.outputNodes = 7
 
         # Set mutation rate, step, and fitness
-        self.mutationRate = 0.01
-        self.mutationStep = 0.1
+        self.mutationRate = 0.1
+        self.mutationStep = 0.05
         self.fitness = 0
 
     # Mutate values within the neural network

@@ -43,10 +43,12 @@ class NEAT:
         return self.genomes[self.currentGenome].nodeNet
 
     def processGenome(self, move):
-        print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         temp = self.genomes[self.currentGenome]
         return temp.getButtons(move)
     
+    def printFitness(self, fitness):
+        print(" ",self.generation, " - ", self.currentGenome, " - ", fitness)
+        
     def didBlockChange(self, captura):
         qChange = 0
         for i in range(17):

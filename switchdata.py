@@ -377,7 +377,10 @@ class SwitchData:
             if self.getBoardPos(10, x) == 0:
                 isDead = False
                 break
-        return isDead               
+        return isDead   
+
+    def getBoard(self):
+        return self.__boardArr            
 
     def getBoardPos(self, y, x):
         return self.__boardArr[int(y)][int(x)]

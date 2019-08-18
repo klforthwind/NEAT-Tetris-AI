@@ -18,7 +18,7 @@ capture = SwitchData()
 capture.start()
 
 # Begin our population
-populationSize = 50
+populationSize = 26
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
@@ -73,6 +73,8 @@ while True:
         # Send the correct button inputs
         btnArr = neat.processGenome(validMoves)
         emulator.emulateTetris(btnArr)
+        print(neat.getCurrentNodeNet())
+        neat.printFitness(capture.getFitness(capture.getBoard(), neat.getCurrentNodeNet()))
 
 # Stop the capture thread
 capture.stop()
