@@ -9,6 +9,7 @@ class Genome:
         # Make Node Net
         self.nodeCount = 4
         self.nodeNet = np.zeros((self.nodeCount))
+        self.outputNodes = 7
 
         # Set mutation rate, step, and fitness
         self.mutationRate = 0.01
@@ -22,5 +23,12 @@ class Genome:
             if isMutating < self.mutationRate:
                 self.nodeNet[n] += (random()-0.5) * self.mutationStep
 
-    def getButtons(self, move):
+    # Get all buttons and whether they should be pushed
+    def getButtons(self, moves):
+        arr = np.zeros(self.outputNodes)
         
+        if moves[1] != 0:
+            arr[5] = 1
+        
+        return arr
+

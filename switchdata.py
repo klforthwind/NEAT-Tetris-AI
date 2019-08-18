@@ -157,9 +157,10 @@ class SwitchData:
     def getBestMoves(self, nodeNet):
         heights = self.getHeights(self.__boardArr)
         blocks = self.getQueueBlocks()
-        blockBeingPlaced = self.getMovingBlock()
+        tuplew = self.getMovingBlock()
+        blockBeingPlaced = tuplew[0]
         fitness = 0
-        arr = np.zeros((4))
+        arr = np.zeros((6))
         for r1 in range(4):
             b1 = blockBeingPlaced
             b1 = self.rotate(b1, r1)
@@ -178,6 +179,8 @@ class SwitchData:
                             arr[1] = r1
                             arr[2] = x2
                             arr[3] = r2
+                            arr[4] = tuplew[1]
+                            arr[5] = tuplew[2]
         return arr
 
 
@@ -219,7 +222,7 @@ class SwitchData:
         return fitness
 
     def getMovingBlock(self):
-        current = np.zeros((4,6))
+        c = np.zeros((4,6))
         xx = -1
         yy = -1
         for y in range(10):
@@ -227,8 +230,11 @@ class SwitchData:
                 if xx == -1 and self.__boardArr[y][x] == 1:
                     xx = x
                     yy = y
-                current[y - yy][x - xx + 2] = self.__boardArr[y][x]
-        nz = np.nonzero(current)
+                c[y - yy][x - xx + 2] = self.__boardArr[y][x]
+        return (self.getGrid(c), xx, yy)
+    
+    def getGrid(self, c):
+        nz = np.nonzero(c)
         lowHor = 4
         highHor = 0
         lowVer = 0
@@ -244,27 +250,27 @@ class SwitchData:
                 lowVer = nz[0][i]
         if highHor - lowHor == 3:
             if lowVer != 3:
-                return [lowVer:lowVer+2, lowHor:highHor+1]
+                return c[lowVer:lowVer+2, lowHor:highHor+1]
             else:
-                return [lowVer-1:lowVer+1, lowHor:highHor+1]
+                return c[lowVer-1:lowVer+1, lowHor:highHor+1]
         elif highHor - lowHor == 2:
             if lowVer != 3:
                 if highHor != 5:
-                    return [lowVer:lowVer+2, lowHor:highHor+2]
+                    return c[lowVer:lowVer+2, lowHor:highHor+2]
                 else:
-                    return [lowVer:lowVer+2, lowHor-1:highHor+1]     
+                    return c[lowVer:lowVer+2, lowHor-1:highHor+1]     
             else:
                 if highHor != 5:
-                    return [lowVer:lowVer+2, lowHor:highHor+2]
+                    return c[lowVer:lowVer+2, lowHor:highHor+2]
                 else:
-                    return [lowVer:lowVer+2, lowHor-1:highHor+1] 
+                    return c[lowVer:lowVer+2, lowHor-1:highHor+1] 
         elif highHor - lowHor == 1:
-            return [0:4, lowHor:highHor+1]
+            return c[0:4, lowHor:highHor+1]
         elif highHor - lowHor == 0:
             if lowHor != 0:
-                return [0:4, lowHor-1:highHor+1]
+                return c[0:4, lowHor-1:highHor+1]
             else:
-                return [0:4, lowHor:highHor+2]
+                return c[0:4, lowHor:highHor+2]
         else:
             print("Fuckkkkkkkkk! 214 SwitchDAta")
 
