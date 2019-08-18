@@ -26,9 +26,17 @@ class Genome:
     # Get all buttons and whether they should be pushed
     def getButtons(self, moves):
         arr = np.zeros(self.outputNodes)
-        
+        pushDown = False
         if moves[1] != 0:
             arr[5] = 1
-        
+        else:
+            pushDown = True
+        xPos = moves[4] + moves[6]
+        if xPos > moves[0]:
+            arr[3] = 1
+        elif xPos < moves[0]:
+            arr[1] = 1
+        elif pushDown:
+            arr[0] = 1
         return arr
 

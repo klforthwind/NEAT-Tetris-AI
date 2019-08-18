@@ -160,7 +160,7 @@ class SwitchData:
         tuplew = self.getMovingBlock()
         blockBeingPlaced = tuplew[0]
         fitness = 0
-        arr = np.zeros((6))
+        arr = np.zeros((7))
         for r1 in range(4):
             b1 = blockBeingPlaced
             b1 = self.rotate(b1, r1)
@@ -181,6 +181,7 @@ class SwitchData:
                             arr[3] = r2
                             arr[4] = tuplew[1]
                             arr[5] = tuplew[2]
+                            arr[6] = tuplew[3]
         return arr
 
 
@@ -225,13 +226,16 @@ class SwitchData:
         c = np.zeros((4,6))
         xx = -1
         yy = -1
+        xChange = 0
         for y in range(10):
             for x in range(10):
                 if xx == -1 and self.__boardArr[y][x] == 1:
                     xx = x
                     yy = y
+                if x - xx < xChange and self.__boardArr[y][x] == 1:
+                    xChange = x - xx
                 c[y - yy][x - xx + 2] = self.__boardArr[y][x]
-        return (self.getGrid(c), xx, yy)
+        return (self.getGrid(c), xx, yy, xChange)
     
     def getGrid(self, c):
         nz = np.nonzero(c)
