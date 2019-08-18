@@ -28,7 +28,7 @@ class Genome:
         arr = np.zeros(self.outputNodes)
         pushDown = False
         if moves[1] != 0:
-            arr[5] = 1
+            arr[6] = 1
         else:
             pushDown = True
         xPos = moves[4] + moves[6]

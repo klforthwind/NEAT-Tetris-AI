@@ -22,12 +22,8 @@ class NEAT:
             del temp
         #Let's save some stats
         for g in range(len(self.genomes)):
-            for h in range(self.genomes[0].outputNodes): 
-                txt = "data/"+str(self.generation)+"-"+str(g)+"-h-"+str(h)+".txt"
-                np.savetxt(txt, self.genomes[g].leftNeuralNet[h], fmt="%f")
-            for o in range(self.genomes[0].outputNodes): 
-                txt = "data/"+str(self.generation)+"-"+str(g)+"-o-"+str(o)+".txt"
-                np.savetxt(txt, self.genomes[g].rightNeuralNet[o], fmt="%f")
+            txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
+            np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")
 
     def repopulate(self, gen):
         for g in range(self.popSize):

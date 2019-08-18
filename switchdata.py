@@ -17,7 +17,8 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10))
         self.__queueArr = np.zeros((17, 4))
         self.__holdArr = np.zeros((2, 4))
-        self.bestMoves = np.zeros((100, 6))
+        self.bestMoves = np.zeros((7))
+        self.nodeNet = np.zeros((4))
 
     def set(self, var1, var2):
         self.cap.set(var1, var2)
@@ -75,8 +76,7 @@ class SwitchData:
         boardMat = np.zeros((640, 320))
         for y in range(20):
             for x in range(10):
-                val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and 
-                    board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
+                val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
                 self.__boardArr[y][x] = val
                 for m in range(32):
                     if val == 0:
@@ -117,13 +117,13 @@ class SwitchData:
             for j in range(4):
                 if (i + 1) % 3 == 0:
                     continue
-                val = 1 if queue[self.arr2[y] + 8][16 * x + 8] > 0 else 0
+                val = 1 if queue[self.arr2[i] + 8][16 * j + 8] > 0 else 0
                 self.__queueArr[i][j] = val
-                for m in range(self.arr[y]):
+                for m in range(self.arr[i]):
                     if val == 0:
                         break
                     for n in range(16):
-                        queueMat[self.arr2[y] + m][x * 16 + n] = 255
+                        queueMat[self.arr2[i] + m][j * 16 + n] = 255
         
         cv2.imshow('Queue', queueMat)
 
@@ -132,6 +132,23 @@ class SwitchData:
 
     def __mask(self, mat):
         return cv2.inRange(mat, np.array([0,54,0]), np.array([255,255,255]))
+
+# --------------------------------------------------------------------
+
+    def setNodeNet(self, nn):
+        self.nodeNet = nn
+    
+    def asyncMoveFind(self):
+        tmpArr = self.getBestMoves(self.nodeNet)
+        self.bestMoves = tmpArr
+        del tmpArr
+
+    def startMoveFind(self):
+        self.thread2 = threading.Thread(target=self.asyncMoveFind, args=())
+        self.thread2.start()
+
+    def stopMoveFind(self):
+        self.thread2.join()
 
 # --------------------------------------------------------------------
 
@@ -150,7 +167,8 @@ class SwitchData:
         for x in range(10):
             high = 0
             for y in range(h):
-                high = y if board[19 - y][x] == 1
+                if board[19 - y][x] == 1:
+                    high = y
             heights[x] = high
         return heights
 
@@ -158,11 +176,11 @@ class SwitchData:
         heights = self.getHeights(self.__boardArr)
         blocks = self.getQueueBlocks()
         tuplew = self.getMovingBlock()
-        blockBeingPlaced = tuplew[0]
         fitness = 0
         arr = np.zeros((7))
         for r1 in range(4):
-            b1 = blockBeingPlaced
+            b1 = tuplew[0]
+            print(b1)
             b1 = self.rotate(b1, r1)
             for x1 in range(10 - len(b1[0])):
                 newBoard = self.__boardArr
@@ -196,12 +214,12 @@ class SwitchData:
             heightTotal += heights[i]
 
             # Holes
-            for j in range(heights[i]):
+            for j in range(int(heights[i])):
                 if board[19-j][i] == 0:
                     holes += 1
             
             #Bumpiness
-            if len(heights) > i + 2
+            if len(heights) > i + 2:
                 bump += abs(heights[i] - heights[i + 1])
 
         fitness += nodeNet[0] * heightTotal
@@ -217,7 +235,8 @@ class SwitchData:
                 if board[19-y][x] == 0:
                     c = False
                     break
-            lines += 1 if c
+            if c:
+                lines += 1 
         fitness += nodeNet[3] * lines
 
         return fitness
@@ -227,23 +246,25 @@ class SwitchData:
         xx = -1
         yy = -1
         xChange = 0
-        for y in range(10):
+        for y in range(13):
             for x in range(10):
                 if xx == -1 and self.__boardArr[y][x] == 1:
                     xx = x
                     yy = y
                 if x - xx < xChange and self.__boardArr[y][x] == 1:
                     xChange = x - xx
-                c[y - yy][x - xx + 2] = self.__boardArr[y][x]
+                if self.__boardArr[y][x] == 1 and x - xx + 2 < 6 and y - yy < 4:
+                    c[y - yy][x - xx + 2] = 1
         return (self.getGrid(c), xx, yy, xChange)
     
     def getGrid(self, c):
         nz = np.nonzero(c)
+        print(nz)
         lowHor = 4
         highHor = 0
         lowVer = 0
         highVer = 4
-        for i in range(nz[0]):
+        for i in range(len(nz[0])):
             if nz[1][i] > highHor:
                 highHor = nz[1][i]
             if nz[1][i] < lowHor:
@@ -276,26 +297,29 @@ class SwitchData:
             else:
                 return c[0:4, lowHor:highHor+2]
         else:
-            print("Fuckkkkkkkkk! 214 SwitchDAta")
+            return c[0:2, 0:4]
 
     def getNewBoard(self, heights, x, b1, board):
         maxHeight = 0
         for l in range(len(b1[0])):
-            maxHeight = heights[x+l] if maxHeight < heights[x+l]
-        for y in range(maxHeights + 1):
+            if maxHeight < heights[x+l]:
+                maxHeight = heights[x+l]
+        for y in range(int(maxHeight + 1)):
+            print(b1)
+            print(len(b1))
             if len(b1) == 4:
-                if self.checkVertical(b1, maxHeights - y, x):
+                if self.checkVertical(b1, maxHeight - y, x):
                     for j in range(4):
                         for i in range(2):
-                            if block[3-j][i] == 1:
-                            board[maxHeights - (y + j)][x + i] = 1
+                            if b1[3-j][i] == 1:
+                                board[int(maxHeight - (y + j))][int(x + i)] = 1
                     break
             else:
-                if self.checkHorizontal(b1, maxHeights - y, x):
+                if self.checkHorizontal(b1, maxHeight - y, x):
                     for j in range(2):
                         for i in range(4):
-                            if block[3-j][i] == 1:
-                            board[maxHeights - (y + j)][x + i] = 1
+                            if b1[1-j][i] == 1:
+                                board[int(maxHeight - (y + j))][int(x + i)] = 1
                     break
         return board
     
@@ -311,7 +335,7 @@ class SwitchData:
         return False
 
 
-    def checkHorizontal(self, y, x):
+    def checkHorizontal(self, block, y, x):
         for j in range(2):
             for i in range(4):
                 if block[j][i] == 1 and self.getBoardPos(y + j, x + i) == 1:
@@ -323,7 +347,10 @@ class SwitchData:
         return False
 
     def rotate(self, block, counterRotations):
-        return np.rot90(block, counterRotations)
+        if len(block) > 0:
+            return np.rot90(block, counterRotations)
+        else:
+            return block
 
     def getQueueBlocks(self):
         row = 0
@@ -331,8 +358,11 @@ class SwitchData:
         for i in range(17):
             for j in range(4):
                 if (i + 1) % 3 == 0:
-                    continue
-                blocks[(row - (row % 2)) / 2][row % 2][j] = self.getQueuePos(i, j)
+                    break
+                val1 =int((row - (row % 2)) / 2)
+                val2 = int(row % 2)
+                blocks[val1][val2][j] = self.getQueuePos(i, j)
+            if (i + 1) % 3 != 0:
                 row += 1
         return blocks
                 
@@ -350,7 +380,7 @@ class SwitchData:
         return isDead               
 
     def getBoardPos(self, y, x):
-        return self.__boardArr[y][x]
+        return self.__boardArr[int(y)][int(x)]
 
     def getQueuePos(self, y, x):
         return self.__queueArr[y][x]

@@ -32,6 +32,8 @@ if isfile('data/0'+zeroGenome):
     neat.repopulate(gen - 1)
 else:
     neat.createPopulation()
+capture.setNodeNet(neat.getCurrentNodeNet())
+capture.startMoveFind()
 
 #Get connected to an emulator
 port = "COM3"
@@ -49,6 +51,8 @@ while True:
     if (capture.shouldPressA()):
         emulator.nextGenome()
         neat.loop()
+    
+    capture.setNodeNet(neat.getCurrentNodeNet())
 
     # Process the capture to get the images that we need
     capture.processCapture()
@@ -64,7 +68,7 @@ while True:
         t0 = time.time()
 
         # Get the best move values
-        validMoves = capture.getBestMoves(neat.getCurrentNodeNet())
+        validMoves = capture.bestMoves
         
         # Send the correct button inputs
         btnArr = neat.processGenome(validMoves)
@@ -72,6 +76,8 @@ while True:
 
 # Stop the capture thread
 capture.stop()
+
+capture.stopMoveFind()
 
 # Stop the emulator
 emulator.close()
