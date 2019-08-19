@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.random import random
+import time
 
 class Genome:
 
@@ -12,12 +13,14 @@ class Genome:
         self.outputNodes = 7
 
         # Set mutation rate, step, and fitness
-        self.mutationRate = 0.1
-        self.mutationStep = 0.05
+        self.mutationRate = 0.2
+        self.mutationStep = 0.1
         self.fitness = 0
 
         self.moves = np.array([0])
         self.needNewArray = True
+
+        self.wao = time.time()
 
     # Mutate values within the neural network
     def mutate(self):
@@ -48,8 +51,9 @@ class Genome:
             # print("moving right")
             self.moves[4] += 1
             arr[1] = 1
-        else:
+        elif time.time() - self.wao > 3:
             # print("moving down")
+            self.wao = time.time()
             self.needNewArray = True
             arr[0] = 1
         return arr

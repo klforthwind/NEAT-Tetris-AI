@@ -196,7 +196,7 @@ class SwitchData:
                     for x2 in range(10 - len(b2[0])):
                         newBoard2 = self.getNewBoard(heights, x2, b2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
-                        if  fit >= fitness:
+                        if  fit > fitness:
                             fitness = fit
                             arr[0] = int(x1)
                             arr[1] = int(r1)
