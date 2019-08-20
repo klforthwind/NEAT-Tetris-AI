@@ -6,7 +6,6 @@ from emulator import BTN_A
 import numpy.random as rng
 from neat import NEAT
 import time
-from os.path import isfile
 
 # Controlled randomness
 rng.seed(420)
