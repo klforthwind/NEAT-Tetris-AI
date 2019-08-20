@@ -1,4 +1,5 @@
 # Import packages and files
+from filemanager import FileManager
 from switchdata import SwitchData
 from emulator import Emulator
 from emulator import BTN_A
@@ -22,16 +23,13 @@ populationSize = 26
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
-gen = 0
-zeroGenome = '-0.txt'
-if isfile('data/0'+zeroGenome):
-    while(isfile('data/'+str(gen)+zeroGenome)):
-        hasData = isfile('data/'+str(gen)+zeroGenome)
-        if hasData:
-            gen += 1
-    neat.repopulate(gen - 1)
+fileManager = FileManager()
+canRepopulate = fileManager.canRepopulate()
+if canRepopulate[0]:
+    neat.repopulate(canRepopulate[1])
 else:
     neat.createPopulation()
+
 capture.setNodeNet(neat.getCurrentNodeNet())
 capture.startMoveFind()
 
