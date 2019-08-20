@@ -5,13 +5,13 @@ from emulator import Emulator
 from emulator import BTN_A
 import numpy.random as rng
 from neat import NEAT
-import time
+from time import time
 
 # Controlled randomness
 rng.seed(420)
 
 # Get a relative point of time
-t0 = time.time()
+t0 = time()
 
 # Connect to the Switch Capture, and run it asynchronous
 capture = SwitchData()
@@ -61,15 +61,14 @@ while True:
         neat.loop()
         capture.resetBoard()
 
-    if (time.time()-t0 > 0.25):
-        t0 = time.time()
+    if (time()-t0 > 0.25):
+        t0 = time()
 
         # Get the best move values
         validMoves = capture.bestMoves
         
         # Send the correct button inputs
         btnArr = neat.processGenome(validMoves)
-        # print(btnArr)
         emulator.emulateTetris(btnArr)
         neat.printFitness(capture.getFitness(capture.getBoard(), neat.getCurrentNodeNet()))
 
