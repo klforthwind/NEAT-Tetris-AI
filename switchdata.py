@@ -223,11 +223,8 @@ class SwitchData:
                             arr[3] = int(r2)
                             arr[4] = int(xx)
                             arr[5] = int(yy)
-                            arr[6] = int(xChange)
-
-                             
+                            arr[6] = int(xChange)    
         return arr
-
 
     def getFitness(self, board, nodeNet):
         fitness = 0
@@ -251,7 +248,6 @@ class SwitchData:
         fitness += nodeNet[0] * heightTotal
         fitness += nodeNet[1] * holes
         fitness += nodeNet[2] * bump
-
 
         # Complete Lines
         lines = 0
