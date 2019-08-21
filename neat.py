@@ -1,7 +1,7 @@
 import numpy as np
 from genome import Genome
 from numpy.random import random
-import time
+from time import time
 
 class NEAT:
 
@@ -12,7 +12,7 @@ class NEAT:
         self.genomes = []
         self.currentGenome = 0
         self.lastQueue = np.zeros((17, 4))
-        self.t = time.time()
+        self.t = time()
         
     # Create the initial genomes
     def createPopulation(self):
@@ -48,9 +48,9 @@ class NEAT:
         return temp.getButtons(move)
     
     def printFitness(self, fitness):
-        self.genomes[self.currentGenome].fitness += time.time() - self.t
+        self.genomes[self.currentGenome].fitness += time() - self.t
         print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
-        self.t = time.time()
+        self.t = time()
         
     def didBlockChange(self, captura):
         qChange = 0
@@ -66,7 +66,7 @@ class NEAT:
 
     def loop(self):
         self.currentGenome += 1
-        self.t = time.time()
+        self.t = time()
         if self.currentGenome == len(self.genomes):
             self.sortGenomes()
             self.increaseGeneration()
@@ -105,6 +105,7 @@ class NEAT:
         child.mutate()
         return child
 
+    # Returns a random genome
     def randChoice(self):
         return self.genomes[int(self.randWeightedNumBetween(0, len(self.genomes)-1))]
 

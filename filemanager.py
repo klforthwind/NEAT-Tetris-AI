@@ -1,3 +1,4 @@
+from os.path import isfile
 
 class FileManager:
     def __init__(self):
