@@ -62,6 +62,7 @@ class SwitchData:
     
     # Process the capture card
     def processCapture(self):
+
         # Read the capture card
         _, frame = self.read()
 
@@ -74,6 +75,7 @@ class SwitchData:
         self.__makeQueue(frame)
 
     def __makeBoard(self, frame):
+
         # Make a mat that only shows the board
         board = frame[40:680, 480:800]
 
@@ -83,19 +85,24 @@ class SwitchData:
         # Only get the luminant parts of the board
         board = self.__mask(board)
 
-        # Attempt to apply 
+        # Attempt to make a less noisy mask
         boardMat = np.zeros((640, 320))
+        #Run through all 200 grid tiles
         for y in range(20):
             for x in range(10):
+                # Get correct value of the indexed tiles
                 val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
                 self.__boardArr[y][x] = val
+                # Fill in the correct tiles
                 for m in range(32):
                     if val == 0:
                         break
                     for n in range(32):
                         boardMat[y * 32 + m][x * 32 + n] = 255
+                # Add dotted pattern
                 if x != 9 and y != 19:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
+        # Show the board with opencv
         cv2.imshow('Board', boardMat)
 
     def __makeHold(self, frame):
@@ -108,6 +115,7 @@ class SwitchData:
         # Only get the luminant parts of the board
         hold = self.__mask(hold)
 
+        # Check every hold tile to see if its filled
         for y in range(2):
             for x in range(4):
                 self.__holdArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
@@ -216,9 +224,8 @@ class SwitchData:
                             arr[4] = int(xx)
                             arr[5] = int(yy)
                             arr[6] = int(xChange)
-                            if tuplew[1] != -1:
-                                arr[7] = 2
-        # print(arr[4])
+
+                             
         return arr
 
 
@@ -355,11 +362,11 @@ class SwitchData:
     def checkHorizontal(self, block, y, x):
         for j in range(len(block)):
             for i in range(4):
-                if block[j][i] == 1 and self.getBoardPos(y + j, x + i) == 1:
+                if block[j][i] == 1 and self.__boardArr[y + j][x + i] == 1:
                     return False
         for j in range(len(block)):
             for i in range(4):
-                if block[len(block) - 1 -j][i] == 1 and (y == 0 or self.getBoardPos(19 - (y + j) + 1, x + i) == 1):
+                if block[len(block) - 1 -j][i] == 1 and (y == 0 or self.__boardArr[19 - (y + j) + 1][x + i] == 1):
                     return True
         return False
 
