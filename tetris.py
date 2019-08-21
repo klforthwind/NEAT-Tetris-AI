@@ -31,6 +31,8 @@ else:
 
 # Attempt to find the best moves
 capture.setNodeNet(neat.getCurrentNodeNet())
+
+# Start move finding
 capture.startMoveFind()
 
 #Get connected to an emulator
@@ -87,6 +89,7 @@ while True:
 # Stop the capture thread
 capture.stop()
 
+# Stop move finding
 capture.stopMoveFind()
 
 # Stop the emulator

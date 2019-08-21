@@ -3,7 +3,11 @@ import threading
 import cv2
 
 class SwitchData:
+
+    # Initialize variables
     def __init__(self, src=0, width=1280, height=720):
+
+        # Set capture settings
         self.src = src
         self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
@@ -11,6 +15,8 @@ class SwitchData:
         self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
+
+        # Set image processing variables
         self.lastBoard = np.zeros((20, 10))
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
@@ -20,15 +26,18 @@ class SwitchData:
         self.bestMoves = np.zeros((7))
         self.nodeNet = np.zeros((4))
 
+    # Set a certain value on the capture
     def set(self, var1, var2):
         self.cap.set(var1, var2)
 
+    # Start the capture thread
     def start(self):
         self.started = True
         self.thread = threading.Thread(target=self.update, args=())
         self.thread.start()
         return self
 
+    # Update the capture thread
     def update(self):
         while self.started:
             grabbed, frame = self.cap.read()
@@ -36,12 +45,14 @@ class SwitchData:
                 self.grabbed = grabbed
                 self.frame = frame
 
+    # Read locked thread
     def read(self):
         with self.read_lock:
             frame = self.frame
             grabbed = self.grabbed
         return grabbed, frame
 
+    # Stop the thread from running
     def stop(self):
         self.started = False
         self.thread.join()

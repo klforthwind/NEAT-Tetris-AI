@@ -2,6 +2,8 @@ import serial
 import time
 import math
 
+# --------------------------------------------------------
+
 # Switch Button Values
 BTN_NONE         = 0x0000000000000000
 BTN_Y            = 0x0000000000000001
