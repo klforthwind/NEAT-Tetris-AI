@@ -7,7 +7,7 @@ import numpy.random as rng
 from neat import NEAT
 from time import time
 
-# Controlled randomness
+# Controlled randomness, doesn't matter that much with Tetris tho
 rng.seed(420)
 
 # Get a relative point of time
@@ -23,12 +23,13 @@ neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
 fileManager = FileManager()
-canRepopulate = fileManager.canRepopulate()
-if canRepopulate[0]:
-    neat.repopulate(canRepopulate[1])
+loadable = fileManager.loadable()
+if loadable[0]:
+    neat.repopulate(loadable[1])
 else:
     neat.createPopulation()
 
+# Attempt to find the best moves
 capture.setNodeNet(neat.getCurrentNodeNet())
 capture.startMoveFind()
 
@@ -48,28 +49,39 @@ while True:
     if (capture.shouldPressA()):
         emulator.nextGenome()
         neat.loop()
-    
-    capture.setNodeNet(neat.getCurrentNodeNet())
 
     # Process the capture to get the images that we need
     capture.processCapture()
 
     # Check to see if genome is dead
     if capture.isDead():
-        t1 = time.time()
+
+        # Hold the A button
         emulator.nextGenome()
+
+        # Go to next genome / generation
         neat.loop()
+
+        # Pass over the node net so capture can use it
+        capture.setNodeNet(neat.getCurrentNodeNet())
+        
+        # Reset what the bot sees
         capture.resetBoard()
 
+    # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.25):
         t0 = time()
 
         # Get the best move values
         validMoves = capture.bestMoves
         
-        # Send the correct button inputs
+        # Get the button array of recommended moves
         btnArr = neat.processGenome(validMoves)
+
+        # Send the correct button inputs
         emulator.emulateTetris(btnArr)
+
+        # Print the fitness
         neat.printFitness(capture.getFitness(capture.getBoard(), neat.getCurrentNodeNet()))
 
 # Stop the capture thread

@@ -4,7 +4,7 @@ class FileManager:
         self.suffix = '-0.txt'
         print("File Manager initialized!")
 
-    def canRepopulate(self):
+    def loadable(self):
         gen = 0
         if isfile('data/0'+self.suffix):
             while(isfile('data/'+str(gen)+self.suffix)):
