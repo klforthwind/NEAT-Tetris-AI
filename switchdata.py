@@ -174,23 +174,14 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def getHeights(self, board):
-        h = 0
-        for y in range(20):
-            oneOnThisLevel = False
-            for x in range(10):
-                if board[19 - y][x] == 1:
-                    oneOnThisLevel = True
-                    continue
-            if oneOnThisLevel == False:
-                h = y + 1
-                break
         heights = np.zeros((10))
         for x in range(10):
-            high = 0
-            for y in range(h):
-                if board[19 - y][x] == 1:
-                    high = y
-            heights[x] = high
+            heighest = 0
+            for y in range(15):
+                h = 19 - y
+                if board[h][x] == 1:
+                    heighest = h
+            heights[x] = h
         return heights
 
     def getBestMoves(self, nodeNet):
@@ -267,58 +258,52 @@ class SwitchData:
         xx = -1
         yy = -1
         xChange = 0
-        for y in range(13):
+        for y in range(10):
             for x in range(10):
-                if xx == -1 and self.__boardArr[y][x] == 1:
-                    xx = x
-                    yy = y
-                if x - xx < xChange and self.__boardArr[y][x] == 1:
-                    xChange = x - xx
-                if self.__boardArr[y][x] == 1 and x - xx + 2 < 6 and y - yy < 4:
-                    c[y - yy][x - xx + 2] = 1
+                if self.__boardArr[y][x] == 1:
+                    # If we discover our first filled block
+                    if xx == -1:
+                        xx = x
+                        yy = y
+                    # If we discover a block to the left of the first filled block
+                    if x - xx < xChange:
+                        xChange = x - xx
+                    if x - xx + 2 < 6 and y - yy < 4:
+                        c[y - yy][x - xx + 2] = 1
         return (self.getGrid(c), xx, yy, xChange)
     
     def getGrid(self, c):
-        nz = np.nonzero(c)
-        # print(nz)
-        lowHor = 4
-        highHor = 0
-        lowVer = 0
-        highVer = 4
-        for i in range(len(nz[0])):
-            if nz[1][i] > highHor:
-                highHor = nz[1][i]
-            if nz[1][i] < lowHor:
-                lowHor = nz[1][i]
-            if nz[0][i] < highVer:
-                highVer = nz[0][i]
-            if nz[0][i] > lowVer:
-                lowVer = nz[0][i]
-        if highHor - lowHor == 3:
-            if lowVer != 3:
-                return c[lowVer:lowVer+2, lowHor:highHor+1]
-            else:
-                return c[lowVer-1:lowVer+1, lowHor:highHor+1]
-        elif highHor - lowHor == 2:
-            if lowVer != 3:
-                if highHor != 5:
-                    return c[lowVer:lowVer+2, lowHor:highHor+2]
-                else:
-                    return c[lowVer:lowVer+2, lowHor-1:highHor+1]     
-            else:
-                if highHor != 5:
-                    return c[lowVer:lowVer+2, lowHor:highHor+2]
-                else:
-                    return c[lowVer:lowVer+2, lowHor-1:highHor+1] 
-        elif highHor - lowHor == 1:
-            return c[0:4, lowHor:highHor+1]
-        elif highHor - lowHor == 0:
-            if lowHor != 0:
-                return c[0:4, lowHor-1:highHor+1]
-            else:
-                return c[0:4, lowHor:highHor+2]
-        else:
-            return c[0:2, 0:4]
+        for cut in range(2):
+            cutBottom = True
+            cutTop = True
+            cutLeft = True
+            cutRight = True
+            for n in range(len(c)):
+                if c[n][0] == 1:
+                    cutLeft = False
+                    break
+            for n in range(len(c)):
+                if c[n][len(c[0])-1] == 1:
+                    cutRight = False
+                    break
+            for n in range(len(c[0])):
+                if c[0][n] == 1:
+                    cutTop = False
+                    break
+            for n in range(len(c[0])):
+                if c[len(c)-1][n] == 1:
+                    cutBottom = False
+                    break
+            if cutLeft:
+                c = c[0:len(c)][1:len(c[0])]
+            if cutRight:
+                c = c[0:len(c)][0:len(c[0])-1]
+            if cutBottom:
+                c = c[0:len(c)-1][0:len(c[0])]
+            if cutTop:
+                c = c[1:len(c)][0:len(c[0])]
+
+        return c[0:2, 0:4]
 
     def getNewBoard(self, heights, x, b1, board):
         maxHeight = 0
@@ -378,9 +363,9 @@ class SwitchData:
             for j in range(4):
                 if (i + 1) % 3 == 0:
                     break
-                val1 =int((row - (row % 2)) / 2)
-                val2 = int(row % 2)
-                blocks[val1][val2][j] = self.getQueuePos(i, j)
+                queueNum =int((row - (row % 2)) / 2)
+                rowOfBlock = int(row % 2)
+                blocks[queueNum][rowOfBlock][j] = self.getQueuePos(i, j)
             if (i + 1) % 3 != 0:
                 row += 1
         return blocks

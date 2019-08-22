@@ -25,6 +25,7 @@ class NEAT:
         for g in range(len(self.genomes)):
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
             np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")
+            del txt
 
     def repopulate(self, gen):
         for g in range(self.popSize):
@@ -62,6 +63,7 @@ class NEAT:
                     self.lastQueue[i][j] = captura.getQueuePos(i, j)
                     qChange += 1
         tmp = qChange > 10
+        del qChange
         return tmp
 
     def loop(self):
@@ -90,6 +92,7 @@ class NEAT:
             children.append(self.makeChild(self.randChoice(),self.randChoice()))
         
         self.genomes = children
+        del children
 
         #Let's save some stats
         for g in range(len(self.genomes)):
