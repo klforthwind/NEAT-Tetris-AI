@@ -19,7 +19,6 @@ class Genome:
         self.fitness = 0
 
         self.moves = np.array([0])
-        self.maap = np.zeros((640, 320))
         self.needNewArray = True
 
     # Mutate values within the neural network

@@ -67,9 +67,6 @@ while True:
         # Pass over the node net so capture can use it
         capture.setNodeNet(neat.getCurrentNodeNet())
         
-        # Reset what the bot sees
-        capture.resetBoard()
-
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.25):
         t0 = time()

@@ -17,7 +17,6 @@ class SwitchData:
         self.read_lock = threading.Lock()
 
         # Set image processing variables
-        self.lastBoard = np.zeros((20, 10))
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
         self.__boardArr = np.zeros((20, 10))
@@ -411,9 +410,6 @@ class SwitchData:
     def getHoldPos(self, y, x):
         return self.__holdArr[y][x]
     
-    def resetBoard(self):
-        self.lastBoard = np.zeros((20, 10))
-
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
 
