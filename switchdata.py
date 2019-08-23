@@ -189,8 +189,8 @@ class SwitchData:
         blocks = self.getQueueBlocks()
         tuplew = self.getMovingBlock()
         xx = tuplew[1]
-        yy = tuplew[1]
-        xChange = tuplew[1]
+        yy = tuplew[2]
+        xChange = tuplew[3]
         fitness = -1
         arr = np.zeros((8))
         for r1 in range(4):
@@ -274,36 +274,34 @@ class SwitchData:
     
     def getGrid(self, c):
         for cut in range(2):
-            cutBottom = True
-            cutTop = True
-            cutLeft = True
-            cutRight = True
+            cutBottom = 1
+            cutTop = 1
+            cutLeft = 1
+            cutRight = 1
             for n in range(len(c)):
                 if c[n][0] == 1:
-                    cutLeft = False
+                    cutLeft = 0
                     break
             for n in range(len(c)):
                 if c[n][len(c[0])-1] == 1:
-                    cutRight = False
+                    cutRight = 0
                     break
             for n in range(len(c[0])):
                 if c[0][n] == 1:
-                    cutTop = False
+                    cutTop = 0
                     break
             for n in range(len(c[0])):
                 if c[len(c)-1][n] == 1:
-                    cutBottom = False
+                    cutBottom = 0
                     break
-            if cutLeft:
-                c = c[0:len(c)][1:len(c[0])]
-            if cutRight:
-                c = c[0:len(c)][0:len(c[0])-1]
-            if cutBottom:
-                c = c[0:len(c)-1][0:len(c[0])]
-            if cutTop:
-                c = c[1:len(c)][0:len(c[0])]
-
-        return c[0:2, 0:4]
+            c = c[cutTop:len(c)-cutBottom][cutLeft:len(c[0])- cutRight]
+        if len(c) == 2 and len(c[0]) == 2:
+            c = np.lib.pad(c, ((0,0),(0,2)), 'constant', constant_values=(0))
+        elif len(c) > 2:
+            c = np.lib.pad(c, ((0,4 - len(c)),(0,2 - len(c[0]))), 'constant', constant_values=(0))
+        elif len(c[0]) > 2:
+            c = np.lib.pad(c, ((0,2 - len(c)),(0,4 - len(c[0]))), 'constant', constant_values=(0))
+        return c
 
     def getNewBoard(self, heights, x, b1, board):
         maxHeight = 0
