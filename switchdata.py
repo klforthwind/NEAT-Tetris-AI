@@ -158,7 +158,7 @@ class SwitchData:
             for y in range(15):
                 h = 19 - y
                 if board[h][x] == 1:
-                    maxH = h
+                    maxH = y
             heights[x] = maxH
         return heights
 
