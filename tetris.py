@@ -40,32 +40,22 @@ while True:
         emulator.send_input()
         break
 
-    # Check to see if we should press A (genome over, and it won't go to next genome)
-    if (capture.shouldPressA()):
-        emulator.nextGenome()
-        neat.loop()
-
-    # Process the capture to get the images that we need
-    capture.processCapture()
-
-    # Check to see if genome is dead
-    if capture.isDead():
-
+    # Check to see if we should press A (genome over, and it won't go to next genome),
+    # or check to see if genome is dead to press A
+    if capture.shouldPressA() or capture.isDead():
+        
         # Hold the A button
         emulator.nextGenome()
-
+        
         # Go to next genome / generation
         neat.loop()
 
-        # Pass over the node net so capture can use it
-        capture.setNodeNet(neat.getCurrentNodeNet())
-        
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.25):
         t0 = time()
         
         # Get the button array of recommended moves
-        btnArr = neat.processGenome(validMoves)
+        btnArr = neat.processGenome()
 
         # Send the correct button inputs
         emulator.emulateTetris(btnArr)

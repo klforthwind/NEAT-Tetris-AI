@@ -12,7 +12,6 @@ class SwitchData:
         self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
 
@@ -39,17 +38,26 @@ class SwitchData:
     # Update the capture thread
     def update(self):
         while self.started:
+            
+            # Read the capture card
             grabbed, frame = self.cap.read()
             with self.read_lock:
-                self.grabbed = grabbed
-                self.frame = frame
+
+                # Show the capture card
+                cv2.imshow('Frame', frame)
+
+                # Process the board, hold, and queue
+                self.__makeBoard(frame)
+                self.__makeHold(frame)
+                self.__makeQueue(frame)
 
     # Read locked thread
     def read(self):
         with self.read_lock:
-            frame = self.frame
-            grabbed = self.grabbed
-        return grabbed, frame
+            board = self.__boardArr
+            hold = self.__holdArr
+            queue = self.__queueArr
+            return (board, hold, queue)
 
     # Stop the thread from running
     def stop(self):
@@ -59,20 +67,6 @@ class SwitchData:
 
 # --------------------------------------------------------------------
     
-    # Process the capture card
-    def processCapture(self):
-
-        # Read the capture card
-        _, frame = self.read()
-
-        # Show the capture card
-        cv2.imshow('Frame', frame)
-
-        # Process the board, hold, and queue
-        self.__makeBoard(frame)
-        self.__makeHold(frame)
-        self.__makeQueue(frame)
-
     def __makeBoard(self, frame):
 
         # Make a mat that only shows the board
@@ -153,26 +147,6 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
-    def setNodeNet(self, nn):
-        self.nodeNet = nn
-    
-    def asyncMoveFind(self):
-        while self.started2:
-            tmpArr = self.getBestMoves(self.nodeNet)
-            self.bestMoves = tmpArr
-            del tmpArr
-
-    def startMoveFind(self):
-        self.started2 = True
-        self.thread2 = threading.Thread(target=self.asyncMoveFind, args=())
-        self.thread2.start()
-
-    def stopMoveFind(self):
-        self.started2 = False
-        self.thread2.join()
-
-# --------------------------------------------------------------------
-
     def getHeights(self, board):
         heights = np.zeros((10))
         for x in range(10):
@@ -185,7 +159,9 @@ class SwitchData:
         return heights
 
     def getBestMoves(self, nodeNet):
-        heights = self.getHeights(self.__boardArr)
+        tiles = self.read()
+        boardArr = tiles[0]
+        heights = self.getHeights(boardArr)
         blocks = self.getQueueBlocks()
         tuplew = self.getMovingBlock()
         xx = tuplew[1]
@@ -272,36 +248,19 @@ class SwitchData:
                         c[y - yy][x - xx + 2] = 1
         return (self.getGrid(c), xx, yy, xChange)
     
-    def getGrid(self, c):
-        for cut in range(2):
-            cutBottom = 1
-            cutTop = 1
-            cutLeft = 1
-            cutRight = 1
-            for n in range(len(c)):
-                if c[n][0] == 1:
-                    cutLeft = 0
-                    break
-            for n in range(len(c)):
-                if c[n][len(c[0])-1] == 1:
-                    cutRight = 0
-                    break
-            for n in range(len(c[0])):
-                if c[0][n] == 1:
-                    cutTop = 0
-                    break
-            for n in range(len(c[0])):
-                if c[len(c)-1][n] == 1:
-                    cutBottom = 0
-                    break
-            c = c[cutTop:len(c)-cutBottom][cutLeft:len(c[0])- cutRight]
-        if len(c) == 2 and len(c[0]) == 2:
-            c = np.lib.pad(c, ((0,0),(0,2)), 'constant', constant_values=(0))
-        elif len(c) > 2:
-            c = np.lib.pad(c, ((0,4 - len(c)),(0,2 - len(c[0]))), 'constant', constant_values=(0))
-        elif len(c[0]) > 2:
-            c = np.lib.pad(c, ((0,2 - len(c)),(0,4 - len(c[0]))), 'constant', constant_values=(0))
-        return c
+    def getGrid(self, g):
+        xyVals = np.zeros((2,4))
+        foundBlocks = 0
+        for y in range(4):
+            for x in range(6):
+                if g[y][x] == 1:
+                    xyVals[0][foundBlocks]=y
+                    xyVals[1][foundBlocks]=x
+                    foundBlocks += 1
+                if foundBlocks == 3:
+                    return xyVals
+        return xyVals
+
 
     def getNewBoard(self, heights, x, b1, board):
         maxHeight = 0
