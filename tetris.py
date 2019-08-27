@@ -2,7 +2,6 @@
 from filemanager import FileManager
 from switchdata import SwitchData
 from emulator import Emulator
-from emulator import BTN_A
 import numpy.random as rng
 from neat import NEAT
 from time import time
