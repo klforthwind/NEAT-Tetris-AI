@@ -153,12 +153,17 @@ class SwitchData:
 
     def getHeights(self, board):
         heights = np.zeros((10))
+        # Iterate over all of the columns
         for x in range(len(heights)):
             maxH = 0
+            # Iterate over the bottom 15 rows
             for y in range(15):
+                # Get the correct index for the board array
                 h = 19 - y
                 if board[h][x] == 1:
+                    # Set the height of column to the highest filled block (bottom = 0)
                     maxH = y
+            # Save the height to the heights array
             heights[x] = maxH
         return heights
 
