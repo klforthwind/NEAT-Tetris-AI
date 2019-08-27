@@ -41,12 +41,9 @@ class NEAT:
             del temp
         self.generation = gen
 
-    def getCurrentNodeNet(self):
-        return self.genomes[self.currentGenome].nodeNet
-
-    def processGenome(self, move):
+    def processGenome(self):
         temp = self.genomes[self.currentGenome]
-        return temp.getButtons(move)
+        return temp.getButtons()
     
     def printFitness(self, fitness):
         self.genomes[self.currentGenome].fitness += time() - self.t
