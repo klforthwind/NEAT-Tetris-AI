@@ -18,7 +18,7 @@ capture = SwitchData()
 capture.start()
 
 # Begin our population
-populationSize = 26
+populationSize = 50
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
