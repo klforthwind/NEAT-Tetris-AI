@@ -159,7 +159,7 @@ class SwitchData:
                 h = 19 - y
                 if board[h][x] == 1:
                     maxH = h
-            heights[x] = h
+            heights[x] = maxH
         return heights
 
     def getBestMoves(self, nodeNet):
