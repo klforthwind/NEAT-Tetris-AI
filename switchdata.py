@@ -13,7 +13,6 @@ class SwitchData:
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         self.started = False
-        self.read_lock = threading.Lock()
 
         # Set image processing variables
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
@@ -40,24 +39,15 @@ class SwitchData:
         while self.started:
             
             # Read the capture card
-            grabbed, frame = self.cap.read()
-            with self.read_lock:
+            _, frame = self.cap.read()
 
-                # Show the capture card
-                cv2.imshow('Frame', frame)
+            # Show the capture card
+            cv2.imshow('Frame', frame)
 
-                # Process the board, hold, and queue
-                self.__makeBoard(frame)
-                self.__makeHold(frame)
-                self.__makeQueue(frame)
-
-    # Read locked thread
-    def read(self):
-        with self.read_lock:
-            board = self.__boardArr
-            hold = self.__holdArr
-            queue = self.__queueArr
-            return (board, hold, queue)
+            # Process the board, hold, and queue
+            self.__makeBoard(frame)
+            self.__makeHold(frame)
+            self.__makeQueue(frame)
 
     # Stop the thread from running
     def stop(self):
@@ -81,11 +71,12 @@ class SwitchData:
         # Attempt to make a less noisy mask
         boardMat = np.zeros((640, 320))
         #Run through all 200 grid tiles
+        tempArr = np.zeros((20,10))
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
                 val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
-                self.__boardArr[y][x] = val
+                tempArr[y][x] = val
                 # Fill in the correct tiles
                 for m in range(32):
                     if val == 0:
@@ -97,6 +88,10 @@ class SwitchData:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
         # Show the board with opencv
         cv2.imshow('Board', boardMat)
+        self.__boardArr = tempArr
+        del boardMat
+        del tempArr
+        del board
 
     def __makeHold(self, frame):
         # Make a mat that only shows the hold
@@ -109,9 +104,13 @@ class SwitchData:
         hold = self.__mask(hold)
 
         # Check every hold tile to see if its filled
+        tempArr = np.zeros((2, 4))
         for y in range(2):
             for x in range(4):
-                self.__holdArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
+                tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
+        self.__holdArr = tempArr
+        del hold
+        del tempArr
 
     def __makeQueue(self, frame):
         # Make a mat that only shows the queue
@@ -124,20 +123,25 @@ class SwitchData:
         queue = self.__mask(queue)
         
         queueMat = np.zeros((310, 65))
+        tempArr = np.zeros((17, 4))
         for i in range(17):
             # level = 0
             for j in range(4):
                 if (i + 1) % 3 == 0:
                     continue
                 val = 1 if queue[self.arr2[i] + 8][16 * j + 8] > 0 else 0
-                self.__queueArr[i][j] = val
+                tempArr[i][j] = val
                 for m in range(self.arr[i]):
                     if val == 0:
                         break
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
         
+        self.__queueArr = tempArr
         cv2.imshow('Queue', queueMat)
+        del tempArr
+        del queueMat
+        del queue
 
     def __hls(self, mat):
         return cv2.cvtColor(mat, cv2.COLOR_BGR2HLS)
@@ -159,9 +163,11 @@ class SwitchData:
         return heights
 
     def getBestMoves(self, nodeNet):
-        tiles = self.read()
-        boardArr = tiles[0]
-        heights = self.getHeights(boardArr)
+        data = self.read()
+        board = data[0]
+        hold = data[1]
+        queue = data[2]
+        heights = self.getHeights(board)
         blocks = self.getQueueBlocks()
         tuplew = self.getMovingBlock()
         xx = tuplew[1]
@@ -173,7 +179,7 @@ class SwitchData:
             b1 = tuplew[0]
             b1 = self.rotate(b1, r1)
             for x1 in range(10 - len(b1[0])):
-                newBoard = self.__boardArr
+                newBoard = self.read()[0]
                 newBoard = self.getNewBoard(heights, x1, b1, newBoard)
                 for r2 in range(4):
                     b2 = blocks[0]
