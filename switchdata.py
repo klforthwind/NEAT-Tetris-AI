@@ -137,8 +137,8 @@ class SwitchData:
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
         
-        self.__queueArr = tempArr
         cv2.imshow('Queue', queueMat)
+        self.__queueArr = tempArr
         del tempArr
         del queueMat
         del queue
