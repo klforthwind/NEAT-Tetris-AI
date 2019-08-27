@@ -153,12 +153,12 @@ class SwitchData:
 
     def getHeights(self, board):
         heights = np.zeros((10))
-        for x in range(10):
-            heighest = 0
+        for x in range(len(heights)):
+            maxH = 0
             for y in range(15):
                 h = 19 - y
                 if board[h][x] == 1:
-                    heighest = h
+                    maxH = h
             heights[x] = h
         return heights
 
