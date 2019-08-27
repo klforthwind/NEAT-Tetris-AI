@@ -29,12 +29,6 @@ if loadable[0]:
 else:
     neat.createPopulation()
 
-# Attempt to find the best moves
-capture.setNodeNet(neat.getCurrentNodeNet())
-
-# Start move finding
-capture.startMoveFind()
-
 #Get connected to an emulator
 port = "COM3"
 emulator = Emulator(port)
@@ -70,9 +64,6 @@ while True:
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.25):
         t0 = time()
-
-        # Get the best move values
-        validMoves = capture.bestMoves
         
         # Get the button array of recommended moves
         btnArr = neat.processGenome(validMoves)
@@ -85,9 +76,6 @@ while True:
 
 # Stop the capture thread
 capture.stop()
-
-# Stop move finding
-capture.stopMoveFind()
 
 # Stop the emulator
 emulator.close()
