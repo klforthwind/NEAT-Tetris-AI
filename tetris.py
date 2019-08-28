@@ -40,6 +40,8 @@ while True:
         emulator.send_input()
         break
 
+    capture.processCapture()
+
     # Check to see if we should press A (genome over, and it won't go to next genome),
     # or check to see if genome is dead to press A
     if capture.shouldPressA() or capture.isDead():

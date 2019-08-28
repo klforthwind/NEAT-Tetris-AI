@@ -12,7 +12,9 @@ class SwitchData:
         self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        self.grabbed, self.frame = self.cap.read()
         self.started = False
+        self.read_lock = threading.Lock()
 
         # Set image processing variables
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
@@ -20,7 +22,6 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10))
         self.__queueArr = np.zeros((17, 4))
         self.__holdArr = np.zeros((2, 4))
-        self.bestMoves = np.zeros((7))
         self.nodeNet = np.zeros((4))
 
     # Set a certain value on the capture
@@ -37,17 +38,17 @@ class SwitchData:
     # Update the capture thread
     def update(self):
         while self.started:
-            
-            # Read the capture card
-            _, frame = self.cap.read()
+            grabbed, frame = self.cap.read()
+            with self.read_lock:
+                self.grabbed = grabbed
+                self.frame = frame
 
-            # Show the capture card
-            cv2.imshow('Frame', frame)
-
-            # Process the board, hold, and queue
-            self.__makeBoard(frame)
-            self.__makeHold(frame)
-            self.__makeQueue(frame)
+    # Read locked thread
+    def read(self):
+        with self.read_lock:
+            frame = self.frame
+            grabbed = self.grabbed
+        return grabbed, frame
 
     # Stop the thread from running
     def stop(self):
@@ -57,6 +58,18 @@ class SwitchData:
 
 # --------------------------------------------------------------------
     
+    def processCapture(self):
+        # Read the capture card
+        _, frame = self.cap.read()
+
+        # Show the capture card
+        cv2.imshow('Frame', frame)
+
+        # Process the board, hold, and queue
+        self.__makeBoard(frame)
+        self.__makeHold(frame)
+        self.__makeQueue(frame)
+
     def __makeBoard(self, frame):
 
         # Make a mat that only shows the board
@@ -71,12 +84,12 @@ class SwitchData:
         # Attempt to make a less noisy mask
         boardMat = np.zeros((640, 320))
         #Run through all 200 grid tiles
-        tempArr = np.zeros((20,10))
+        self.__boardArr = np.zeros((20,10))
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
                 val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
-                tempArr[y][x] = val
+                self.__boardArr[y][x] = val
                 # Fill in the correct tiles
                 for m in range(32):
                     if val == 0:
@@ -88,9 +101,6 @@ class SwitchData:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
         # Show the board with opencv
         cv2.imshow('Board', boardMat)
-        self.__boardArr = tempArr
-        del boardMat
-        del tempArr
         del board
 
     def __makeHold(self, frame):
@@ -104,13 +114,11 @@ class SwitchData:
         hold = self.__mask(hold)
 
         # Check every hold tile to see if its filled
-        tempArr = np.zeros((2, 4))
+        self.__holdArr = np.zeros((2, 4))
         for y in range(2):
             for x in range(4):
-                tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
-        self.__holdArr = tempArr
+                self.__holdArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
         del hold
-        del tempArr
 
     def __makeQueue(self, frame):
         # Make a mat that only shows the queue
@@ -123,14 +131,14 @@ class SwitchData:
         queue = self.__mask(queue)
         
         queueMat = np.zeros((310, 65))
-        tempArr = np.zeros((17, 4))
+        self.__queueArr = np.zeros((17, 4))
         for i in range(17):
             # level = 0
             for j in range(4):
                 if (i + 1) % 3 == 0:
                     continue
                 val = 1 if queue[self.arr2[i] + 8][16 * j + 8] > 0 else 0
-                tempArr[i][j] = val
+                self.__queueArr[i][j] = val
                 for m in range(self.arr[i]):
                     if val == 0:
                         break
@@ -138,9 +146,6 @@ class SwitchData:
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
         
         cv2.imshow('Queue', queueMat)
-        self.__queueArr = tempArr
-        del tempArr
-        del queueMat
         del queue
 
     def __hls(self, mat):
@@ -235,12 +240,26 @@ class SwitchData:
                             arr[0] = int(x1)
                             arr[1] = int(r1)
                             arr[2] = int(left)
-                        del fit
-                        del newBoard2
-                    del b2
-                del newBoard   
-            del b1 
+            cv2.imshow('PredictiveAnalysis', self.expand(goodBoard))
         return arr
+    
+    def expand(self, board):
+        # Attempt to make a less noisy mask
+        boardMat = np.zeros((640, 320))
+        for y in range(20):
+            for x in range(10):
+                # Get correct value of the indexed tiles
+                val = self.__boardArr[y][x]
+                # Fill in the correct tiles
+                for m in range(32):
+                    if val == 0:
+                        break
+                    for n in range(32):
+                        boardMat[y * 32 + m][x * 32 + n] = 255
+                # Add dotted pattern
+                if x != 9 and y != 19:
+                    boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
+        return boardMat
 
     def getFitness(self, board, nodeNet):
         fitness = 0
@@ -295,16 +314,7 @@ class SwitchData:
 
     def getLowestBlocks(self, blockData, width):
         arr = np.zeros((int(width)))
-        lowest = 20
-        leftMost = 10
-        for i in range(len(blockData[0])):
-            if blockData[0][i] < lowest:
-                lowest = blockData[0][i]
-            if blockData[1][i] < leftMost:
-                leftMost = blockData[1][i]
-        for i in range(len(blockData[0])):
-            blockData[0][i] -= lowest
-            blockData[1][i] -= leftMost
+        blockData = self.pushTopLeft(blockData)
         for l in range(int(width)):
             low = 14
             for i in range(len(blockData[0])):
@@ -324,9 +334,9 @@ class SwitchData:
                 high = heights[x + col]
                 yOrigin = lowestBlocks[col]
         for i in range(len(b1[0])):
-            yAxis = int(b1[0][i] - yOrigin + high)
-            xAxis = int(x + b1[1][i])
-            board[yAxis][xAxis] = 1
+            yAxis = int(self.pushTopLeft(b1)[0][i] - yOrigin + high)
+            xAxis = int(x + self.pushTopLeft(b1)[1][i])
+            board[19 - yAxis][xAxis] = 1
         return board
 
     def getQueueBlocks(self):
