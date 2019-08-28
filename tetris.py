@@ -17,7 +17,7 @@ capture = SwitchData()
 capture.start()
 
 # Begin our population
-populationSize = 50
+populationSize = 26
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
@@ -53,15 +53,17 @@ while True:
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.25):
         t0 = time()
+
+        moveees = capture.getBestMoves(neat.getCurrentNodeNet())
         
         # Get the button array of recommended moves
-        btnArr = neat.processGenome()
+        btnArr = neat.processGenome(moveees)
 
         # Send the correct button inputs
         emulator.emulateTetris(btnArr)
 
         # Print the fitness
-        neat.printFitness(capture.getFitness(capture.getBoard(), neat.getCurrentNodeNet()))
+        neat.printFitness()
 
 # Stop the capture thread
 capture.stop()

@@ -40,12 +40,16 @@ class NEAT:
             self.genomes.append(temp)
             del temp
         self.generation = gen
-
-    def processGenome(self):
-        temp = self.genomes[self.currentGenome]
-        return temp.getButtons()
     
-    def printFitness(self, fitness):
+    def getCurrentNodeNet(self):
+        temp = self.genomes[self.currentGenome]
+        return temp.nodeNet
+
+    def processGenome(self, moves):
+        temp = self.genomes[self.currentGenome]
+        return temp.getButtons(moves)
+    
+    def printFitness(self):
         self.genomes[self.currentGenome].fitness += time() - self.t
         print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         self.t = time()

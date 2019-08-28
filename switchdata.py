@@ -167,40 +167,79 @@ class SwitchData:
             heights[x] = maxH
         return heights
 
+    def pushTopLeft(self, blockData):
+        left = 20
+        top = 20
+        for i in range(len(blockData[0])):
+            if blockData[1][i] < left:
+                left = blockData[1][i]
+            if blockData[0][i] < top:
+                top = blockData[0][i]
+        for i in range(len(blockData[0])):
+            blockData[0][i] -= top
+            blockData[1][i] -= left
+        return blockData
+
+    def leftMost(self, blockData):
+        left = 20
+        for i in range(len(blockData[0])):
+            if blockData[1][i] < left:
+                left = blockData[1][i]
+        return left 
+
+    def rotate(self, blockData):
+        yTemp = blockData[0]
+        blockData[0] = blockData[1]
+        for r in range(len(blockData[0])):
+            blockData[1][r] = 3 - yTemp[r]
+        return self.pushTopLeft(blockData)
+
+    def getWidth(self, blockData):
+        left = 20
+        right = 0
+        for i in range(len(blockData[1])):
+            if blockData[1][i] < left:
+                left = blockData[1][i]
+            if blockData[1][i] > right:
+                right = blockData[1][i]
+        return right - left + 1
+
     def getBestMoves(self, nodeNet):
-        data = self.read()
-        board = data[0]
-        hold = data[1]
-        queue = data[2]
+        board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
-        blocks = self.getQueueBlocks()
-        tuplew = self.getMovingBlock()
-        xx = tuplew[1]
-        yy = tuplew[2]
-        xChange = tuplew[3]
+        qBlocks = self.getQueueBlocks()
+        blockData = self.getMovingBlock()
+        left = self.leftMost(blockData)
+        goodBoard = np.copy(board)
         fitness = -1
         arr = np.zeros((8))
         for r1 in range(4):
-            b1 = tuplew[0]
-            b1 = self.rotate(b1, r1)
-            for x1 in range(10 - len(b1[0])):
-                newBoard = self.read()[0]
-                newBoard = self.getNewBoard(heights, x1, b1, newBoard)
+            b1 = blockData
+            for r in range(r1 + 1):
+                b1 = self.rotate(b1)
+            width = self.getWidth(b1)
+            for x1 in range(int(11 - width)):
+                copyBoard = np.copy(board)
+                newBoard = self.getNewBoard(heights, x1, b1, width, copyBoard)
                 for r2 in range(4):
-                    b2 = blocks[0]
-                    b2 = self.rotate(b1, r2)
-                    for x2 in range(10 - len(b2[0])):
-                        newBoard2 = self.getNewBoard(heights, x2, b2, newBoard)
+                    b2 = qBlocks[0]
+                    for r in range(r2 + 1):
+                        b2 = self.rotate(b2)
+                    width2 = self.getWidth(b2)
+                    for x2 in range(int(11 - width2)):
+                        newBoard2 = self.getNewBoard(heights, x2, b2, width2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit > fitness:
+                            goodBoard = newBoard2
                             fitness = fit
                             arr[0] = int(x1)
                             arr[1] = int(r1)
-                            arr[2] = int(x2)
-                            arr[3] = int(r2)
-                            arr[4] = int(xx)
-                            arr[5] = int(yy)
-                            arr[6] = int(xChange)    
+                            arr[2] = int(left)
+                        del fit
+                        del newBoard2
+                    del b2
+                del newBoard   
+            del b1 
         return arr
 
     def getFitness(self, board, nodeNet):
@@ -241,88 +280,54 @@ class SwitchData:
         return fitness
 
     def getMovingBlock(self):
-        c = np.zeros((4,6))
-        xx = -1
-        yy = -1
-        xChange = 0
-        for y in range(10):
-            for x in range(10):
-                if self.__boardArr[y][x] == 1:
-                    # If we discover our first filled block
-                    if xx == -1:
-                        xx = x
-                        yy = y
-                    # If we discover a block to the left of the first filled block
-                    if x - xx < xChange:
-                        xChange = x - xx
-                    if x - xx + 2 < 6 and y - yy < 4:
-                        c[y - yy][x - xx + 2] = 1
-        return (self.getGrid(c), xx, yy, xChange)
-    
-    def getGrid(self, g):
+        tempBoard = self.__boardArr
         xyVals = np.zeros((2,4))
         foundBlocks = 0
-        for y in range(4):
-            for x in range(6):
-                if g[y][x] == 1:
-                    xyVals[0][foundBlocks]=y
+        for y in range(15):
+            for x in range(10):
+                if tempBoard[y][x] == 1:
+                    xyVals[0][foundBlocks]=14 - y
                     xyVals[1][foundBlocks]=x
                     foundBlocks += 1
                 if foundBlocks == 3:
                     return xyVals
         return xyVals
 
-
-    def getNewBoard(self, heights, x, b1, board):
-        maxHeight = 0
-        for l in range(len(b1[0])):
-            if maxHeight < heights[x+l]:
-                maxHeight = heights[x+l]
-        for y in range(int(maxHeight + 1)):
-            if len(b1) == 4:
-                if self.checkVertical(b1, maxHeight - y, x):
-                    for j in range(len(b1)):
-                        for i in range(len(b1[j])):
-                            if b1[len(b1)-1-j][i] == 1:
-                                board[int(maxHeight - (y + j))][int(x + i)] = 1
-                    break
-            else:
-                if self.checkHorizontal(b1, maxHeight - y, x):
-                    for j in range(len(b1)):
-                        for i in range(len(b1[j])):
-                            if b1[len(b1) - 1-j][i] == 1:
-                                board[int(maxHeight - (y + j))][int(x + i)] = 1
-                    break
-        return board
+    def getLowestBlocks(self, blockData, width):
+        arr = np.zeros((int(width)))
+        lowest = 20
+        leftMost = 10
+        for i in range(len(blockData[0])):
+            if blockData[0][i] < lowest:
+                lowest = blockData[0][i]
+            if blockData[1][i] < leftMost:
+                leftMost = blockData[1][i]
+        for i in range(len(blockData[0])):
+            blockData[0][i] -= lowest
+            blockData[1][i] -= leftMost
+        for l in range(int(width)):
+            low = 14
+            for i in range(len(blockData[0])):
+                if blockData[1][i] == l:
+                    if blockData[0][i] < low:
+                        low = blockData[0][i]
+            arr[l] = low
+        return arr
     
-    def checkVertical(self, block, y, x):
-        for j in range(len(block)):
-            for i in range(len(block[j])):
-                if block[j][i] == 1 and self.getBoardPos(19 - (y + j), x + i) == 1:
-                    return False
-        for j in range(len(block)):
-            for i in range(len(block[j])):
-                if block[len(block[j])-1-j][i] == 1 and (y == 0 or self.getBoardPos(19 - (y + j) + 1, x + i) == 1):
-                    return True
-        return False
-
-
-    def checkHorizontal(self, block, y, x):
-        for j in range(len(block)):
-            for i in range(4):
-                if block[j][i] == 1 and self.__boardArr[y + j][x + i] == 1:
-                    return False
-        for j in range(len(block)):
-            for i in range(4):
-                if block[len(block) - 1 -j][i] == 1 and (y == 0 or self.__boardArr[19 - (y + j) + 1][x + i] == 1):
-                    return True
-        return False
-
-    def rotate(self, block, counterRotations):
-        if len(block) > 0:
-            return np.rot90(block, counterRotations)
-        else:
-            return block
+    def getNewBoard(self, heights, x, b1, width, board):
+        lowestBlocks = self.getLowestBlocks(b1, width)
+        high = 0
+        yOrigin = 0
+        for col in range(int(width)):
+            val = heights[x + col] + lowestBlocks[col]
+            if val > high:
+                high = heights[x + col]
+                yOrigin = lowestBlocks[col]
+        for i in range(len(b1[0])):
+            yAxis = int(b1[0][i] - yOrigin + high)
+            xAxis = int(x + b1[1][i])
+            board[yAxis][xAxis] = 1
+        return board
 
     def getQueueBlocks(self):
         row = 0
