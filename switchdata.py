@@ -219,7 +219,6 @@ class SwitchData:
         movingBlock = self.getMovingBlock()
         left = self.leftMost(movingBlock)
         movingBlock = self.pushTopLeft(movingBlock)
-        goodBoard = np.copy(board)
         fitness = -1
         arr = np.zeros((3))
         for r1 in range(4):
@@ -227,8 +226,6 @@ class SwitchData:
             for r in range(r1 + 1):
                 b1 = self.rotate(b1)
             width = self.getWidth(b1)
-            if width > 4:
-                continue
             for x1 in range(int(11 - width)):
                 copyBoard = np.copy(board)
                 newBoard = self.getNewBoard(heights, x1, b1, width, copyBoard)
@@ -237,13 +234,10 @@ class SwitchData:
                     for r in range(r2 + 1):
                         b2 = self.rotate(b2)
                     width2 = self.getWidth(b2)
-                    if width2 > 4:
-                        continue
                     for x2 in range(int(11 - width2)):
                         newBoard2 = self.getNewBoard(heights, x2, b2, width2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit > fitness:
-                            goodBoard = newBoard2
                             fitness = fit
                             arr[0] = int(x1)
                             arr[1] = int(r1)
@@ -319,7 +313,8 @@ class SwitchData:
             arr[l] = low
         return (arr, high)
     
-    def getNewBoard(self, heights, x, b1, width, board):
+    def getNewBoard(self, heights, x, b1, width, b):
+        board = np.copy(b)
         lowTuple = self.getLowestBlocks(b1, width)
         lowestBlocks = lowTuple[0]
         highBoi = lowTuple[1]
@@ -336,7 +331,7 @@ class SwitchData:
             yAxis = int(self.pushTopLeft(b1)[0][i] - yOrigin + height)
             xAxis = int(x + self.pushTopLeft(b1)[1][i])
             board[19 - yAxis][xAxis] = 1
-        return board
+        return np.copy(board)
 
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self):

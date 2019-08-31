@@ -53,7 +53,7 @@ while True:
         neat.loop()
 
     # Attempt a command if it has been X amount of seconds since the last command
-    if (time()-t0 > 0.25):
+    if (time()-t0 > 0.5):
         t0 = time()
 
         moves = capture.getBestMoves(neat.getCurrentNodeNet())
@@ -66,6 +66,8 @@ while True:
 
         # Print the fitness
         neat.printFitness()
+    else:
+        emulator.no_inputt()
 
 # Stop the capture thread
 capture.stop()

@@ -96,6 +96,10 @@ class Emulator:
             # print(cmd)
             self.send_input(cmd)
 
+    def no_inputt(self):
+        self.send_input(DPAD_CENTER)
+        self.send_input(NO_INPUT)
+
     def emulateTetris(self, arr):
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)

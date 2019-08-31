@@ -28,6 +28,7 @@ class Genome:
     # Get all buttons and whether they should be pushed
     def getButtons(self, mList):
         arr = np.zeros(self.outputNodes)
+        print(mList)
         xPos = mList[2]
         if mList[1] != 0:
             arr[6] = 1
