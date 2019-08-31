@@ -22,9 +22,6 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10))
         self.__queueArr = np.zeros((17, 4))
         self.__holdArr = np.zeros((2, 4))
-        self.__lastArr = np.zeros((18, 10))
-        self.__lastQ = np.zeros((17, 4)) 
-        self.__qNum = 24
         self.nodeNet = np.zeros((4))
 
     # Set a certain value on the capture
@@ -149,11 +146,6 @@ class SwitchData:
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
         
         cv2.imshow('Queue', queueMat)
-        if not np.array_equal(self.__queueArr, self.__lastQ) and np.sum(self.__queueArr) == self.__qNum:
-            self.__lastQ = self.__queueArr
-            for j in range(18):
-                for i in range(10):
-                    self.__lastArr[j][i] = self.__boardArr[j + 2][i]
         del queue
 
     def __hls(self, mat):
@@ -226,6 +218,7 @@ class SwitchData:
         qBlocks = self.getQueueBlocks()
         movingBlock = self.getMovingBlock()
         left = self.leftMost(movingBlock)
+        movingBlock = self.pushTopLeft(movingBlock)
         goodBoard = np.copy(board)
         fitness = -1
         arr = np.zeros((3))
@@ -240,7 +233,7 @@ class SwitchData:
                 copyBoard = np.copy(board)
                 newBoard = self.getNewBoard(heights, x1, b1, width, copyBoard)
                 for r2 in range(4):
-                    b2 = qBlocks[0]
+                    b2 = self.pushTopLeft(qBlocks[0])
                     for r in range(r2 + 1):
                         b2 = self.rotate(b2)
                     width2 = self.getWidth(b2)
@@ -255,27 +248,8 @@ class SwitchData:
                             arr[0] = int(x1)
                             arr[1] = int(r1)
                             arr[2] = int(left)
-            cv2.imshow('PredictiveAnalysis', self.expand(goodBoard))
         return arr
     
-    def expand(self, board):
-        # Attempt to make a less noisy mask
-        boardMat = np.zeros((640, 320))
-        for y in range(20):
-            for x in range(10):
-                # Get correct value of the indexed tiles
-                val = self.__boardArr[y][x]
-                # Fill in the correct tiles
-                for m in range(32):
-                    if val == 0:
-                        break
-                    for n in range(32):
-                        boardMat[y * 32 + m][x * 32 + n] = 255
-                # Add dotted pattern
-                if x != 9 and y != 19:
-                    boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
-        return boardMat
-
     def getFitness(self, board, nodeNet):
         fitness = 0
         heightTotal = 0
@@ -315,49 +289,51 @@ class SwitchData:
 
     # Returns a 2x4 array containing data on the necessary block [yCoords][xCoords], inaccurate at the moment
     def getMovingBlock(self):
+        # Make a copy of the tetris board
         board = self.__boardArr
         xyVals = np.zeros((2,4))
         foundBlocks = 0
         for y in range(15):
             for x in range(10):
-                if board[y][x] == 1 and (y < 2 or self.__lastArr[y-2][x] == 0):
-                    xyVals[0][foundBlocks]=14 - y
-                    xyVals[1][foundBlocks]=x
+                if board[y][x] == 1:
+                    # Save the coords of the filled block as [distance from bottom] and [x]
+                    xyVals[0][foundBlocks] = 19 - y
+                    xyVals[1][foundBlocks] = x
                     foundBlocks += 1
-                if foundBlocks == 3:
+                if foundBlocks == 4:
                     return xyVals
         return xyVals
 
     def getLowestBlocks(self, blockData, width):
         arr = np.zeros((int(width)))
+        high = 0
         blockData = self.pushTopLeft(blockData)
         for l in range(int(width)):
-            low = 14
+            low = 20
             for i in range(len(blockData[0])):
                 if blockData[1][i] == l:
                     if blockData[0][i] < low:
                         low = blockData[0][i]
+                        if low > high:
+                            high = low
             arr[l] = low
-        return arr
+        return (arr, high)
     
     def getNewBoard(self, heights, x, b1, width, board):
-        lowestBlocks = self.getLowestBlocks(b1, width)
+        lowTuple = self.getLowestBlocks(b1, width)
+        lowestBlocks = lowTuple[0]
+        highBoi = lowTuple[1]
         high = 0
+        height = 0
         yOrigin = 0
         for col in range(int(width)):
-            val = heights[x + col] + lowestBlocks[col]
+            val = heights[x + col] + (highBoi - lowestBlocks[col])
             if val > high:
-                high = heights[x + col]
+                high = val
+                height = heights[x + col]
                 yOrigin = lowestBlocks[col]
         for i in range(len(b1[0])):
-            print(x)
-            print(b1)
-            print(width)
-            print(heights)
-            print(self.pushTopLeft(b1)[0][i])
-            print(yOrigin)
-            print(high)
-            yAxis = int(self.pushTopLeft(b1)[0][i] - yOrigin + high)
+            yAxis = int(self.pushTopLeft(b1)[0][i] - yOrigin + height)
             xAxis = int(x + self.pushTopLeft(b1)[1][i])
             board[19 - yAxis][xAxis] = 1
         return board
