@@ -22,6 +22,9 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10))
         self.__queueArr = np.zeros((17, 4))
         self.__holdArr = np.zeros((2, 4))
+        self.__lastArr = np.zeros((18, 10))
+        self.__lastQ = np.zeros((17, 4)) 
+        self.__qNum = 24
         self.nodeNet = np.zeros((4))
 
     # Set a certain value on the capture
@@ -146,6 +149,11 @@ class SwitchData:
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
         
         cv2.imshow('Queue', queueMat)
+        if not np.array_equal(self.__queueArr, self.__lastQ) and np.sum(self.__queueArr) == self.__qNum:
+            self.__lastQ = self.__queueArr
+            for j in range(18):
+                for i in range(10):
+                    self.__lastArr[j][i] = self.__boardArr[j + 2][i]
         del queue
 
     def __hls(self, mat):
@@ -155,14 +163,15 @@ class SwitchData:
         return cv2.inRange(mat, np.array([0,54,0]), np.array([255,255,255]))
 
 # --------------------------------------------------------------------
-
+    
+    # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
         heights = np.zeros((10))
         # Iterate over all of the columns
         for x in range(len(heights)):
             maxH = 0
-            # Iterate over the bottom 15 rows
-            for y in range(15):
+            # Iterate over the bottom 14 rows
+            for y in range(14):
                 # Get the correct index for the board array
                 h = 19 - y
                 if board[h][x] == 1:
@@ -172,18 +181,20 @@ class SwitchData:
             heights[x] = maxH
         return heights
 
+    # Get x and y values closest to 0 without breaking formation
     def pushTopLeft(self, blockData):
-        left = 20
-        top = 20
-        for i in range(len(blockData[0])):
-            if blockData[1][i] < left:
-                left = blockData[1][i]
-            if blockData[0][i] < top:
-                top = blockData[0][i]
-        for i in range(len(blockData[0])):
-            blockData[0][i] -= top
-            blockData[1][i] -= left
-        return blockData
+        data = np.copy(blockData)
+        x = 20
+        y = 20
+        for i in range(len(data[0])):
+            if data[1][i] < x:
+                x = data[1][i]
+            if data[0][i] < y:
+                y = data[0][i]
+        for i in range(len(data[0])):
+            data[0][i] -= y
+            data[1][i] -= x
+        return data
 
     def leftMost(self, blockData):
         left = 20
@@ -207,22 +218,24 @@ class SwitchData:
                 left = blockData[1][i]
             if blockData[1][i] > right:
                 right = blockData[1][i]
-        return right - left + 1
+        return (right - left + 1)
 
     def getBestMoves(self, nodeNet):
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
         qBlocks = self.getQueueBlocks()
-        blockData = self.getMovingBlock()
-        left = self.leftMost(blockData)
+        movingBlock = self.getMovingBlock()
+        left = self.leftMost(movingBlock)
         goodBoard = np.copy(board)
         fitness = -1
-        arr = np.zeros((8))
+        arr = np.zeros((3))
         for r1 in range(4):
-            b1 = blockData
+            b1 = movingBlock
             for r in range(r1 + 1):
                 b1 = self.rotate(b1)
             width = self.getWidth(b1)
+            if width > 4:
+                continue
             for x1 in range(int(11 - width)):
                 copyBoard = np.copy(board)
                 newBoard = self.getNewBoard(heights, x1, b1, width, copyBoard)
@@ -231,6 +244,8 @@ class SwitchData:
                     for r in range(r2 + 1):
                         b2 = self.rotate(b2)
                     width2 = self.getWidth(b2)
+                    if width2 > 4:
+                        continue
                     for x2 in range(int(11 - width2)):
                         newBoard2 = self.getNewBoard(heights, x2, b2, width2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
@@ -298,13 +313,14 @@ class SwitchData:
 
         return fitness
 
+    # Returns a 2x4 array containing data on the necessary block [yCoords][xCoords], inaccurate at the moment
     def getMovingBlock(self):
-        tempBoard = self.__boardArr
+        board = self.__boardArr
         xyVals = np.zeros((2,4))
         foundBlocks = 0
         for y in range(15):
             for x in range(10):
-                if tempBoard[y][x] == 1:
+                if board[y][x] == 1 and (y < 2 or self.__lastArr[y-2][x] == 0):
                     xyVals[0][foundBlocks]=14 - y
                     xyVals[1][foundBlocks]=x
                     foundBlocks += 1
@@ -334,11 +350,19 @@ class SwitchData:
                 high = heights[x + col]
                 yOrigin = lowestBlocks[col]
         for i in range(len(b1[0])):
+            print(x)
+            print(b1)
+            print(width)
+            print(heights)
+            print(self.pushTopLeft(b1)[0][i])
+            print(yOrigin)
+            print(high)
             yAxis = int(self.pushTopLeft(b1)[0][i] - yOrigin + high)
             xAxis = int(x + self.pushTopLeft(b1)[1][i])
             board[19 - yAxis][xAxis] = 1
         return board
 
+    # Returns a list of blocks in the Queue
     def getQueueBlocks(self):
         row = 0
         blocks = np.zeros((6, 2, 4))
@@ -348,7 +372,7 @@ class SwitchData:
                     break
                 queueNum =int((row - (row % 2)) / 2)
                 rowOfBlock = int(row % 2)
-                blocks[queueNum][rowOfBlock][j] = self.getQueuePos(i, j)
+                blocks[queueNum][rowOfBlock][j] = self.__queueArr[i, j]
             if (i + 1) % 3 != 0:
                 row += 1
         return blocks
@@ -358,25 +382,13 @@ class SwitchData:
     def isDead(self):
         isDead = True
         for x in range(10):
-            if self.getBoardPos(5, x) == 0:
+            if self.__boardArr[5][int(x)] == 0:
                 isDead = False
                 break
-            if self.getBoardPos(10, x) == 0:
+            if self.__boardArr[10][int(x)] == 0:
                 isDead = False
                 break
         return isDead   
-
-    def getBoard(self):
-        return self.__boardArr            
-
-    def getBoardPos(self, y, x):
-        return self.__boardArr[int(y)][int(x)]
-
-    def getQueuePos(self, y, x):
-        return self.__queueArr[y][x]
-
-    def getHoldPos(self, y, x):
-        return self.__holdArr[y][x]
     
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')

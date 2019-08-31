@@ -7,7 +7,7 @@ from neat import NEAT
 from time import time
 
 # Controlled randomness, doesn't matter that much with Tetris tho
-rng.seed(420)
+rng.seed(666)
 
 # Get a relative point of time
 t0 = time()
@@ -17,7 +17,7 @@ capture = SwitchData()
 capture.start()
 
 # Begin our population
-populationSize = 26
+populationSize = 4
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
@@ -56,10 +56,10 @@ while True:
     if (time()-t0 > 0.25):
         t0 = time()
 
-        moveees = capture.getBestMoves(neat.getCurrentNodeNet())
+        moves = capture.getBestMoves(neat.getCurrentNodeNet())
         
         # Get the button array of recommended moves
-        btnArr = neat.processGenome(moveees)
+        btnArr = neat.processGenome(moves)
 
         # Send the correct button inputs
         emulator.emulateTetris(btnArr)
