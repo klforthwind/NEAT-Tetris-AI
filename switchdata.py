@@ -22,11 +22,6 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10))
         self.__queueArr = np.zeros((17, 4))
         self.__holdArr = np.zeros((2, 4))
-        self.nodeNet = np.zeros((4))
-
-    # Set a certain value on the capture
-    def set(self, var1, var2):
-        self.cap.set(var1, var2)
 
     # Start the capture thread
     def start(self):
@@ -66,30 +61,22 @@ class SwitchData:
         cv2.imshow('Frame', frame)
 
         # Process the board, hold, and queue
-        self.__makeBoard(frame)
-        self.__makeHold(frame)
-        self.__makeQueue(frame)
+        self.__makeBoard(frame[40:680, 480:800])
+        self.__makeHold(frame[80:120, 396:468])
+        self.__makeQueue(frame[80:390, 815:880])
 
     def __makeBoard(self, frame):
-
-        # Make a mat that only shows the board
-        board = frame[40:680, 480:800]
-
-        # Convert the board to Hue Luminance and Saturation Mode
-        board = self.__hls(board)
-
-        # Only get the luminant parts of the board
-        board = self.__mask(board)
+        board = self.__handleCanvas(frame)
 
         # Attempt to make a less noisy mask
         boardMat = np.zeros((640, 320))
         #Run through all 200 grid tiles
-        self.__boardArr = np.zeros((20,10))
+        tempArr = np.zeros((20,10))
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
                 val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
-                self.__boardArr[y][x] = val
+                tempArr[y][x] = val
                 # Fill in the correct tiles
                 for m in range(32):
                     if val == 0:
@@ -100,74 +87,56 @@ class SwitchData:
                 if x != 9 and y != 19:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
         # Show the board with opencv
+        self.__boardArr = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
+        del tempArr
         del board
 
     def __makeHold(self, frame):
-        # Make a mat that only shows the hold
-        hold = frame[80:120, 396:468]
-
-        # Convert the hold to Hue Luminance and Saturation Mode
-        hold = self.__hls(hold)
-
-        # Only get the luminant parts of the board
-        hold = self.__mask(hold)
+        hold = self.__handleCanvas(frame)
 
         # Check every hold tile to see if its filled
-        self.__holdArr = np.zeros((2, 4))
+        tempArr = np.zeros((2, 4))
         for y in range(2):
             for x in range(4):
-                self.__holdArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
+                tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
+        self.__holdArr = np.copy(tempArr)
+        del tempArr
         del hold
 
     def __makeQueue(self, frame):
-        # Make a mat that only shows the queue
-        queue = frame[80:390, 815:880]
-
-        # Convert the queue to Hue Luminance and Saturation Mode
-        queue = self.__hls(queue)
-
-        # Only get the luminant parts of the board
-        queue = self.__mask(queue)
+        queue = self.__handleCanvas(frame)
         
         queueMat = np.zeros((310, 65))
-        self.__queueArr = np.zeros((17, 4))
+        tempArr = np.zeros((17, 4))
         for i in range(17):
             # level = 0
             for j in range(4):
                 if (i + 1) % 3 == 0:
                     continue
                 val = 1 if queue[self.arr2[i] + 8][16 * j + 8] > 0 else 0
-                self.__queueArr[i][j] = val
+                tempArr[i][j] = val
                 for m in range(self.arr[i]):
                     if val == 0:
                         break
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
-        
+        self.__queueArr = np.copy(tempArr)
         cv2.imshow('Queue', queueMat)
+        del tempArr
         del queue
 
-    def __hls(self, mat):
-        return cv2.cvtColor(mat, cv2.COLOR_BGR2HLS)
+    def __handleCanvas(self, canvas):
+        # Make a mat that only shows the canvas
+        tempCanvas = canvas
 
-    def __mask(self, mat):
-        return cv2.inRange(mat, np.array([0,54,0]), np.array([255,255,255]))
+        # Convert the queue to Hue Luminance and Saturation Mode
+        tempCanvas = cv2.cvtColor(tempCanvas, cv2.COLOR_BGR2HLS)
+
+        # Only get the luminant parts of the board
+        return cv2.inRange(tempCanvas, np.array([0,54,0]), np.array([255,255,255]))
 
 # --------------------------------------------------------------------
-            
-    def didBlockChange(self, captura):
-        qChange = 0
-        for i in range(17):
-            for j in range(4):
-                if (i + 1) % 3 == 0:
-                    continue
-                if captura.getQueuePos(i, j) != self.lastQueue[i][j]:
-                    self.lastQueue[i][j] = captura.getQueuePos(i, j)
-                    qChange += 1
-        tmp = qChange > 10
-        del qChange
-        return tmp
 
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
