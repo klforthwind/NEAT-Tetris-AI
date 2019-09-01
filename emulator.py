@@ -96,7 +96,7 @@ class Emulator:
             # print(cmd)
             self.send_input(cmd)
 
-    def no_inputt(self):
+    def stop_input(self):
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
 

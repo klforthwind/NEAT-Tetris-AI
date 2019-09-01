@@ -7,7 +7,7 @@ from neat import NEAT
 from time import time
 
 # Controlled randomness, doesn't matter that much with Tetris tho
-rng.seed(666)
+rng.seed(420)
 
 # Get a relative point of time
 t0 = time()
@@ -37,7 +37,7 @@ while True:
     
     # Check to see if we should end the program (if we pressed q)
     if (capture.shouldQuit()):
-        emulator.send_input()
+        emulator.stop_input()
         break
 
     capture.processCapture()
@@ -59,7 +59,7 @@ while True:
         moves = capture.getBestMoves(neat.getCurrentNodeNet())
         
         # Get the button array of recommended moves
-        btnArr = neat.processGenome(moves)
+        btnArr = neat.getGenomeActions(moves)
 
         # Send the correct button inputs
         emulator.emulateTetris(btnArr)
@@ -67,7 +67,7 @@ while True:
         # Print the fitness
         neat.printFitness()
     else:
-        emulator.no_inputt()
+        emulator.stop_input()
 
 # Stop the capture thread
 capture.stop()

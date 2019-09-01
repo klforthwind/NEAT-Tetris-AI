@@ -11,7 +11,6 @@ class NEAT:
         self.generation = 0
         self.genomes = []
         self.currentGenome = 0
-        self.lastQueue = np.zeros((17, 4))
         self.t = time()
         
     # Create the initial genomes
@@ -21,6 +20,7 @@ class NEAT:
             temp.mutate()
             self.genomes.append(temp)
             del temp
+        
         #Let's save some stats
         for g in range(len(self.genomes)):
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
@@ -42,30 +42,15 @@ class NEAT:
         self.generation = gen
     
     def getCurrentNodeNet(self):
-        temp = self.genomes[self.currentGenome]
-        return temp.nodeNet
+        return self.genomes[self.currentGenome].nodeNet
 
-    def processGenome(self, moves):
-        temp = self.genomes[self.currentGenome]
-        return temp.getButtons(moves)
+    def getGenomeActions(self, moves):
+        return self.genomes[self.currentGenome].getButtons(moves)
     
     def printFitness(self):
         self.genomes[self.currentGenome].fitness += time() - self.t
         print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
         self.t = time()
-        
-    def didBlockChange(self, captura):
-        qChange = 0
-        for i in range(17):
-            for j in range(4):
-                if (i + 1) % 3 == 0:
-                    continue
-                if captura.getQueuePos(i, j) != self.lastQueue[i][j]:
-                    self.lastQueue[i][j] = captura.getQueuePos(i, j)
-                    qChange += 1
-        tmp = qChange > 10
-        del qChange
-        return tmp
 
     def loop(self):
         self.currentGenome += 1
@@ -99,6 +84,7 @@ class NEAT:
         for g in range(len(self.genomes)):
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
             np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")
+            del txt
 
 
     # Makes a child genome from parent genomes + random mutations
