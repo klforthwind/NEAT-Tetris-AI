@@ -20,7 +20,6 @@ class NEAT:
             temp.mutate()
             self.genomes.append(temp)
             del temp
-        
         #Let's save some stats
         for g in range(len(self.genomes)):
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
@@ -67,7 +66,7 @@ class NEAT:
         print("Generation ", self.generation ," evaluated.")
         self.currentGenome = 0
         self.generation += 1
-    
+
         while len(self.genomes) > self.popSize / 2:
             self.genomes.pop(len(self.genomes)-1)
             
@@ -76,7 +75,7 @@ class NEAT:
         children.append(self.genomes[0])
         for c in range(self.popSize - 1):
             children.append(self.makeChild(self.randChoice(),self.randChoice()))
-        
+
         self.genomes = children
         del children
 
@@ -85,7 +84,6 @@ class NEAT:
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
             np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")
             del txt
-
 
     # Makes a child genome from parent genomes + random mutations
     def makeChild(self, mom, dad):
@@ -102,5 +100,4 @@ class NEAT:
     # Returns a number between min and max that is more likely to be skewed towards min
     def randWeightedNumBetween(self, min, max):
         return np.floor(np.power(random(), 2) * (max - min + 1) + min)
-
     
