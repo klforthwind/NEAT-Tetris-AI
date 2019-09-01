@@ -53,7 +53,7 @@ while True:
         neat.loop()
 
     # Attempt a command if it has been X amount of seconds since the last command
-    if (time()-t0 > 0.5):
+    if (time()-t0 > 0.25):
         t0 = time()
 
         moves = capture.getBestMoves(neat.getCurrentNodeNet())

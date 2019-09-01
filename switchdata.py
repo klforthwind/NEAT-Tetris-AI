@@ -222,26 +222,31 @@ class SwitchData:
         fitness = -1
         arr = np.zeros((3))
         for r1 in range(4):
-            b1 = movingBlock
+            b1 = np.copy(movingBlock)
             for r in range(r1 + 1):
                 b1 = self.rotate(b1)
             width = self.getWidth(b1)
             for x1 in range(int(11 - width)):
                 copyBoard = np.copy(board)
-                newBoard = self.getNewBoard(heights, x1, b1, width, copyBoard)
+                newBoard = np.copy(self.getNewBoard(heights, x1, b1, width, copyBoard))
                 for r2 in range(4):
-                    b2 = self.pushTopLeft(qBlocks[0])
+                    b2 = np.copy(self.pushTopLeft(qBlocks[0]))
                     for r in range(r2 + 1):
                         b2 = self.rotate(b2)
                     width2 = self.getWidth(b2)
                     for x2 in range(int(11 - width2)):
-                        newBoard2 = self.getNewBoard(heights, x2, b2, width2, newBoard)
+                        newBoard2 = np.copy(self.getNewBoard(heights, x2, b2, width2, newBoard))
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit > fitness:
                             fitness = fit
                             arr[0] = int(x1)
                             arr[1] = int(r1)
                             arr[2] = int(left)
+                        del newBoard2
+                    del b2
+                del newBoard
+                del copyBoard
+            del b1
         return arr
     
     def getFitness(self, board, nodeNet):
