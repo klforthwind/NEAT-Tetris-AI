@@ -227,37 +227,25 @@ class SwitchData:
     
     def getFitness(self, board, nodeNet):
         fitness = 0
-        heightTotal = 0
-        holes = 0
-        bump = 0
         heights = self.getHeights(board)
-        for i in range(len(heights)):
-            # Aggregate Height
-            heightTotal += heights[i]
 
-            # Holes
-            for j in range(int(heights[i])):
-                if board[19-j][i] == 0:
-                    holes += 1
-            
-            #Bumpiness
-            if len(heights) > i + 2:
-                bump += abs(heights[i] - heights[i + 1])
+        # Aggregate Height
+        heightTotal = np.sum(heights)
+
+        # Holes (not 100% correct, but will work)
+        holes = heightTotal - np.sum(board)
+
+        bump = 0
+        # Bumpiness
+        for i in range(len(heights)-1):
+            bump += abs(heights[i] - heights[i + 1])
 
         fitness += nodeNet[0] * heightTotal
         fitness += nodeNet[1] * holes
         fitness += nodeNet[2] * bump
 
         # Complete Lines
-        lines = 0
-        for y in range(10):
-            c = True
-            for x in range(10):
-                if board[19-y][x] == 0:
-                    c = False
-                    break
-            if c:
-                lines += 1 
+        lines = np.sum(np.amin(board, axis=1))
         fitness += nodeNet[3] * lines
 
         return fitness
