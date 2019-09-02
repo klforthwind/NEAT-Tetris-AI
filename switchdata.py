@@ -159,9 +159,8 @@ class SwitchData:
     def zeroBlock(self, blockData):
         data = np.copy(blockData)
         lows = np.amin(data, axis=1)
-        for i in range(len(data[0])):
-            data[0][i] -= lows[0]
-            data[1][i] -= lows[1]
+        data[0] -= lows[0]
+        data[1] -= lows[1]
         return data
 
     def leftMost(self, blockData):
