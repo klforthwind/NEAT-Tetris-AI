@@ -192,14 +192,7 @@ class SwitchData:
         return self.zeroBlock(blockData)
 
     def getWidth(self, blockData):
-        left = 20
-        right = 0
-        for i in range(len(blockData[1])):
-            if blockData[1][i] < left:
-                left = blockData[1][i]
-            if blockData[1][i] > right:
-                right = blockData[1][i]
-        return (right - left + 1)
+        return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
 
     def getBestMoves(self, nodeNet):
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
