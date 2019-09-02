@@ -72,7 +72,7 @@ class SwitchData:
         self.printTime()
         # Show the capture card
         cv2.imshow('Frame', frame)
-        
+        print("Frmae awdojnai")
         self.printTime()
         # Process the board, hold, and queue
         self.__makeBoard(frame[40:680, 480:800])
@@ -80,6 +80,7 @@ class SwitchData:
         self.__makeHold(frame[80:120, 396:468])
         self.printTime()
         self.__makeQueue(frame[80:390, 815:880])
+        print("End of QUeuee")
         self.printTime()
 
     def __makeBoard(self, frame):
@@ -184,12 +185,13 @@ class SwitchData:
     def leftMost(self, blockData):
         return np.amin(blockData[1])
 
-    def rotate(self, blockData):
-        yTemp = blockData[0]
-        blockData[0] = blockData[1]
-        for r in range(len(blockData[0])):
-            blockData[1][r] = 3 - yTemp[r]
-        return self.zeroBlock(blockData)
+    def rotate(self, blockData, rot):
+        for r in range(rot):
+            yTemp = blockData[0]
+            blockData[0] = blockData[1]
+            for r in range(len(blockData[0])):
+                blockData[1][r] = 3 - yTemp[r]
+        return self.zeroBlock(blockData), self.getWidth(blockData)
 
     def getWidth(self, blockData):
         return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
@@ -207,42 +209,37 @@ class SwitchData:
                         break
         return newData
 
+# --------------------------------------------------------------------
+
     def getBestMoves(self, nodeNet):
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.getMovingBlock()
-        left = self.leftMost(movingBlock)
-        movingBlock = self.zeroBlock(movingBlock)
+        movingBlock = self.zeroBlock(self.getMovingBlock())
         fitness = -1
-        arr = np.zeros((3))
+        arr = np.zeros((6))
         for r1 in range(4):
-            b1 = np.copy(movingBlock)
-            for r in range(r1 + 1):
-                b1 = self.rotate(b1)
-            width = self.getWidth(b1)
+            b1, width = self.rotate(np.copy(movingBlock), r1)
             for x1 in range(int(11 - width)):
-                copyBoard = np.copy(board)
-                newBoard = np.copy(self.getNewBoard(heights, x1, b1, width, copyBoard))
+                newBoard = self.getNewBoard(heights, x1, b1, width, board)
                 for r2 in range(4):
-                    b2 = np.copy(self.analyzeQBlock(qBlocks[0]))
-                    for r in range(r2 + 1):
-                        b2 = self.rotate(b2)
-                    width2 = self.getWidth(b2)
+                    b2, width2 = self.rotate(np.copy(self.analyzeQBlock(qBlocks[0])), r2)
                     for x2 in range(int(11 - width2)):
-                        newBoard2 = np.copy(self.getNewBoard(heights, x2, b2, width2, newBoard))
+                        newBoard2 = self.getNewBoard(heights, x2, b2, width2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit > fitness:
                             fitness = fit
                             arr[0] = int(x1)
                             arr[1] = int(r1)
-                            arr[2] = int(left)
+                            arr[2] = int(self.leftMost(movingBlock))
                         del newBoard2
                     del b2
                 del newBoard
                 del copyBoard
             del b1
         return arr
+    
+# --------------------------------------------------------------------
     
     def getFitness(self, board, nodeNet):
         fitness = 0
@@ -298,6 +295,8 @@ class SwitchData:
                         low = blockData[0][i]
             arr[l] = low
         return (arr, high)
+
+# --------------------------------------------------------------------
     
     def getNewBoard(self, heights, x, b1, width, b):
         board = np.copy(b)
@@ -318,6 +317,8 @@ class SwitchData:
             xAxis = int(x + self.zeroBlock(b1)[1][i])
             board[19 - yAxis][xAxis] = 1
         return np.copy(board)
+
+# --------------------------------------------------------------------
 
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self):
