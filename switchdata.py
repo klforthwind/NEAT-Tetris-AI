@@ -193,6 +193,19 @@ class SwitchData:
 
     def getWidth(self, blockData):
         return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
+    
+    def analyzeQBlock(self, qBlock):
+        newData = np.zeros((2, 4))
+        foundBlocks = 0
+        for j in range(2):
+            for i in range(4):
+                if qBlock[j][i] == 1:
+                    newData[0][foundBlocks] = 1 - j
+                    newData[1][foundBlocks] = i
+
+                if foundBlocks == 4:
+                        break
+        return newData
 
     def getBestMoves(self, nodeNet):
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
@@ -212,7 +225,7 @@ class SwitchData:
                 copyBoard = np.copy(board)
                 newBoard = np.copy(self.getNewBoard(heights, x1, b1, width, copyBoard))
                 for r2 in range(4):
-                    b2 = np.copy(self.zeroBlock(qBlocks[0]))
+                    b2 = np.copy(self.analyzeQBlock(qBlocks[0]))
                     for r in range(r2 + 1):
                         b2 = self.rotate(b2)
                     width2 = self.getWidth(b2)
