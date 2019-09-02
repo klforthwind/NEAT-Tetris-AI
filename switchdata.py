@@ -58,7 +58,7 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def printTime(self):
-        print(self.debug)
+        print(time() - self.debug)
         self.debug = time()
 
 # --------------------------------------------------------------------
@@ -235,7 +235,6 @@ class SwitchData:
                         del newBoard2
                     del b2
                 del newBoard
-                del copyBoard
             del b1
         return arr
     
