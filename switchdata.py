@@ -280,19 +280,6 @@ class SwitchData:
                     return xyVals
         return xyVals
 
-    def didBlockChange(self, captura):
-        qChange = 0
-        for i in range(17):
-            for j in range(4):
-                if (i + 1) % 3 == 0:
-                    continue
-                if captura.getQueuePos(i, j) != self.lastQueue[i][j]:
-                    self.lastQueue[i][j] = captura.getQueuePos(i, j)
-                    qChange += 1
-        tmp = qChange > 10
-        del qChange
-        return tmp
-
     def getLowestBlocks(self, blockData, width):
         arr = np.zeros((int(width)))
         blockData = self.zeroBlock(blockData)
