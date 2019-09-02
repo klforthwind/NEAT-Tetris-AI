@@ -299,25 +299,25 @@ class SwitchData:
             arr[l] = low
         return (arr, high)
     
-    # def getNewBoard(self, heights, x, b1, width, b):
-    #     board = np.copy(b)
-    #     lowTuple = self.getLowestBlocks(b1, width)
-    #     lowestBlocks = lowTuple[0]
-    #     highBoi = lowTuple[1]
-    #     high = 0
-    #     height = 0
-    #     yOrigin = 0
-    #     for col in range(int(width)):
-    #         val = heights[x + col] + (highBoi - lowestBlocks[col])
-    #         if val > high:
-    #             high = val
-    #             height = heights[x + col]
-    #             yOrigin = lowestBlocks[col]
-    #     for i in range(len(b1[0])):
-    #         yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
-    #         xAxis = int(x + self.zeroBlock(b1)[1][i])
-    #         board[19 - yAxis][xAxis] = 1
-    #     return np.copy(board)
+    def getNewBoard(self, heights, x, b1, width, b):
+        board = np.copy(b)
+        lowTuple = self.getLowestBlocks(b1, width)
+        lowestBlocks = lowTuple[0]
+        highBoi = lowTuple[1]
+        high = 0
+        height = 0
+        yOrigin = 0
+        for col in range(int(width)):
+            val = heights[x + col] + (highBoi - lowestBlocks[col])
+            if val > high:
+                high = val
+                height = heights[x + col]
+                yOrigin = lowestBlocks[col]
+        for i in range(len(b1[0])):
+            yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
+            xAxis = int(x + self.zeroBlock(b1)[1][i])
+            board[19 - yAxis][xAxis] = 1
+        return np.copy(board)
 
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self):
