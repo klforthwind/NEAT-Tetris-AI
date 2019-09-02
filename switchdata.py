@@ -1,6 +1,9 @@
+from time import time
 import numpy as np
 import threading
 import cv2
+
+# --------------------------------------------------------------------
 
 class SwitchData:
 
@@ -15,6 +18,7 @@ class SwitchData:
         self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
+        self.debug = time()
 
         # Set image processing variables
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
@@ -52,18 +56,31 @@ class SwitchData:
         cv2.destroyAllWindows()
 
 # --------------------------------------------------------------------
+
+    def printTime(self):
+        print(self.debug)
+        self.debug = time()
+
+# --------------------------------------------------------------------
     
     def processCapture(self):
+        
+        self.printTime()
         # Read the capture card
         _, frame = self.cap.read()
 
+        self.printTime()
         # Show the capture card
         cv2.imshow('Frame', frame)
-
+        
+        self.printTime()
         # Process the board, hold, and queue
         self.__makeBoard(frame[40:680, 480:800])
+        self.printTime()
         self.__makeHold(frame[80:120, 396:468])
+        self.printTime()
         self.__makeQueue(frame[80:390, 815:880])
+        self.printTime()
 
     def __makeBoard(self, frame):
         board = self.__handleCanvas(frame)
@@ -147,10 +164,11 @@ class SwitchData:
             # Iterate over the bottom 14 rows
             for y in range(14):
                 # Get the correct index for the board array
-                h = 19 - y
+                h = 6 + y
                 if board[h][x] == 1:
                     # Set the height of column to the highest filled block (bottom = 0)
-                    maxH = y
+                    maxH = 13 - y
+                    break
             # Save the height to the heights array
             heights[x] = maxH
         return heights
@@ -164,11 +182,7 @@ class SwitchData:
         return data
 
     def leftMost(self, blockData):
-        left = 20
-        for i in range(len(blockData[0])):
-            if blockData[1][i] < left:
-                left = blockData[1][i]
-        return left 
+        return np.amin(blockData[1])
 
     def rotate(self, blockData):
         yTemp = blockData[0]
@@ -281,16 +295,14 @@ class SwitchData:
 
     def getLowestBlocks(self, blockData, width):
         arr = np.zeros((int(width)))
-        high = 0
         blockData = self.zeroBlock(blockData)
+        high = np.amax(blockData[0])
         for l in range(int(width)):
             low = 20
             for i in range(len(blockData[0])):
                 if blockData[1][i] == l:
                     if blockData[0][i] < low:
                         low = blockData[0][i]
-                        if low > high:
-                            high = low
             arr[l] = low
         return (arr, high)
     
@@ -324,7 +336,7 @@ class SwitchData:
                     break
                 queueNum =int((row - (row % 2)) / 2)
                 rowOfBlock = int(row % 2)
-                blocks[queueNum][rowOfBlock][j] = self.__queueArr[i, j]
+                blocks[queueNum][rowOfBlock][j] = self.__queueArr[i][j]
             if (i + 1) % 3 != 0:
                 row += 1
         return blocks
@@ -332,15 +344,7 @@ class SwitchData:
 # --------------------------------------------------------------------  
 
     def isDead(self):
-        isDead = True
-        for x in range(10):
-            if self.__boardArr[5][int(x)] == 0:
-                isDead = False
-                break
-            if self.__boardArr[10][int(x)] == 0:
-                isDead = False
-                break
-        return isDead   
+        return np.amin(self.__boardArr[5]) == 1 and np.amin(self.__boardArr[10]) == 1
     
     def shouldQuit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
