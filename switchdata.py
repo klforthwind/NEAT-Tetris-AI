@@ -156,18 +156,12 @@ class SwitchData:
         return heights
 
     # Get x and y values closest to 0 without breaking formation
-    def pushTopLeft(self, blockData):
+    def zeroBlock(self, blockData):
         data = np.copy(blockData)
-        x = 20
-        y = 20
+        lows = np.amin(data, axis=1)
         for i in range(len(data[0])):
-            if data[1][i] < x:
-                x = data[1][i]
-            if data[0][i] < y:
-                y = data[0][i]
-        for i in range(len(data[0])):
-            data[0][i] -= y
-            data[1][i] -= x
+            data[0][i] -= lows[0]
+            data[1][i] -= lows[1]
         return data
 
     def leftMost(self, blockData):
@@ -182,7 +176,7 @@ class SwitchData:
         blockData[0] = blockData[1]
         for r in range(len(blockData[0])):
             blockData[1][r] = 3 - yTemp[r]
-        return self.pushTopLeft(blockData)
+        return self.zeroBlock(blockData)
 
     def getWidth(self, blockData):
         left = 20
@@ -200,7 +194,7 @@ class SwitchData:
         qBlocks = self.getQueueBlocks()
         movingBlock = self.getMovingBlock()
         left = self.leftMost(movingBlock)
-        movingBlock = self.pushTopLeft(movingBlock)
+        movingBlock = self.zeroBlock(movingBlock)
         fitness = -1
         arr = np.zeros((3))
         for r1 in range(4):
@@ -212,7 +206,7 @@ class SwitchData:
                 copyBoard = np.copy(board)
                 newBoard = np.copy(self.getNewBoard(heights, x1, b1, width, copyBoard))
                 for r2 in range(4):
-                    b2 = np.copy(self.pushTopLeft(qBlocks[0]))
+                    b2 = np.copy(self.zeroBlock(qBlocks[0]))
                     for r in range(r2 + 1):
                         b2 = self.rotate(b2)
                     width2 = self.getWidth(b2)
@@ -285,10 +279,23 @@ class SwitchData:
                     return xyVals
         return xyVals
 
+    def didBlockChange(self, captura):
+        qChange = 0
+        for i in range(17):
+            for j in range(4):
+                if (i + 1) % 3 == 0:
+                    continue
+                if captura.getQueuePos(i, j) != self.lastQueue[i][j]:
+                    self.lastQueue[i][j] = captura.getQueuePos(i, j)
+                    qChange += 1
+        tmp = qChange > 10
+        del qChange
+        return tmp
+
     def getLowestBlocks(self, blockData, width):
         arr = np.zeros((int(width)))
         high = 0
-        blockData = self.pushTopLeft(blockData)
+        blockData = self.zeroBlock(blockData)
         for l in range(int(width)):
             low = 20
             for i in range(len(blockData[0])):
@@ -300,25 +307,25 @@ class SwitchData:
             arr[l] = low
         return (arr, high)
     
-    def getNewBoard(self, heights, x, b1, width, b):
-        board = np.copy(b)
-        lowTuple = self.getLowestBlocks(b1, width)
-        lowestBlocks = lowTuple[0]
-        highBoi = lowTuple[1]
-        high = 0
-        height = 0
-        yOrigin = 0
-        for col in range(int(width)):
-            val = heights[x + col] + (highBoi - lowestBlocks[col])
-            if val > high:
-                high = val
-                height = heights[x + col]
-                yOrigin = lowestBlocks[col]
-        for i in range(len(b1[0])):
-            yAxis = int(self.pushTopLeft(b1)[0][i] - yOrigin + height)
-            xAxis = int(x + self.pushTopLeft(b1)[1][i])
-            board[19 - yAxis][xAxis] = 1
-        return np.copy(board)
+    # def getNewBoard(self, heights, x, b1, width, b):
+    #     board = np.copy(b)
+    #     lowTuple = self.getLowestBlocks(b1, width)
+    #     lowestBlocks = lowTuple[0]
+    #     highBoi = lowTuple[1]
+    #     high = 0
+    #     height = 0
+    #     yOrigin = 0
+    #     for col in range(int(width)):
+    #         val = heights[x + col] + (highBoi - lowestBlocks[col])
+    #         if val > high:
+    #             high = val
+    #             height = heights[x + col]
+    #             yOrigin = lowestBlocks[col]
+    #     for i in range(len(b1[0])):
+    #         yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
+    #         xAxis = int(x + self.zeroBlock(b1)[1][i])
+    #         board[19 - yAxis][xAxis] = 1
+    #     return np.copy(board)
 
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self):
