@@ -103,6 +103,7 @@ class Emulator:
     def emulateTetris(self, arr):
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
+        self.wait(0.05)
         self.runButton(arr[0], DPAD_U)
         self.runButton(arr[1], DPAD_R)
         self.runButton(arr[2], DPAD_D)
@@ -114,6 +115,9 @@ class Emulator:
         # self.runButton(arr[8], self.rstick_angle(90, 0xFF))
         # self.runButton(arr[9], self.rstick_angle(180, 0xFF))
         # self.runButton(arr[10], self.rstick_angle(270, 0xFF))
+        self.wait(0.05)
+        self.send_input(DPAD_CENTER)
+        self.send_input(NO_INPUT)
     
     def close(self):
         self.ser.close

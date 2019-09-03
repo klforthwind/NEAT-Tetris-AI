@@ -217,7 +217,12 @@ class SwitchData:
         qBlocks = self.getQueueBlocks()
         movingBlock = self.zeroBlock(self.getMovingBlock())
         fitness = -1
-        arr = np.zeros((6))
+        blocks = np.zeros(())
+        arr = np.zeros((1, 2, 4))
+        arr[0] = movingBlock
+        arr = np.append(arr, qBlocks)
+        
+        moves = self.iterateMoves(7, arr)
         for r1 in range(4):
             b1, width = self.rotate(np.copy(movingBlock), r1)
             for x1 in range(int(11 - width)):
@@ -237,6 +242,16 @@ class SwitchData:
                 del newBoard
             del b1
         return arr
+    
+    def iterateMoves(self, count, arr):
+        block = 
+        if count > 0:
+            for r in range(4):
+                block, width = self.rotate(np.copy(block), r)
+                for x in range(int(11 - width)):
+                    newBoard = self.getNewBoard(heights, x, block, width, board)
+        else:
+
     
 # --------------------------------------------------------------------
     
@@ -332,6 +347,8 @@ class SwitchData:
                 blocks[queueNum][rowOfBlock][j] = self.__queueArr[i][j]
             if (i + 1) % 3 != 0:
                 row += 1
+        for i in range(6):
+            blocks[i] = self.analyzeQBlock(blocks[i])
         return blocks
                 
 # --------------------------------------------------------------------  

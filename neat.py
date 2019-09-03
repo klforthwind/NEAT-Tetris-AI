@@ -43,8 +43,14 @@ class NEAT:
     def getCurrentNodeNet(self):
         return self.genomes[self.currentGenome].nodeNet
 
+    def requiresMoreMoves(self):
+        return self.genomes[self.currentGenome].noMoreMoves()
+
+    def handMoves(self, moves):
+        self.genomes[self.currentGenome].giveMoves(moves)
+
     def getGenomeActions(self, moves):
-        return self.genomes[self.currentGenome].getButtons(moves)
+        return self.genomes[self.currentGenome].getButtons()
     
     def printFitness(self):
         self.genomes[self.currentGenome].fitness += time() - self.t
