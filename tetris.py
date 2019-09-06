@@ -32,7 +32,7 @@ else:
 port = "COM3"
 emulator = Emulator(port)
 
-# Main code loop
+# Main code loop :)
 while True:
     
     # Check to see if we should end the program (if we pressed q)
