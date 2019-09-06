@@ -12,7 +12,7 @@ rng.seed(666)
 # Get a relative point of time
 t0 = time()
 
-# Connect to the Switch Capture, and run it asynchronous
+# Connect to the Switch Capture, and run it asynchronously
 capture = SwitchData()
 capture.start()
 

@@ -15,30 +15,31 @@ class NEAT:
         
     # Create the initial genomes
     def createPopulation(self):
-        for g in range(self.popSize):
-            temp = Genome()
-            temp.mutate()
-            self.genomes.append(temp)
-            del temp
+        for genomeNum in range(self.popSize):
+            genome = Genome()
+            genome.mutate()
+            self.genomes.append(genome)
+            del genome
         #Let's save some stats
-        for g in range(len(self.genomes)):
-            txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
-            np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")
+        for genomeNum in range(len(self.genomes)):
+            txt = "data/"+str(self.generation)+"-"+str(genomeNum)+".txt"
+            np.savetxt(txt, self.genomes[genomeNum].nodeNet, fmt="%f")
             del txt
 
-    def repopulate(self, gen):
-        for g in range(self.popSize):
-            temp = Genome()
-            filename = "data/"+str(gen)+"-"+str(g)+".txt"
-            f = open(filename, "r")
-            foo = f.read().splitlines()
-            for l in range(temp.nodeCount):
-                temp.nodeNet[l] = float(foo[l])
-            del foo
-            f.close()
-            self.genomes.append(temp)
-            del temp
-        self.generation = gen
+    # Repopulate genomes from the latest generation that exists (in saved text files)
+    def repopulate(self, generation):
+        for genomeNum in range(self.popSize):
+            genome = Genome()
+            filename = "data/"+str(generation)+"-"+str(genomeNum)+".txt"
+            file = open(filename, "r")
+            lines = file.read().splitlines()
+            for lineNum in range(genome.nodeCount):
+                genome.nodeNet[lineNum] = float(lines[lineNum])
+            del lines
+            file.close()
+            self.genomes.append(genome)
+            del genome
+        self.generation = generation
     
     def getCurrentNodeNet(self):
         return self.genomes[self.currentGenome].nodeNet
