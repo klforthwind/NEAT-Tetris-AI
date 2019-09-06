@@ -1,4 +1,3 @@
-from time import time
 import numpy as np
 import threading
 import cv2
@@ -18,7 +17,6 @@ class SwitchData:
         self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
-        self.debug = time()
 
         # Set image processing variables
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
@@ -56,32 +54,19 @@ class SwitchData:
         cv2.destroyAllWindows()
 
 # --------------------------------------------------------------------
-
-    def printTime(self):
-        print(time() - self.debug)
-        self.debug = time()
-
-# --------------------------------------------------------------------
     
     def processCapture(self):
         
-        self.printTime()
         # Read the capture card
         _, frame = self.cap.read()
 
-        self.printTime()
         # Show the capture card
         cv2.imshow('Frame', frame)
-        print("Frmae awdojnai")
-        self.printTime()
         # Process the board, hold, and queue
         self.__makeBoard(frame[40:680, 480:800])
-        self.printTime()
         self.__makeHold(frame[80:120, 396:468])
-        self.printTime()
         self.__makeQueue(frame[80:390, 815:880])
         print("End of QUeuee")
-        self.printTime()
 
     def __makeBoard(self, frame):
         board = self.__handleCanvas(frame)
