@@ -55,6 +55,7 @@ class SwitchData:
 
 # --------------------------------------------------------------------
     
+    # Make and display boardArr, holdArr, and queueArr
     def processCapture(self):
         
         # Read the capture card
@@ -62,11 +63,11 @@ class SwitchData:
 
         # Show the capture card
         cv2.imshow('Frame', frame)
+        
         # Process the board, hold, and queue
         self.__makeBoard(frame[40:680, 480:800])
         self.__makeHold(frame[80:120, 396:468])
         self.__makeQueue(frame[80:390, 815:880])
-        print("End of QUeuee")
 
     def __makeBoard(self, frame):
         board = self.__handleCanvas(frame)

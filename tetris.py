@@ -40,6 +40,7 @@ while True:
         emulator.stop_input()
         break
 
+    # Make and display the board, hold, and queue, and game frame
     capture.processCapture()
 
     # Check to see if we should press A (genome over, and it won't go to next genome),
