@@ -28,15 +28,19 @@ class NEAT:
 
     # Repopulate genomes from the latest generation that exists (in saved text files)
     def repopulate(self, generation):
+        # Iterate over the population size
         for genomeNum in range(self.popSize):
             genome = Genome()
             filename = "data/"+str(generation)+"-"+str(genomeNum)+".txt"
             file = open(filename, "r")
             lines = file.read().splitlines()
+            # Save the neural network to the genome
             for lineNum in range(genome.nodeCount):
                 genome.nodeNet[lineNum] = float(lines[lineNum])
+            # Clean up memory
             del lines
             file.close()
+            # Add genome to the genome array
             self.genomes.append(genome)
             del genome
         self.generation = generation
