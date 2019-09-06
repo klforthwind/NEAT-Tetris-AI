@@ -96,6 +96,7 @@ class Emulator:
             # print(cmd)
             self.send_input(cmd)
 
+    # Send signals to the controller that stop buttons from staying pressed down
     def stop_input(self):
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
