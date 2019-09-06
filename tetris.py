@@ -7,7 +7,7 @@ from neat import NEAT
 from time import time
 
 # Controlled randomness, doesn't matter that much with Tetris tho
-rng.seed(420)
+rng.seed(666)
 
 # Get a relative point of time
 t0 = time()
