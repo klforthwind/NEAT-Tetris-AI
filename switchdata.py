@@ -25,6 +25,7 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10), dtype = uchar)
         self.__queueArr = np.zeros((17, 4), dtype = uchar)
         self.__holdArr = np.zeros((2, 4), dtype = uchar)
+        self.lastQueue = np.zeros((17,4), dtype = uchar)
 
     # Start the capture thread
     def start(self):
@@ -143,6 +144,18 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
+    def didBlockChange(self):
+        qChange = 0
+        for i in range(17):
+            for j in range(4):
+                if (i + 1) % 3 == 0:
+                    continue
+                if self.__queueArr[i][j] != self.lastQueue[i][j]:
+                    self.lastQueue[i][j] = self.__queueArr[i][j]
+                    qChange += 1
+        tmp = qChange > 5
+        return tmp
+
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
         heights = np.zeros((10), dtype = uchar)
@@ -234,6 +247,7 @@ class SwitchData:
         zeroed = self.zeroBlock(movingBlock)
         fitness = -1
         arr = [(0, 0), (0, 0)]
+        self.didBlockChange()
         
         for r1 in range(4):
             b1, width = self.rotate(np.copy(zeroed), r1)

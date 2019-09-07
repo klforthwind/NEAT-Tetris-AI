@@ -20,6 +20,7 @@ class Genome:
 
         self.needPosition = False
         self.list = []
+        self.hitSeven = False
 
     # Mutate values within the neural network
     def mutate(self):
@@ -34,8 +35,10 @@ class Genome:
             data = capture.getBestMoves(self.nodeNet)
             self.list.append(data[0])
             self.list.append(data[1])
-        elif len(self.list) < 7:
+        elif len(self.list) < 7 and (not self.hitSeven or capture.didBlockChange()):
             self.list.append(capture.getNextBestMove(self.list, self.nodeNet))
+        else:
+            self.hitSeven = True
 
     # Get all buttons and whether they should be pushed
     def getButtons(self, capture, xPos):
