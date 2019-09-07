@@ -173,8 +173,8 @@ class SwitchData:
         for r in range(rot):
             yTemp = blockData[0]
             blockData[0] = blockData[1]
-            for r in range(len(blockData[0])):
-                blockData[1][r] = 3 - yTemp[r]
+            for sec in range(len(blockData[0])):
+                blockData[1][sec] = 3 - yTemp[sec]
         return self.zeroBlock(blockData), self.getWidth(blockData)
 
     def getWidth(self, blockData):
@@ -195,21 +195,51 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
+    def getNextBestMove(self, thelist, nodeNet):
+        board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
+        heights = self.getHeights(board)
+        qBlocks = self.getQueueBlocks()
+        movingBlock = self.getMovingBlock()
+        zeroed = self.zeroBlock(movingBlock)
+        fitness = -1
+        move = (0, 0)
+
+        theboard = np.copy(board)
+        for item in range(len(thelist)):
+            if item == 0:
+                b1, width = self.rotate(np.copy(zeroed), thelist[item][1])
+                theboard = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
+            else:
+                heights = self.getHeights(theboard)
+                b1, width = self.rotate(np.copy(self.analyzeQBlock(qBlocks[item - 1])), thelist[item][1])
+                theboard = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
+        newBlock = qBlocks[len(theist) - 1]
+        heights = self.getHeights(theboard)
+        for r1 in range(4):
+            b1, width = self.rotate(np.copy(self.analyzeQBlock(newBlock)), r1)
+            for x1 in range(int(11 - width)):
+                theboard = self.getNewBoard(heights, x1, b1, width, theboard)
+                if  fit > fitness:
+                    fitness = fit
+                    move = (x1, r1)
+                del theboard
+        return move
+
+    # Returns initial good placements
     def getBestMoves(self, nodeNet):
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.zeroBlock(self.getMovingBlock())
+        movingBlock = self.getMovingBlock()
+        zeroed = self.zeroBlock(movingBlock)
         fitness = -1
-        arr = np.zeros((1, 2, 4), dtype = uchar)
-        arr[0] = movingBlock
-        arr = np.append(arr, qBlocks)
+        arr = [(0, 0), (0, 0)]
         
-        moves = self.iterateMoves(7, arr)
         for r1 in range(4):
-            b1, width = self.rotate(np.copy(movingBlock), r1)
+            b1, width = self.rotate(np.copy(zeroed), r1)
             for x1 in range(int(11 - width)):
                 newBoard = self.getNewBoard(heights, x1, b1, width, board)
+                heights = self.getHeights(newBoard)
                 for r2 in range(4):
                     b2, width2 = self.rotate(np.copy(self.analyzeQBlock(qBlocks[0])), r2)
                     for x2 in range(int(11 - width2)):
@@ -217,24 +247,13 @@ class SwitchData:
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit > fitness:
                             fitness = fit
-                            arr[0] = int(x1)
-                            arr[1] = int(r1)
-                            arr[2] = int(self.leftMost(movingBlock))
+                            arr.append((x1, r1))
+                            arr.append((x2, r2))
                         del newBoard2
                     del b2
                 del newBoard
             del b1
         return arr
-    
-    def iterateMoves(self, count, arr):
-        block = 
-        if count > 0:
-            for r in range(4):
-                block, width = self.rotate(np.copy(block), r)
-                for x in range(int(11 - width)):
-                    newBoard = self.getNewBoard(heights, x, block, width, board)
-        else:
-
 
 # --------------------------------------------------------------------
 
@@ -260,7 +279,7 @@ class SwitchData:
         return (xyVals, False)
 
     # Determines if there is a piece that we can control
-    def controllablePiece(self):
+    def existsControllablePiece(self):
         return self.getMovingBlock()[1]
 
     # Returns the left-most x value of current block
@@ -277,7 +296,7 @@ class SwitchData:
         heightTotal = np.sum(heights)
 
         # Holes (not 100% correct, but will work)
-        holes = heightTotal - np.sum(board)
+        holes = heightTotal - np.sum(board) + 4
 
         bump = 0
         # Bumpiness

@@ -56,8 +56,15 @@ while True:
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.1):
         t0 = time()
-        if capture.controllablePiece():
-            # Do move
+        if capture.existsControllablePiece():
+            # Perform movement since we can
+            xPos = capture.getXPos()
+
+            # Get the button array of recommended moves
+            btnArr = neat.getMovements(capture, xPos)
+
+            # Send the correct button inputs
+            emulator.emulateTetris(btnArr)
 
         # Print the fitness
         neat.printFitness()
