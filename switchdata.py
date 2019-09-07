@@ -169,9 +169,6 @@ class SwitchData:
         data[1] -= lows[1]
         return data
 
-    def leftMost(self, blockData):
-        return np.amin(blockData[1])
-
     def rotate(self, blockData, rot):
         for r in range(rot):
             yTemp = blockData[0]
@@ -238,6 +235,37 @@ class SwitchData:
                     newBoard = self.getNewBoard(heights, x, block, width, board)
         else:
 
+
+# --------------------------------------------------------------------
+
+    def leftMost(self, blockData):
+        return np.amin(blockData[1])
+
+    # Returns a 2x4 array containing data on the necessary block [yCoords][xCoords], inaccurate at the moment
+    def getMovingBlock(self):
+        # Make a copy of the tetris board
+        board = np.copy(self.__boardArr)
+        xyVals = np.zeros((2,4), dtype = uchar)
+        foundBlocks = 0
+        for y in range(10):
+            for x in range(10):
+                if board[y][x] == 1: # Y = 0 refers to the top of the board
+                    # Save the coords of the filled block as [distance from bottom] and [x]
+                    xyVals[0][foundBlocks] = 19 - y
+                    xyVals[1][foundBlocks] = x
+                    foundBlocks += 1
+                if foundBlocks == 4:
+                    del board
+                    return (xyVals, True)
+        return (xyVals, False)
+
+    # Determines if there is a piece that we can control
+    def controllablePiece(self):
+        return self.getMovingBlock()[1]
+
+    # Returns the left-most x value of current block
+    def getXPos(self):
+        return self.leftMost(self.getMovingBlock()[0])
     
 # --------------------------------------------------------------------
     
@@ -265,23 +293,6 @@ class SwitchData:
         fitness += nodeNet[3] * lines
 
         return fitness
-
-    # Returns a 2x4 array containing data on the necessary block [yCoords][xCoords], inaccurate at the moment
-    def getMovingBlock(self):
-        # Make a copy of the tetris board
-        board = self.__boardArr
-        xyVals = np.zeros((2,4), dtype = uchar)
-        foundBlocks = 0
-        for y in range(15):
-            for x in range(10):
-                if board[y][x] == 1:
-                    # Save the coords of the filled block as [distance from bottom] and [x]
-                    xyVals[0][foundBlocks] = 19 - y
-                    xyVals[1][foundBlocks] = x
-                    foundBlocks += 1
-                if foundBlocks == 4:
-                    return xyVals
-        return xyVals
 
     def getLowestBlocks(self, blockData, width):
         arr = np.zeros((int(width)), dtype = uchar)

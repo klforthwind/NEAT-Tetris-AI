@@ -56,6 +56,8 @@ while True:
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.1):
         t0 = time()
+        if capture.controllablePiece():
+            # Do move
 
         # Print the fitness
         neat.printFitness()
