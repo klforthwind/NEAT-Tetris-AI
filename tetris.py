@@ -52,21 +52,10 @@ while True:
         
         # Go to next genome / generation
         neat.loop()
-    
-    # if neat.requiresMoreMoves():
-    #     emulator.wait(2)
-    #     moves = capture.getBestMoves(neat.getCurrentNodeNet())
-    #     neat.handMoves(moves)
 
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.1):
         t0 = time()
-
-        # # Get the button array of recommended moves
-        # btnArr = neat.getGenomeActions()
-
-        # # Send the correct button inputs
-        # emulator.emulateTetris(btnArr)
 
         # Print the fitness
         neat.printFitness()

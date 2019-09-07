@@ -17,9 +17,6 @@ class Genome:
         self.mutationRate = 0.2
         self.mutationStep = 0.1
         self.fitness = 0
-        
-        self.needNew = False
-        self.list = []
 
     # Mutate values within the neural network
     def mutate(self):
@@ -28,27 +25,21 @@ class Genome:
             if isMutating < self.mutationRate:
                 self.nodeNet[n] += (random()-0.5) * self.mutationStep
 
-    def noMoreMoves(self):
-        return len(self.list) == 0
-
-    def giveMoves(self, moves):
-        self.list = moves
-
     # Get all buttons and whether they should be pushed
     def getButtons(self):
-        arr = np.zeros(self.outputNodes)
-        xPos = self.list[2]
-        if self.list[1] != 0:
-            arr[6] = 1
-            self.list[1] -= 1
-        elif xPos > self.list[0]:
-            arr[3] = 1
-            self.list[2] -= 1
-        elif xPos < self.list[0]:
-            arr[1] = 1
-            self.list[2] += 1
-        else:
-            self.needNew = True
-            arr[0] = 1
-        return arr
+        # arr = np.zeros(self.outputNodes)
+        # xPos = self.list[2]
+        # if self.list[1] != 0:
+        #     arr[6] = 1
+        #     self.list[1] -= 1
+        # elif xPos > self.list[0]:
+        #     arr[3] = 1
+        #     self.list[2] -= 1
+        # elif xPos < self.list[0]:
+        #     arr[1] = 1
+        #     self.list[2] += 1
+        # else:
+        #     self.needNew = True
+        #     arr[0] = 1
+        # return arr
 

@@ -5,6 +5,7 @@ class FileManager:
         self.suffix = '-0.txt'
         print("File Manager initialized!")
 
+    # Determines whether there is existing genome data saved as txt files (located in the data folder)
     def loadable(self):
         gen = 0
         if isfile('data/0'+self.suffix):

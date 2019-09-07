@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import uint8 as uchar
 import threading
 import cv2
 
@@ -21,9 +22,9 @@ class SwitchData:
         # Set image processing variables
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
-        self.__boardArr = np.zeros((20, 10))
-        self.__queueArr = np.zeros((17, 4))
-        self.__holdArr = np.zeros((2, 4))
+        self.__boardArr = np.zeros((20, 10), dtype = uchar)
+        self.__queueArr = np.zeros((17, 4), dtype = uchar)
+        self.__holdArr = np.zeros((2, 4), dtype = uchar)
 
     # Start the capture thread
     def start(self):
@@ -73,9 +74,9 @@ class SwitchData:
         board = self.__handleCanvas(frame)
 
         # Attempt to make a less noisy mask
-        boardMat = np.zeros((640, 320))
+        boardMat = np.zeros((640, 320), dtype = uchar)
         #Run through all 200 grid tiles
-        tempArr = np.zeros((20,10))
+        tempArr = np.zeros((20,10), dtype = uchar)
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
@@ -100,7 +101,7 @@ class SwitchData:
         hold = self.__handleCanvas(frame)
 
         # Check every hold tile to see if its filled
-        tempArr = np.zeros((2, 4))
+        tempArr = np.zeros((2, 4), dtype = uchar)
         for y in range(2):
             for x in range(4):
                 tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
@@ -111,8 +112,8 @@ class SwitchData:
     def __makeQueue(self, frame):
         queue = self.__handleCanvas(frame)
         
-        queueMat = np.zeros((310, 65))
-        tempArr = np.zeros((17, 4))
+        queueMat = np.zeros((310, 65), dtype = uchar)
+        tempArr = np.zeros((17, 4), dtype = uchar)
         for i in range(17):
             # level = 0
             for j in range(4):
@@ -144,7 +145,7 @@ class SwitchData:
 
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
-        heights = np.zeros((10))
+        heights = np.zeros((10), dtype = uchar)
         # Iterate over all of the columns
         for x in range(len(heights)):
             maxH = 0
@@ -183,7 +184,7 @@ class SwitchData:
         return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
     
     def analyzeQBlock(self, qBlock):
-        newData = np.zeros((2, 4))
+        newData = np.zeros((2, 4), dtype = uchar)
         foundBlocks = 0
         for j in range(2):
             for i in range(4):
@@ -203,8 +204,7 @@ class SwitchData:
         qBlocks = self.getQueueBlocks()
         movingBlock = self.zeroBlock(self.getMovingBlock())
         fitness = -1
-        blocks = np.zeros(())
-        arr = np.zeros((1, 2, 4))
+        arr = np.zeros((1, 2, 4), dtype = uchar)
         arr[0] = movingBlock
         arr = np.append(arr, qBlocks)
         
@@ -270,7 +270,7 @@ class SwitchData:
     def getMovingBlock(self):
         # Make a copy of the tetris board
         board = self.__boardArr
-        xyVals = np.zeros((2,4))
+        xyVals = np.zeros((2,4), dtype = uchar)
         foundBlocks = 0
         for y in range(15):
             for x in range(10):
@@ -284,7 +284,7 @@ class SwitchData:
         return xyVals
 
     def getLowestBlocks(self, blockData, width):
-        arr = np.zeros((int(width)))
+        arr = np.zeros((int(width)), dtype = uchar)
         blockData = self.zeroBlock(blockData)
         high = np.amax(blockData[0])
         for l in range(int(width)):
@@ -323,7 +323,7 @@ class SwitchData:
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self):
         row = 0
-        blocks = np.zeros((6, 2, 4))
+        blocks = np.zeros((6, 2, 4), dtype = uchar)
         for i in range(17):
             for j in range(4):
                 if (i + 1) % 3 == 0:
