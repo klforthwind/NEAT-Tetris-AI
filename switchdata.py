@@ -239,7 +239,7 @@ class SwitchData:
             for x1 in range(int(11 - width)):
                 theboard = self.getNewBoard(heights, x1, b1, width, theboard)
                 fit = self.getFitness(theboard, nodeNet)
-                if  fit > fitness:
+                if  fit >= fitness:
                     fitness = fit
                     move = (x1, r1)
         return move
@@ -265,7 +265,7 @@ class SwitchData:
                     for x2 in range(int(11 - width2)):
                         newBoard2 = self.getNewBoard(heights, x2, b2, width2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
-                        if  fit > fitness:
+                        if  fit >= fitness:
                             fitness = fit
                             tup1 = (x1, r1)
                             arr.append(tup1)
