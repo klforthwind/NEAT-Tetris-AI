@@ -362,10 +362,11 @@ class SwitchData:
         height = 0
         yOrigin = 0
         for col in range(int(width)):
-            val = heights[x + col] + (highBoi - lowestBlocks[col])
+            correctCol = x + col if x + col < 10 else 9
+            val = heights[correctCol] + (highBoi - lowestBlocks[col])
             if val > high:
                 high = val
-                height = heights[x + col]
+                height = heights[correctCol]
                 yOrigin = lowestBlocks[col]
         for i in range(len(b1[0])):
             yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
