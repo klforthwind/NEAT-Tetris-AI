@@ -176,13 +176,13 @@ class SwitchData:
         # Iterate over all of the columns
         for x in range(len(heights)):
             maxH = 0
-            # Iterate over the bottom 14 rows
-            for y in range(14):
+            # Iterate over the whole board
+            for y in range(20):
                 # Get the correct index for the board array
-                h = 6 + y
+                h = y
                 if board[h][x] == 1:
                     # Set the height of column to the highest filled block (bottom = 0)
-                    maxH = 13 - y
+                    maxH = 19 - y
                     break
             # Save the height to the heights array
             heights[x] = maxH
@@ -229,15 +229,15 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def getNextBestMove(self, thelist, nodeNet):
-        board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
-        heights = self.getHeights(board)
+        board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
+        heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
         movingBlock = self.getMovingBlock()
         zeroed = self.zeroBlock(movingBlock)
         fitness = -1
         move = (0, 0)
 
-        theboard = np.copy(board)
+        theboard = np.copy(lBoard)
         for item in range(len(thelist)):
             if item == 0:
                 b1, width = self.rotate(np.copy(zeroed), thelist[item][1])
@@ -260,8 +260,8 @@ class SwitchData:
 
     # Returns initial good placements
     def getBestMoves(self, nodeNet):
-        board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
-        heights = self.getHeights(board)
+        board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
+        heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
         movingBlock = self.getMovingBlock()
         zeroed = self.zeroBlock(movingBlock)
@@ -272,7 +272,7 @@ class SwitchData:
         for r1 in range(4):
             b1, width = self.rotate(np.copy(zeroed), r1)
             for x1 in range(int(11 - width)):
-                newBoard = self.getNewBoard(heights, x1, b1, width, board)
+                newBoard = self.getNewBoard(heights, x1, b1, width, lBoard)
                 heights = self.getHeights(newBoard)
                 for r2 in range(4):
                     b2, width2 = self.rotate(np.copy(self.analyzeQBlock(qBlocks[0])), r2)
