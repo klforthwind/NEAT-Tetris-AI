@@ -241,22 +241,22 @@ class SwitchData:
         for item in range(len(thelist)):
             if item == 0:
                 b1, width = self.rotate(np.copy(zeroed), thelist[item][1])
-                theboard = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
-                if theboard == None:
+                theboard, test = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
+                if test == False:
                     continue
             else:
                 heights = self.getHeights(theboard)
                 b1, width = self.rotate(np.copy(self.analyzeQBlock(qBlocks[item - 1])), thelist[item][1])
-                theboard = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
-                if theboard == None:
+                theboard, test = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
+                if test == False:
                     continue
         newBlock = qBlocks[len(thelist) - 1]
         heights = self.getHeights(theboard)
         for r1 in range(4):
             b1, width = self.rotate(np.copy(self.analyzeQBlock(newBlock)), r1)
             for x1 in range(int(11 - width)):
-                theboard = self.getNewBoard(heights, x1, b1, width, theboard)
-                if theboard == None:
+                theboard, test = self.getNewBoard(heights, x1, b1, width, theboard)
+                if test == False:
                     continue
                 fit = self.getFitness(theboard, nodeNet)
                 if  fit >= fitness:
@@ -278,15 +278,15 @@ class SwitchData:
         for r1 in range(4):
             b1, width = self.rotate(np.copy(zeroed), r1)
             for x1 in range(int(11 - width)):
-                newBoard = self.getNewBoard(heights, x1, b1, width, lBoard)
-                if newBoard == None:
+                newBoard, test = self.getNewBoard(heights, x1, b1, width, lBoard)
+                if test == False:
                     continue
                 heights = self.getHeights(newBoard)
                 for r2 in range(4):
                     b2, width2 = self.rotate(np.copy(self.analyzeQBlock(qBlocks[0])), r2)
                     for x2 in range(int(11 - width2)):
-                        newBoard2 = self.getNewBoard(heights, x2, b2, width2, newBoard)
-                        if newBoard2 == None:
+                        newBoard2, test = self.getNewBoard(heights, x2, b2, width2, newBoard)
+                        if test == False:
 	                        continue
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit >= fitness:
@@ -384,6 +384,7 @@ class SwitchData:
         high = 0
         height = 0
         yOrigin = 0
+        test = True
         for col in range(int(width)):
             correctCol = x + col if x + col < 10 else 9
             val = heights[correctCol] + (highBoi - lowestBlocks[col])
@@ -395,11 +396,11 @@ class SwitchData:
             yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
             xAxis = int(x + self.zeroBlock(b1)[1][i])
             xAxis = xAxis if xAxis < 10 else 9
-            if yAxis > 19
-                return None
+            if yAxis > 19:
+                test = False
             if yAxis < 19 and yAxis > 0:
                 board[19 - yAxis][xAxis] = 1
-        return np.copy(board)
+        return np.copy(board), test
 
 # --------------------------------------------------------------------
 
