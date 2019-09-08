@@ -45,8 +45,8 @@ class NEAT:
             del genome
         self.generation = generation
 
-    def getMovements(self, capture, xPos):
-        return self.genomes[self.currentGenome].getButtons(capture, xPos)
+    def getMovements(self, capture, xPos, blockChange):
+        return self.genomes[self.currentGenome].getButtons(capture, xPos, blockChange)
     
     def printFitness(self):
         self.genomes[self.currentGenome].fitness += time() - self.t

@@ -102,7 +102,7 @@ class SwitchData:
         hold = self.__handleCanvas(frame)
 
         # Check every hold tile to see if its filled
-        tempArr = np.zeros((2, 4), dtype = uchar)
+        tempArr = np.zeros((2, 4))
         for y in range(2):
             for x in range(4):
                 tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
@@ -158,7 +158,7 @@ class SwitchData:
 
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
-        heights = np.zeros((10), dtype = uchar)
+        heights = np.zeros((10))
         # Iterate over all of the columns
         for x in range(len(heights)):
             maxH = 0
@@ -232,16 +232,16 @@ class SwitchData:
                 heights = self.getHeights(theboard)
                 b1, width = self.rotate(np.copy(self.analyzeQBlock(qBlocks[item - 1])), thelist[item][1])
                 theboard = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
-        newBlock = qBlocks[len(theist) - 1]
+        newBlock = qBlocks[len(thelist) - 1]
         heights = self.getHeights(theboard)
         for r1 in range(4):
             b1, width = self.rotate(np.copy(self.analyzeQBlock(newBlock)), r1)
             for x1 in range(int(11 - width)):
                 theboard = self.getNewBoard(heights, x1, b1, width, theboard)
+                fit = self.getFitness(theboard, nodeNet)
                 if  fit > fitness:
                     fitness = fit
                     move = (x1, r1)
-                del theboard
         return move
 
     # Returns initial good placements
@@ -267,8 +267,10 @@ class SwitchData:
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit > fitness:
                             fitness = fit
-                            arr.append((x1, r1))
-                            arr.append((x2, r2))
+                            tup1 = (x1, r1)
+                            arr.append(tup1)
+                            tup2 = (x2, r2)
+                            arr.append(tup2)
                         del newBoard2
                     del b2
                 del newBoard
@@ -316,7 +318,10 @@ class SwitchData:
         heightTotal = np.sum(heights)
 
         # Holes (not 100% correct, but will work)
-        holes = heightTotal - np.sum(board) + 4
+        sumOfBoard = np.sum(board) - 4
+        holes = 0
+        if heightTotal - sumOfBoard >= 0:
+            holes = heightTotal - sumOfBoard
 
         bump = 0
         # Bumpiness
@@ -365,7 +370,8 @@ class SwitchData:
         for i in range(len(b1[0])):
             yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
             xAxis = int(x + self.zeroBlock(b1)[1][i])
-            board[19 - yAxis][xAxis] = 1
+            if yAxis < 19 and yAxis > 0:
+                board[19 - yAxis][xAxis] = 1
         return np.copy(board)
 
 # --------------------------------------------------------------------

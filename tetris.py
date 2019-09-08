@@ -11,13 +11,14 @@ rng.seed(666)
 
 # Get a relative point of time
 t0 = time()
+t1 = time()
 
 # Connect to the Switch Capture, and run it asynchronously
 capture = SwitchData()
 capture.start()
 
 # Begin our population
-populationSize = 4
+populationSize = 50
 neat = NEAT(populationSize)
 
 # Check to see if there is save data for the neural network to return to
@@ -57,9 +58,13 @@ while True:
         neat.loop()
 
     # Attempt a command if it has been X amount of seconds since the last command
-    if (time()-t0 > 0.1):
+    if (time()-t0 > 1):
         t0 = time()
         blockChange = capture.didBlockChange()
+        if placedBlock and time() - t1 > 1:
+            placedBlock = False
+            t1 = time()
+
         if capture.existsControllablePiece() and (not placedBlock or blockChange):
             
             # Perform movement since we can
@@ -67,15 +72,20 @@ while True:
 
             if blockChange:
                 pos = xPos
+                print(pos)
 
             # Get the button array of recommended moves
-            btnArr = neat.getMovements(capture, pos)
+            btnArr = neat.getMovements(capture, pos, blockChange)
 
             if btnArr[0] == 1:
                 placedBlock = True
+                t1 = time()
 
             # Send the correct button inputs
             emulator.emulateTetris(btnArr)
+        else:
+            # Send signals to stop the emulator from sending button data
+            emulator.stop_input()
 
         # Print the fitness
         neat.printFitness()
