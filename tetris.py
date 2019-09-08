@@ -58,10 +58,10 @@ while True:
         neat.loop()
 
     # Attempt a command if it has been X amount of seconds since the last command
-    if (time()-t0 > 1):
+    if (time()-t0 > 0.2):
         t0 = time()
         blockChange = capture.didBlockChange()
-        if placedBlock and time() - t1 > 1:
+        if placedBlock and time() - t1 > 0.5:
             placedBlock = False
             t1 = time()
 
