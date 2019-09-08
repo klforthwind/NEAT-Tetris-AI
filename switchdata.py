@@ -197,7 +197,7 @@ class SwitchData:
         return data
 
     def rotDiff(self):
-        movingBlock = self.getMovingBlock()[0]
+        movingBlock = self.getMovingBlock()
         l1 = self.leftMost(self.zeroBlock(movingBlock))
         l2 = self.leftMost(self.rotate(self.zeroBlock(movingBlock), 1))
         return l2 - l1
@@ -232,7 +232,7 @@ class SwitchData:
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.getMovingBlock()[0]
+        movingBlock = self.getMovingBlock()
         zeroed = self.zeroBlock(movingBlock)
         fitness = -1
         move = (0, 0)
@@ -263,7 +263,7 @@ class SwitchData:
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.getMovingBlock()[0]
+        movingBlock = self.getMovingBlock()
         zeroed = self.zeroBlock(movingBlock)
         fitness = -1
         arr = [(0, 0), (0, 0)]
@@ -299,10 +299,10 @@ class SwitchData:
     # Returns a 2x4 array containing data on the necessary block [yCoords][xCoords], inaccurate at the moment
     def getMovingBlock(self):
         # Make a copy of the tetris board
-        board = np.copy(self.__boardArr)
+        board = self.lastBoard
         xyVals = np.zeros((2,4), dtype = uchar)
         foundBlocks = 0
-        for y in range(10):
+        for y in range(20):
             for x in range(10):
                 if board[y][x] == 1: # Y = 0 refers to the top of the board
                     # Save the coords of the filled block as [distance from bottom] and [x]
@@ -310,17 +310,16 @@ class SwitchData:
                     xyVals[1][foundBlocks] = x
                     foundBlocks += 1
                 if foundBlocks == 4:
-                    del board
-                    return (xyVals, True)
-        return (xyVals, False)
+                    return xyVals
+        return xyVals
 
     # Determines if there is a piece that we can control
     def existsControllablePiece(self):
-        return self.getMovingBlock()[1]
+        return np.sum(self.__boardArr) - np.sum(self.lastBoard) >= 3
 
     # Returns the left-most x value of current block
     def getXPos(self):
-        return self.leftMost(self.getMovingBlock()[0])
+        return self.leftMost(self.getMovingBlock())
     
 # --------------------------------------------------------------------
     
