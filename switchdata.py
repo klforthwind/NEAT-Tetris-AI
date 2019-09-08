@@ -309,12 +309,13 @@ class SwitchData:
     # Returns a 2x4 array containing data on the necessary block [yCoords][xCoords], inaccurate at the moment
     def getMovingBlock(self):
         # Make a copy of the tetris board
-        board = self.lastBoard
+        lBoard = self.lastBoard
+        board = self.__boardArr
         xyVals = np.zeros((2,4), dtype = uchar)
         foundBlocks = 0
         for y in range(20):
             for x in range(10):
-                if board[y][x] == 1: # Y = 0 refers to the top of the board
+                if board[y][x] == 1 and lBoard[y][x] == 0: # Y = 0 refers to the top of the board
                     # Save the coords of the filled block as [distance from bottom] and [x]
                     xyVals[0][foundBlocks] = 19 - y
                     xyVals[1][foundBlocks] = x
