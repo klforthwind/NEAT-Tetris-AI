@@ -32,7 +32,6 @@ class Genome:
 
     def handleMoves(self, capture, blockChange):
         # This should only happen once
-        print(self.list)
         if len(self.list) == 0:
             if blockChange:
                 data = capture.getBestMoves(self.nodeNet)
@@ -50,8 +49,6 @@ class Genome:
         yikes = False
         if len(self.list)>0:
             info = self.list[0]
-            print(info[0])
-            print(xPos - self.diff)
             if info[1] != 0:
                 arr[6] = 1
                 info2 = [info[0], (info[1] - 1)]

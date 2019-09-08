@@ -72,7 +72,6 @@ while True:
 
             if blockChange:
                 pos = xPos
-                print(pos)
 
             # Get the button array of recommended moves
             btnArr = neat.getMovements(capture, pos, blockChange)
