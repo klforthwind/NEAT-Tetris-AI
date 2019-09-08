@@ -32,6 +32,9 @@ else:
 port = "COM3"
 emulator = Emulator(port)
 
+placedBlock = False
+pos = 0
+
 # Main code loop :)
 while True:
     
@@ -56,12 +59,20 @@ while True:
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.1):
         t0 = time()
-        if capture.existsControllablePiece():
+        blockChange = capture.didBlockChange()
+        if capture.existsControllablePiece() and (not placedBlock or blockChange):
+            
             # Perform movement since we can
             xPos = capture.getXPos()
 
+            if blockChange:
+                pos = xPos
+
             # Get the button array of recommended moves
-            btnArr = neat.getMovements(capture, xPos)
+            btnArr = neat.getMovements(capture, pos)
+
+            if btnArr[0] == 1:
+                placedBlock = True
 
             # Send the correct button inputs
             emulator.emulateTetris(btnArr)

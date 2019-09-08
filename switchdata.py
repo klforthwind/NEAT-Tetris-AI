@@ -182,6 +182,12 @@ class SwitchData:
         data[1] -= lows[1]
         return data
 
+    def rotDiff(self):
+        movingBlock = self.getMovingBlock()[0]
+        l1 = self.leftMost(self.zeroBlock(movingBlock))
+        l2 = self.leftMost(self.rotate(self.zeroBlock(movingBlock), 1))
+        return l2 - l1
+
     def rotate(self, blockData, rot):
         for r in range(rot):
             yTemp = blockData[0]
@@ -212,7 +218,7 @@ class SwitchData:
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.getMovingBlock()
+        movingBlock = self.getMovingBlock()[0]
         zeroed = self.zeroBlock(movingBlock)
         fitness = -1
         move = (0, 0)
@@ -243,7 +249,7 @@ class SwitchData:
         board, hold, queue = self.__boardArr, self.__holdArr, self.__queueArr
         heights = self.getHeights(board)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.getMovingBlock()
+        movingBlock = self.getMovingBlock()[0]
         zeroed = self.zeroBlock(movingBlock)
         fitness = -1
         arr = [(0, 0), (0, 0)]

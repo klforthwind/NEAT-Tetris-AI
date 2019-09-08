@@ -21,6 +21,7 @@ class Genome:
         self.needPosition = False
         self.list = []
         self.hitSeven = False
+        self.diff = 0
 
     # Mutate values within the neural network
     def mutate(self):
@@ -29,7 +30,7 @@ class Genome:
             if isMutating < self.mutationRate:
                 self.nodeNet[n] += (random()-0.5) * self.mutationStep
 
-    def handleMoves(self, capture, xPos):
+    def handleMoves(self, capture):
         # This should only happen once
         if len(self.list) == 0:
             data = capture.getBestMoves(self.nodeNet)
@@ -42,25 +43,26 @@ class Genome:
 
     # Get all buttons and whether they should be pushed
     def getButtons(self, capture, xPos):
-        self.handleMoves(capture, xPos)
+        self.handleMoves(capture)
         arr = np.zeros(self.outputNodes)
         info = self.list[0]
         if info[1] != 0:
             arr[6] = 1
             info2 = [info[0], (info[1] - 1)]
             info = info2
-            self.needPosition = True
-        elif xPos > info[0]:
+            self.diff += capture.rotDiff()
+        elif xPos - self.diff > info[0]:
             arr[3] = 1
             info2 = [info[0] + 1, (info[1])]
             info = info2
-        elif xPos < info[0]:
+        elif xPos - self.diff < info[0]:
             arr[1] = 1
             info2 = [info[0] - 1, (info[1])]
             info = info2
         else:
             self.list.pop(0)
             arr[0] = 1
+            self.diff = 0
         self.list[0] = info
         return arr
 
