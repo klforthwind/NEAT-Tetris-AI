@@ -371,6 +371,7 @@ class SwitchData:
         for i in range(len(b1[0])):
             yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
             xAxis = int(x + self.zeroBlock(b1)[1][i])
+            xAxis = xAxis if xAxis < 10 else 9
             if yAxis < 19 and yAxis > 0:
                 board[19 - yAxis][xAxis] = 1
         return np.copy(board)
