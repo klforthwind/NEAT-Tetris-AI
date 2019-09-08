@@ -387,7 +387,10 @@ class SwitchData:
         yOrigin = 0
         test = True
         for col in range(int(width)):
-            correctCol = x + col if x + col < 10 else 9
+            if x + col < 10 and x + col > -1:
+                correctCol = x + col
+            else:
+                correctCol = 9
             val = heights[correctCol] + (highBoi - lowestBlocks[col])
             if val > high:
                 high = val
