@@ -25,7 +25,9 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10), dtype = uchar)
         self.__queueArr = np.zeros((17, 4), dtype = uchar)
         self.__holdArr = np.zeros((2, 4), dtype = uchar)
+        self.lastBoard = np.zeros((20, 10), dtype = uchar)
         self.lastQueue = np.zeros((17,4), dtype = uchar)
+        self.nextBlock = np.zeros((2,4), dtype = uchar)
 
     # Start the capture thread
     def start(self):
@@ -144,10 +146,22 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
+    def clearLastBoard(self):
+        self.lastBoard = np.zeros((20, 10), dtype = uchar)
+
+    def updateLastBoard(self):
+        self.lastBoard = np.copy(self.__boardArr)
+        for i in range(2):
+            for j in range(4):
+                if self.nextBlock[i][j] == 1 and self.lastBoard[i][j + 3] == 1:
+                    self.lastBoard[i][j + 3] = 0
+
     def didBlockChange(self):
         qChange = 0
         for i in range(17):
             for j in range(4):
+                if i < 2:
+                    self.nextBlock[i][j] = self.lastQueue[i][j]
                 if (i + 1) % 3 == 0:
                     continue
                 if self.__queueArr[i][j] != self.lastQueue[i][j]:
