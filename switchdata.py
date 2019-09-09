@@ -80,26 +80,22 @@ class SwitchData:
         boardMat = np.zeros((640, 320), dtype = uchar)
         #Run through all 200 grid tiles
         tempArr = np.zeros((20,10), dtype = uchar)
+        blockDataa = self.getMovingBlock()
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
                 val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
                 tempArr[y][x] = val
                 # Fill in the correct tiles
+                colorVal = 128 if x in blockDataa[1] and (19 - y) in blockDataa[0] else 255
                 for m in range(32):
                     if val == 0:
                         break
                     for n in range(32):
-                        boardMat[y * 32 + m][x * 32 + n] = 255
+                        boardMat[y * 32 + m][x * 32 + n] = colorVal
                 # Add dotted pattern
                 if x != 9 and y != 19:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
-        blockDataa = self.getMovingBlock()
-        for ii in range(len(blockDataa[0])):
-            # Fill in the correct tiles
-            for m in range(32):
-                for n in range(32):
-                    boardMat[(19 - blockDataa[0][ii]) * 32 + m][blockDataa[1][ii] * 32 + n] = 128
         # Show the board with opencv
         self.__boardArr = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
