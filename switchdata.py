@@ -306,21 +306,18 @@ class SwitchData:
     def leftMost(self, blockData):
         return np.amin(blockData[1])
 
-    # Returns a 2x4 array containing data on the necessary block [yCoords][xCoords], inaccurate at the moment
+    # Returns a numpy array containing data on the moving block [yCoords][xCoords]
     def getMovingBlock(self):
         # Make a copy of the tetris board
-        lBoard = self.lastBoard
-        board = self.__boardArr
-        xyVals = np.zeros((2,4), dtype = uchar)
-        foundBlocks = 0
+        board, lBoard = self.__boardArr, self.lastBoard
+        # Create an empty numpy array to add the locations of moving block to
+        xyVals = np.zeros((2,0), dtype = uchar)
         for y in range(20):
             for x in range(10):
                 if board[y][x] == 1 and lBoard[y][x] == 0: # Y = 0 refers to the top of the board
                     # Save the coords of the filled block as [distance from bottom] and [x]
-                    xyVals[0][foundBlocks] = 19 - y
-                    xyVals[1][foundBlocks] = x
-                    foundBlocks += 1
-                if foundBlocks == 4:
+                    xyVals = np.append(xyVals, [[19-y],[x], 1])
+                if len(xyVals[0]) == 4:
                     return xyVals
         return xyVals
 
