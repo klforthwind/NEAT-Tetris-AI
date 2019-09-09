@@ -95,11 +95,11 @@ class SwitchData:
                 if x != 9 and y != 19:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
         blockDataa = self.getMovingBlock()
-        for ii in range(len(blockData[0]))
+        for ii in range(len(blockDataa[0])):
             # Fill in the correct tiles
             for m in range(32):
                 for n in range(32):
-                    boardMat[blockData[0][ii] * 32 + m][blockData[1][ii] * 32 + n] = 128
+                    boardMat[(19 - blockDataa[0][ii]) * 32 + m][blockDataa[1][ii] * 32 + n] = 128
         # Show the board with opencv
         self.__boardArr = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
@@ -408,7 +408,7 @@ class SwitchData:
             xAxis = xAxis if xAxis < 10 else 9
             if yAxis > 19:
                 test = False
-            if yAxis < 19 and yAxis > 0:
+            if yAxis < 19 and yAxis > 0 and xAxis > -1 and xAxis < 10:
                 board[19 - yAxis][xAxis] = 1
         return np.copy(board), test
 
