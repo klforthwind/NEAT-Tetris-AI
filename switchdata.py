@@ -28,6 +28,7 @@ class SwitchData:
         self.lastBoard = np.zeros((20, 10), dtype = uchar)
         self.lastQueue = np.zeros((17,4), dtype = uchar)
         self.nextBlock = np.zeros((2,4), dtype = uchar)
+        self.movingBlock = np.zeros((2,4), dtype = uchar)
 
     # Start the capture thread
     def start(self):
@@ -61,6 +62,7 @@ class SwitchData:
     
     # Make and display boardArr, holdArr, and queueArr
     def processCapture(self):
+        self.movingBlock = self.getMovingBlock()
         
         # Read the capture card
         _, frame = self.cap.read()
@@ -80,14 +82,13 @@ class SwitchData:
         boardMat = np.zeros((640, 320), dtype = uchar)
         #Run through all 200 grid tiles
         tempArr = np.zeros((20,10), dtype = uchar)
-        blockDataa = self.getMovingBlock()
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
                 val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
                 tempArr[y][x] = val
                 # Fill in the correct tiles
-                colorVal = 128 if x in blockDataa[1] and (19 - y) in blockDataa[0] else 255
+                colorVal = 128 if x in self.movingBlock[1] and (19 - y) in self.movingBlock[0] else 255
                 for m in range(32):
                     if val == 0:
                         break
@@ -199,9 +200,8 @@ class SwitchData:
         return data
 
     def rotDiff(self):
-        movingBlock = self.getMovingBlock()
-        l1 = self.leftMost(self.zeroBlock(movingBlock))
-        l2 = self.leftMost(self.rotate(self.zeroBlock(movingBlock), 1))
+        l1 = self.leftMost(self.zeroBlock(self.movingBlock))
+        l2 = self.leftMost(self.rotate(self.zeroBlock(self.movingBlock), 1))
         return l2 - l1
 
     def rotate(self, blockData, rot):
@@ -234,8 +234,7 @@ class SwitchData:
         board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.getMovingBlock()
-        zeroed = self.zeroBlock(movingBlock)
+        zeroed = self.zeroBlock(self.movingBlock)
         fitness = -1
         move = (0, 0)
 
@@ -271,8 +270,7 @@ class SwitchData:
         board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
-        movingBlock = self.getMovingBlock()
-        zeroed = self.zeroBlock(movingBlock)
+        zeroed = self.zeroBlock(self.movingBlock)
         fitness = -1
         arr = [(0, 0), (0, 0)]
         self.didBlockChange()
@@ -332,7 +330,7 @@ class SwitchData:
 
     # Returns the left-most x value of current block
     def getXPos(self):
-        return self.leftMost(self.getMovingBlock())
+        return self.leftMost(self.movingBlock)
     
 # --------------------------------------------------------------------
     
