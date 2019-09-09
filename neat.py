@@ -45,6 +45,7 @@ class NEAT:
             del genome
         self.generation = generation
 
+    # Return the correct button inputs from the currentGenome
     def getMovements(self, capture, xPos, blockChange):
         return self.genomes[self.currentGenome].getButtons(capture, xPos, blockChange)
     
