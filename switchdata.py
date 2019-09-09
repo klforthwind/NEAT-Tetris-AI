@@ -93,7 +93,13 @@ class SwitchData:
                         boardMat[y * 32 + m][x * 32 + n] = 255
                 # Add dotted pattern
                 if x != 9 and y != 19:
-                    boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1 
+                    boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
+        blockDataa = self.getMovingBlock()
+        for ii in range(len(blockData[0]))
+            # Fill in the correct tiles
+            for m in range(32):
+                for n in range(32):
+                    boardMat[blockData[0][ii] * 32 + m][blockData[1][ii] * 32 + n] = 128
         # Show the board with opencv
         self.__boardArr = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
