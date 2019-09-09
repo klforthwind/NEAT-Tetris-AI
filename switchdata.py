@@ -151,6 +151,7 @@ class SwitchData:
 
     def clearLastBoard(self):
         self.lastBoard = np.zeros((20, 10), dtype = uchar)
+        self.lastQueue = np.zeros((17, 4), dtype = uchar)
 
     def updateLastBoard(self):
         self.lastBoard = np.copy(self.__boardArr)
@@ -159,8 +160,10 @@ class SwitchData:
                 if self.nextBlock[i][j] == 1 and self.lastBoard[i][j + 3] == 1:
                     self.lastBoard[i][j + 3] = 0
 
+    # Returns if the block being used has been placed (queue changes)
     def didBlockChange(self):
         qChange = 0
+        oldTileCount = np.sum(self.lastQueue)
         for i in range(17):
             for j in range(4):
                 if i < 2:
@@ -170,8 +173,8 @@ class SwitchData:
                 if self.__queueArr[i][j] != self.lastQueue[i][j]:
                     self.lastQueue[i][j] = self.__queueArr[i][j]
                     qChange += 1
-        tmp = qChange > 5
-        return tmp
+        tileCount = np.sum(self.lastQueue)
+        return qChange > 5 and tileCount > 20 and tileCount < 28 and oldTileCount > 20 and oldTileCount < 28
 
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
@@ -323,7 +326,7 @@ class SwitchData:
 
     # Determines if there is a piece that we can control
     def existsControllablePiece(self):
-        return np.sum(self.__boardArr) - np.sum(self.lastBoard) >= 3
+        return len(self.movingBlock[0]) == 4
 
     # Returns the left-most x value of current block
     def getXPos(self):
