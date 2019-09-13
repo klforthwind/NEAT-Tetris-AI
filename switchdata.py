@@ -62,7 +62,6 @@ class SwitchData:
     
     # Make and display boardArr, holdArr, and queueArr
     def processCapture(self):
-        self.movingBlock = self.getMovingBlock()
         
         # Read the capture card
         _, frame = self.cap.read()
@@ -82,13 +81,28 @@ class SwitchData:
         boardMat = np.zeros((640, 320), dtype = uchar)
         #Run through all 200 grid tiles
         tempArr = np.zeros((20,10), dtype = uchar)
+
+        # Make a copy of the tetris board
+        board, lBoard = self.__boardArr, self.lastBoard
+        # Create an empty numpy array to add the locations of moving block to
+        xyVals = np.zeros((2,0), dtype = uchar)
+        for y in range(20):
+            for x in range(10):
+                if board[y][x] == 1 : 
+                    # Save the coords of the filled block as [distance from bottom] and [x]
+                    
+                if len(xyVals[0]) == 4:
+
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
                 val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
                 tempArr[y][x] = val
-                # Fill in the correct tiles
-                colorVal = 128 if x in self.movingBlock[1] and (19 - y) in self.movingBlock[0] else 255
+
+                colorVal = 255
+                if val == 1 and lBoard[y][x] == 0: # Y = 0 refers to the top of the board
+                    xyVals = np.append(xyVals, [[19-y],[x], 1])
+                    colorVal = 128
                 for m in range(32):
                     if val == 0:
                         break
@@ -97,6 +111,8 @@ class SwitchData:
                 # Add dotted pattern
                 if x != 9 and y != 19:
                     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
+        
+        self.movingBlock = np.copy(xyVals)
         # Show the board with opencv
         self.__boardArr = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
@@ -109,7 +125,7 @@ class SwitchData:
         # Check every hold tile to see if its filled
         tempArr = np.zeros((2, 4))
         for y in range(2):
-            for x in range(4):
+            for x in range(4): 
                 tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
         self.__holdArr = np.copy(tempArr)
         del tempArr
@@ -207,12 +223,13 @@ class SwitchData:
         l2 = self.leftMost(self.rotate(self.zeroBlock(self.movingBlock), 1))
         return l2 - l1
 
-    def rotate(self, blockData, rot):
-        for r in range(rot):
-            yTemp = blockData[0]
-            blockData[0] = blockData[1]
-            for sec in range(len(blockData[0])):
-                blockData[1][sec] = 3 - yTemp[sec]
+    def rotate(self, blockData, rotationCount):
+        tempData = np.copy(blockData)
+        for r in range(rotationCount):
+            yTemp = tempData[0]
+            tempData[0] = tempData[1]
+            for index in range(len(blockData[0])):
+                blockData[1][index] = 3 - yTemp[index]
         return self.zeroBlock(blockData), self.getWidth(blockData)
 
     def getWidth(self, blockData):
@@ -308,21 +325,6 @@ class SwitchData:
 
     def leftMost(self, blockData):
         return np.amin(blockData[1])
-
-    # Returns a numpy array containing data on the moving block [yCoords][xCoords]
-    def getMovingBlock(self):
-        # Make a copy of the tetris board
-        board, lBoard = self.__boardArr, self.lastBoard
-        # Create an empty numpy array to add the locations of moving block to
-        xyVals = np.zeros((2,0), dtype = uchar)
-        for y in range(20):
-            for x in range(10):
-                if board[y][x] == 1 and lBoard[y][x] == 0: # Y = 0 refers to the top of the board
-                    # Save the coords of the filled block as [distance from bottom] and [x]
-                    xyVals = np.append(xyVals, [[19-y],[x], 1])
-                if len(xyVals[0]) == 4:
-                    return xyVals
-        return xyVals
 
     # Determines if there is a piece that we can control
     def existsControllablePiece(self):
