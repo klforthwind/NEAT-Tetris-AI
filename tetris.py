@@ -11,7 +11,6 @@ rng.seed(666)
 
 # Get a relative point of time
 t0 = time()
-t1 = time()
 
 # Connect to the Switch Capture, and run it asynchronously
 capture = SwitchData()
@@ -66,11 +65,9 @@ while True:
         blockChange = capture.didBlockChange()
         if blockChange:
             capture.updateLastBoard()
-        if placedBlock and time() - t1 > 0.5:
             placedBlock = False
-            t1 = time()
 
-        if capture.existsControllablePiece() and (not placedBlock or blockChange):
+        if capture.existsControllablePiece() and not placedBlock:
             
             # Perform movement since we can
             xPos = capture.getXPos()
@@ -83,7 +80,6 @@ while True:
 
             if btnArr[0] == 1:
                 placedBlock = True
-                t1 = time()
 
             # Send the correct button inputs
             emulator.emulateTetris(btnArr)

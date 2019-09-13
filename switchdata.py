@@ -25,6 +25,7 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10), dtype = uchar)
         self.__queueArr = np.zeros((17, 4), dtype = uchar)
         self.__holdArr = np.zeros((2, 4), dtype = uchar)
+        
         self.lastBoard = np.zeros((20, 10), dtype = uchar)
         self.lastQueue = np.zeros((17,4), dtype = uchar)
         self.nextBlock = np.zeros((2,4), dtype = uchar)
