@@ -25,7 +25,7 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10), dtype = uchar)
         self.__queueArr = np.zeros((17, 4), dtype = uchar)
         self.__holdArr = np.zeros((2, 4), dtype = uchar)
-        
+
         self.lastBoard = np.zeros((20, 10), dtype = uchar)
         self.lastQueue = np.zeros((17,4), dtype = uchar)
         self.nextBlock = np.zeros((2,4), dtype = uchar)
@@ -84,24 +84,22 @@ class SwitchData:
         tempArr = np.zeros((20,10), dtype = uchar)
 
         # Make a copy of the tetris board
-        board, lBoard = self.__boardArr, self.lastBoard
+        lBoard = self.lastBoard
         # Create an empty numpy array to add the locations of moving block to
         xyVals = np.zeros((2,0), dtype = uchar)
-        for y in range(20):
-            for x in range(10):
-                if board[y][x] == 1 : 
-                    # Save the coords of the filled block as [distance from bottom] and [x]
-                    
-                if len(xyVals[0]) == 4:
 
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
-                val = 1 if board[32 * y + 4][32 * x + 4] > 0 and board[32 * y + 28][32 * x + 4] > 0 and board[32 * y + 4][32 * x + 28] > 0 and board[32 * y + 28][32 * x + 28] > 0 else 0
+                val = 1 if (board[32 * y + 4][32 * x + 4] > 0 and 
+                board[32 * y + 28][32 * x + 4] > 0 and 
+                board[32 * y + 4][32 * x + 28] > 0 and 
+                board[32 * y + 28][32 * x + 28] > 0) else 0
                 tempArr[y][x] = val
 
-                colorVal = 255
+                colorVal = val * 255
                 if val == 1 and lBoard[y][x] == 0: # Y = 0 refers to the top of the board
+                    # Save the coords of the filled block as [distance from bottom] and [x]
                     xyVals = np.append(xyVals, [[19-y],[x], 1])
                     colorVal = 128
                 for m in range(32):
