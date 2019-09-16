@@ -62,6 +62,8 @@ class Genome:
                 yikes = True
                 self.list.pop(0)
                 arr[0] = 1
+                if len(self.list > 0):
+                    print(self.list[0])
         if len(self.list) > 0 and not yikes:
             self.list[0] = info
         return arr

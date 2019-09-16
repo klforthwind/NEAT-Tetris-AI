@@ -96,7 +96,7 @@ class SwitchData:
                 colorVal = val * 255
                 if val == 1 and lBoard[y][x] == 0: # Y = 0 refers to the top of the board
                     # Save the coords of the filled block as [distance from bottom] and [x]
-                    xyVals = np.append(xyVals, [[19-y],[x], 1])
+                    xyVals = np.append(xyVals, [[19-y],[x]], 1)
                     colorVal = 128
                 for m in range(32):
                     if val == 0:
@@ -276,7 +276,7 @@ class SwitchData:
                 fit = self.getFitness(theboard, nodeNet)
                 if  fit >= fitness:
                     fitness = fit
-                    move = (x1, r1)
+                    move = (r1, 0 ,x1)
         return move
 
     # Returns initial good placements
@@ -307,7 +307,7 @@ class SwitchData:
                             arr = []
                             tup1 = (r1, 0, x1)
                             arr.append(tup1)
-                            tup2 = (r2, 0 x2)
+                            tup2 = (r2, 0, x2)
                             arr.append(tup2)
                         del newBoard2
                     del b2
