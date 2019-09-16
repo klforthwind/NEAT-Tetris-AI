@@ -169,6 +169,7 @@ class SwitchData:
         self.nextBlock = np.zeros((2,4), dtype = uchar)
         self.movingBlock = np.zeros((2,4), dtype = uchar)
 
+    # Make sure the block in hand doesnt show up on the board to plan things out
     def updateLastBoard(self):
         self.lastBoard = np.copy(self.__boardArr)
         for i in range(2):
