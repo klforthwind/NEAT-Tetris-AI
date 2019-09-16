@@ -337,24 +337,16 @@ class SwitchData:
         return fitness
 
     def getLowestBlocks(self, blockData, width):
-
+        blockData = self.zero(blockData)
         b = blockData.reshape(200)[::-1]
         b = blockData.reshape(20, 10)
 
-        heights = np.argmax(b, axis=0)
+        lowest = np.argmax(b, axis=0)
         return np.subtract(19, heights)
 
 
         arr = np.zeros((int(width)), dtype = uchar)
-        blockData = self.zero(blockData)
-        high = np.amax(blockData[0])
-        for l in range(int(width)):
-            low = 20
-            for i in range(len(blockData[0])):
-                if blockData[1][i] == l:
-                    if blockData[0][i] < low:
-                        low = blockData[0][i]
-            arr[l] = low
+        
         return (arr, high)
 
 # --------------------------------------------------------------------
