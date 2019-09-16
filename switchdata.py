@@ -270,7 +270,7 @@ class SwitchData:
         qBlocks = self.getQueueBlocks()
         firstBlock = self.zero(self.movingBlock)
         fitness = -1
-        arr = []
+        moveArr = []
         
         for r1 in range(4):
             b1, width = self.rotate(firstBlock, r1)
@@ -336,6 +336,14 @@ class SwitchData:
         return fitness
 
     def getLowestBlocks(self, blockData, width):
+
+        b = blockData.reshape(200)[::-1]
+        b = blockData.reshape(20, 10)
+
+        heights = np.argmax(b, axis=0)
+        return np.subtract(19, heights)
+
+
         arr = np.zeros((int(width)), dtype = uchar)
         blockData = self.zero(blockData)
         high = np.amax(blockData[0])
