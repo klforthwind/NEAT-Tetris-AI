@@ -64,12 +64,9 @@ while True:
             capture.updateLastBoard()
 
         if capture.existsControllablePiece():
-            
+
             # Get the button array of recommended moves
             btnArr = neat.getMovements(capture, blockChange)
-
-            if btnArr[0] == 1:
-                placedBlock = True
 
             # Send the correct button inputs
             emulator.emulateTetris(btnArr)

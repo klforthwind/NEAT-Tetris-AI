@@ -46,8 +46,8 @@ class NEAT:
         self.generation = generation
 
     # Return the correct button inputs from the currentGenome
-    def getMovements(self, capture, xPos, blockChange):
-        return self.genomes[self.currentGenome].getButtons(capture, xPos, blockChange)
+    def getMovements(self, capture, blockChange):
+        return self.genomes[self.currentGenome].getButtons(capture, blockChange)
     
     def printFitness(self):
         self.genomes[self.currentGenome].fitness += time() - self.t
