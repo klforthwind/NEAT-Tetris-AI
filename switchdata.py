@@ -211,8 +211,8 @@ class SwitchData:
             yTemp = tempData[0]
             tempData[0] = tempData[1]
             for index in range(len(blockData[0])):
-                blockData[1][index] = 3 - yTemp[index]
-        return self.zero(blockData), self.getWidth(blockData)
+                tempData[1][index] = 3 - yTemp[index]
+        return self.zero(tempData), self.getWidth(tempData)
 
     def getWidth(self, blockData):
         return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
