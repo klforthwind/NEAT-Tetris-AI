@@ -32,9 +32,6 @@ else:
 port = "COM3"
 emulator = Emulator(port)
 
-placedBlock = False
-pos = 0
-
 # Main code loop :)
 while True:
     
@@ -65,18 +62,11 @@ while True:
         blockChange = capture.didBlockChange()
         if blockChange:
             capture.updateLastBoard()
-            placedBlock = False
 
-        if capture.existsControllablePiece() and not placedBlock:
+        if capture.existsControllablePiece():
             
-            # Perform movement since we can
-            xPos = capture.getXPos()
-
-            if blockChange:
-                pos = xPos
-
             # Get the button array of recommended moves
-            btnArr = neat.getMovements(capture, pos, blockChange)
+            btnArr = neat.getMovements(capture, blockChange)
 
             if btnArr[0] == 1:
                 placedBlock = True

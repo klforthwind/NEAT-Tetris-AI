@@ -208,17 +208,12 @@ class SwitchData:
         return heights
 
     # Get x and y values closest to 0 without breaking formation
-    def zeroBlock(self, blockData):
+    def zero(self, blockData):
         data = np.copy(blockData)
         lows = np.amin(data, axis=1)
         data[0] -= lows[0]
         data[1] -= lows[1]
         return data
-
-    def rotDiff(self):
-        l1 = self.leftMost(self.zeroBlock(self.movingBlock))
-        l2 = self.leftMost(self.rotate(self.zeroBlock(self.movingBlock), 1))
-        return l2 - l1
 
     def rotate(self, blockData, rotationCount):
         tempData = np.copy(blockData)
@@ -227,7 +222,7 @@ class SwitchData:
             tempData[0] = tempData[1]
             for index in range(len(blockData[0])):
                 blockData[1][index] = 3 - yTemp[index]
-        return self.zeroBlock(blockData), self.getWidth(blockData)
+        return self.zero(blockData), self.getWidth(blockData)
 
     def getWidth(self, blockData):
         return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
@@ -251,7 +246,7 @@ class SwitchData:
         board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
-        zeroed = self.zeroBlock(self.movingBlock)
+        zeroed = self.zero(self.movingBlock)
         fitness = -1
         move = (0, 0)
 
@@ -259,23 +254,25 @@ class SwitchData:
         for item in range(len(thelist)):
             if item == 0:
                 b1, width = self.rotate(np.copy(zeroed), thelist[item][1])
-                theboard, test = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
-                if test == False:
+                xval = thelist[item][0]
+                if np.amax(heights[xval:xval + width]) > 16:
                     continue
+                theboard = self.getNewBoard(heights, xval, b1, width, theboard)
             else:
                 heights = self.getHeights(theboard)
                 b1, width = self.rotate(np.copy(self.analyzeQBlock(qBlocks[item - 1])), thelist[item][1])
-                theboard, test = self.getNewBoard(heights, thelist[item][0], b1, width, theboard)
-                if test == False:
+                xval = thelist[item][0]
+                if np.amax(heights[xval:xval + width]) > 16:
                     continue
+                theboard = self.getNewBoard(heights, xval, b1, width, theboard)
         newBlock = qBlocks[len(thelist) - 1]
         heights = self.getHeights(theboard)
         for r1 in range(4):
             b1, width = self.rotate(np.copy(self.analyzeQBlock(newBlock)), r1)
             for x1 in range(int(11 - width)):
-                theboard, test = self.getNewBoard(heights, x1, b1, width, theboard)
-                if test == False:
+                if np.amax(heights[x1:x1 + width]) > 16:
                     continue
+                theboard = self.getNewBoard(heights, x1, b1, width, theboard)
                 fit = self.getFitness(theboard, nodeNet)
                 if  fit >= fitness:
                     fitness = fit
@@ -287,30 +284,30 @@ class SwitchData:
         board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
-        zeroed = self.zeroBlock(self.movingBlock)
+        zeroed = self.zero(self.movingBlock)
         fitness = -1
-        arr = [(0, 0), (0, 0)]
-        self.didBlockChange()
+        arr = []
         
         for r1 in range(4):
             b1, width = self.rotate(np.copy(zeroed), r1)
             for x1 in range(int(11 - width)):
-                newBoard, test = self.getNewBoard(heights, x1, b1, width, lBoard)
-                if test == False:
+                if np.amax(heights[x1:x1 + width]) > 16:
                     continue
-                heights = self.getHeights(newBoard)
+                newBoard = self.getNewBoard(heights, x1, b1, width, lBoard)
+                newHeights = self.getHeights(newBoard)
                 for r2 in range(4):
                     b2, width2 = self.rotate(np.copy(self.analyzeQBlock(qBlocks[0])), r2)
                     for x2 in range(int(11 - width2)):
-                        newBoard2, test = self.getNewBoard(heights, x2, b2, width2, newBoard)
-                        if test == False:
+                        if np.amax(heights[x2:x2 + width]) > 16:
 	                        continue
+                        newBoard2 = self.getNewBoard(newHeights, x2, b2, width2, newBoard)
                         fit = self.getFitness(newBoard2, nodeNet)
                         if  fit >= fitness:
                             fitness = fit
-                            tup1 = (x1, r1)
+                            arr = []
+                            tup1 = (r1, 0, x1)
                             arr.append(tup1)
-                            tup2 = (x2, r2)
+                            tup2 = (r2, 0 x2)
                             arr.append(tup2)
                         del newBoard2
                     del b2
@@ -320,17 +317,10 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
-    def leftMost(self, blockData):
-        return np.amin(blockData[1])
-
     # Determines if there is a piece that we can control
     def existsControllablePiece(self):
         return len(self.movingBlock[0]) == 4
 
-    # Returns the left-most x value of current block
-    def getXPos(self):
-        return self.leftMost(self.movingBlock)
-    
 # --------------------------------------------------------------------
     
     def getFitness(self, board, nodeNet):
@@ -363,7 +353,7 @@ class SwitchData:
 
     def getLowestBlocks(self, blockData, width):
         arr = np.zeros((int(width)), dtype = uchar)
-        blockData = self.zeroBlock(blockData)
+        blockData = self.zero(blockData)
         high = np.amax(blockData[0])
         for l in range(int(width)):
             low = 20
@@ -384,26 +374,17 @@ class SwitchData:
         high = 0
         height = 0
         yOrigin = 0
-        test = True
         for col in range(int(width)):
-            if x + col < 10 and x + col > -1:
-                correctCol = x + col
-            else:
-                correctCol = 9
-            val = heights[correctCol] + (highBoi - lowestBlocks[col])
+            val = heights[x + col] + (highBoi - lowestBlocks[col])
             if val > high:
                 high = val
-                height = heights[correctCol]
+                height = heights[x + col]
                 yOrigin = lowestBlocks[col]
         for i in range(len(b1[0])):
-            yAxis = int(self.zeroBlock(b1)[0][i] - yOrigin + height)
-            xAxis = int(x + self.zeroBlock(b1)[1][i])
-            xAxis = xAxis if xAxis < 10 else 9
-            if yAxis > 19:
-                test = False
-            if yAxis < 19 and yAxis > 0 and xAxis > -1 and xAxis < 10:
-                board[19 - yAxis][xAxis] = 1
-        return np.copy(board), test
+            yAxis = int(self.zero(b1)[0][i] - yOrigin + height)
+            xAxis = int(x + self.zero(b1)[1][i])
+            board[19 - yAxis][xAxis] = 1
+        return np.copy(board)
 
 # --------------------------------------------------------------------
 
