@@ -194,21 +194,8 @@ class SwitchData:
 
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
-        heights = np.zeros((10))
-        # Iterate over all of the columns
-        for x in range(len(heights)):
-            maxH = 0
-            # Iterate over the whole board
-            for y in range(20):
-                # Get the correct index for the board array
-                h = y
-                if board[h][x] == 1:
-                    # Set the height of column to the highest filled block (bottom = 0)
-                    maxH = 19 - y
-                    break
-            # Save the height to the heights array
-            heights[x] = maxH
-        return heights
+        heights = np.argmax(board, axis=0)
+        return np.subtract(19, heights)
 
     # Get x and y values closest to 0 without breaking formation
     def zero(self, blockData):
