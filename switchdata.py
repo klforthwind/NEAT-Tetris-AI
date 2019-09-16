@@ -87,10 +87,13 @@ class SwitchData:
         for y in range(20):
             for x in range(10):
                 # Get correct value of the indexed tiles
-                val = 1 if (board[32 * y + 4][32 * x + 4] > 0 and 
-                board[32 * y + 28][32 * x + 4] > 0 and 
-                board[32 * y + 4][32 * x + 28] > 0 and 
-                board[32 * y + 28][32 * x + 28] > 0) else 0
+                val = 1
+                valArr = [4, 16, 28]
+                for i in valArr:
+                    for j in valArr:
+                        if board[32 * y + i][32 * x + j] == 0:
+                            val = 0
+                            break
                 tempArr[y][x] = val
 
                 colorVal = val * 255
@@ -253,14 +256,14 @@ class SwitchData:
         theboard = np.copy(lBoard)
         for item in range(len(thelist)):
             if item == 0:
-                b1, width = self.rotate(np.copy(zeroed), thelist[item][1])
+                b1, width = self.rotate(zeroed, thelist[item][1])
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
                 theboard = self.getNewBoard(heights, xval, b1, width, theboard)
             else:
                 heights = self.getHeights(theboard)
-                b1, width = self.rotate(np.copy(self.analyzeQBlock(qBlocks[item - 1])), thelist[item][1])
+                b1, width = self.rotate(self.analyzeQBlock(qBlocks[item - 1]), thelist[item][1])
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
@@ -268,7 +271,7 @@ class SwitchData:
         newBlock = qBlocks[len(thelist) - 1]
         heights = self.getHeights(theboard)
         for r1 in range(4):
-            b1, width = self.rotate(np.copy(self.analyzeQBlock(newBlock)), r1)
+            b1, width = self.rotate(self.analyzeQBlock(newBlock), r1)
             for x1 in range(int(11 - width)):
                 if np.amax(heights[x1:x1 + width]) > 16:
                     continue
@@ -284,19 +287,19 @@ class SwitchData:
         board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
-        zeroed = self.zero(self.movingBlock)
+        firstBlock = self.zero(self.movingBlock)
         fitness = -1
         arr = []
         
         for r1 in range(4):
-            b1, width = self.rotate(np.copy(zeroed), r1)
+            b1, width = self.rotate(firstBlock, r1)
             for x1 in range(int(11 - width)):
                 if np.amax(heights[x1:x1 + width]) > 16:
                     continue
                 newBoard = self.getNewBoard(heights, x1, b1, width, lBoard)
                 newHeights = self.getHeights(newBoard)
                 for r2 in range(4):
-                    b2, width2 = self.rotate(np.copy(self.analyzeQBlock(qBlocks[0])), r2)
+                    b2, width2 = self.rotate(self.analyzeQBlock(qBlocks[0]), r2)
                     for x2 in range(int(11 - width2)):
                         if np.amax(heights[x2:x2 + width]) > 16:
 	                        continue
