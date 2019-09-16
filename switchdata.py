@@ -277,6 +277,7 @@ class SwitchData:
                 if  fit >= fitness:
                     fitness = fit
                     move = (r1, 0 ,x1)
+                    print(theboard)
         return move
 
     # Returns initial good placements

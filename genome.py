@@ -30,6 +30,8 @@ class Genome:
 
     def handleMoves(self, capture, blockChange):
         # This should only happen once
+        if len(self.list) < 7:
+            self.hitSeven = False
         if len(self.list) == 0 and blockChange:
             data = capture.getBestMoves(self.nodeNet)
             self.list.append(data[0])
@@ -62,8 +64,7 @@ class Genome:
                 yikes = True
                 self.list.pop(0)
                 arr[0] = 1
-                if len(self.list) > 0:
-                    print(self.list[0])
+                print(self.list)
         if len(self.list) > 0 and not yikes:
             self.list[0] = info
         return arr
