@@ -218,16 +218,8 @@ class SwitchData:
         return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
     
     def analyzeQBlock(self, qBlock):
-        newData = np.zeros((2, 4), dtype = uchar)
-        foundBlocks = 0
-        for j in range(2):
-            for i in range(4):
-                if qBlock[j][i] == 1:
-                    newData[0][foundBlocks] = 1 - j
-                    newData[1][foundBlocks] = i
-
-                if foundBlocks == 4:
-                        break
+        newData = np.nonzero(qBlock)
+        newData[0] = np.subtract(1, newData[0])
         return newData
 
 # --------------------------------------------------------------------
