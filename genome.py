@@ -46,7 +46,7 @@ class Genome:
         self.handleMoves(capture, blockChange)
         arr = np.zeros(self.outputNodes)
         yikes = False
-        if len(self.list)>0:
+        if len(self.list) > 0:
             info = self.list[0]
             if info[0] != 0:
                 arr[6] = 1

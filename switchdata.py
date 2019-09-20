@@ -338,11 +338,14 @@ class SwitchData:
 
     def getLowestBlocks(self, blockData, width):
         blockData = self.zero(blockData)
-        b = blockData.reshape(200)[::-1]
-        b = blockData.reshape(20, 10)
+        maxx = np.amax(blockData[1])
+        highest = np.amax(blockData[0])
+        lowest = np.zeros((maxx))
 
-        lowest = np.argmax(b, axis=0)
-        return np.subtract(19, heights)
+        for i in range(maxx + 1):
+            lowest[i] = highest
+            for t in range(len(blockData[0])):
+                if 
 
 
         arr = np.zeros((int(width)), dtype = uchar)
