@@ -6,7 +6,7 @@ import numpy.random as rng
 from neat import NEAT
 from time import time
 
-# Controlled randomness, doesn't matter that much with Tetris tho
+# Controlled randomness, doesn't matter that much with Tetris though, since tetris block placement is random
 rng.seed(666)
 
 # Get a relative point of time
