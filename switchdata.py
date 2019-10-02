@@ -378,7 +378,6 @@ class SwitchData:
 
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self):
-        row = 0
         blocks = np.zeros((6, 2, 4), dtype = uchar)
         for i in range(17):
             if i % 3 == 2:
@@ -387,8 +386,8 @@ class SwitchData:
                 row = i % 3
                 block = int((i - row) / 3)
                 blocks[block][row][j] = self.__queueArr[i][j]
-        for i in range(6):
-            blocks[i] = self.analyzeQBlock(blocks[i])
+        for b in range(6):
+            blocks[b] = self.analyzeQBlock(blocks[b])
         return blocks
                 
 # --------------------------------------------------------------------  
