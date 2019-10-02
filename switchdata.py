@@ -381,14 +381,13 @@ class SwitchData:
         row = 0
         blocks = np.zeros((6, 2, 4), dtype = uchar)
         for i in range(17):
+            if i % 3 == 2:
+                continue
             for j in range(4):
-                if (i + 1) % 3 == 0:
-                    break
                 queueNum =int((row - (row % 2)) / 2)
                 rowOfBlock = int(row % 2)
                 blocks[queueNum][rowOfBlock][j] = self.__queueArr[i][j]
-            if (i + 1) % 3 != 0:
-                row += 1
+            row += 1
         for i in range(6):
             blocks[i] = self.analyzeQBlock(blocks[i])
         return blocks
