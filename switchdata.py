@@ -384,10 +384,9 @@ class SwitchData:
             if i % 3 == 2:
                 continue
             for j in range(4):
-                queueNum =int((row - (row % 2)) / 2)
-                rowOfBlock = int(row % 2)
-                blocks[queueNum][rowOfBlock][j] = self.__queueArr[i][j]
-            row += 1
+                row = i % 3
+                block = int((i - row) / 3)
+                blocks[block][row][j] = self.__queueArr[i][j]
         for i in range(6):
             blocks[i] = self.analyzeQBlock(blocks[i])
         return blocks
