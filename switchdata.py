@@ -1,5 +1,6 @@
+from numpy import uint8
+import DataHandler
 import numpy as np
-from numpy import uint8 as uchar
 import threading
 import cv2
 
@@ -22,9 +23,10 @@ class SwitchData:
         # Set image processing variables
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
-        self.__boardArr = np.zeros((20, 10), dtype = uchar)
-        self.__queueArr = np.zeros((17, 4), dtype = uchar)
-        self.__holdArr = np.zeros((2, 4), dtype = uchar)
+        self.__boardArr = np.zeros((20, 10), dtype = uint8)
+        self.__queueArr = np.zeros((17, 4), dtype = uint8)
+        self.__holdArr = np.zeros((2, 4), dtype = uint8)
+        self.datahandler = DataHandler()
         self.clearLastBoard()
 
     # Start the capture thread
@@ -60,16 +62,12 @@ class SwitchData:
     # Make and display boardArr, holdArr, and queueArr
     def processCapture(self):
         
-        # Read the capture card
-        _, frame = self.cap.read()
+        _, frame = self.cap.read()                      # Read the capture card
+        cv2.imshow('Frame', frame)                      # Show the capture card
 
-        # Show the capture card
-        cv2.imshow('Frame', frame)
-        
-        # Process the board, hold, and queue
-        self.__makeBoard(frame[40:680, 480:800])
-        self.__makeHold(frame[80:120, 396:468])
-        self.__makeQueue(frame[80:390, 815:880])
+        self.__makeBoard(frame[40:680, 480:800])        # Process and show the board
+        self.__makeHold(frame[80:120, 396:468])         # Process the hold
+        self.__makeQueue(frame[80:390, 815:880])        # Process the queue
 
     def __makeBoard(self, frame):
         board = self.__handleCanvas(frame)
@@ -152,14 +150,9 @@ class SwitchData:
         del queue
 
     def __handleCanvas(self, canvas):
-        # Make a mat that only shows the canvas
-        tempCanvas = canvas
-
-        # Convert the queue to Hue Luminance and Saturation Mode
-        tempCanvas = cv2.cvtColor(tempCanvas, cv2.COLOR_BGR2HLS)
-
-        # Only get the luminant parts of the board
-        return cv2.inRange(tempCanvas, np.array([0,54,0]), np.array([255,255,255]))
+        tempCanvas = canvas                                                         # Make a mat that only shows the canvas
+        tempCanvas = cv2.cvtColor(tempCanvas, cv2.COLOR_BGR2HLS)                    # Convert the queue to Hue Luminance and Saturation Mode
+        return cv2.inRange(tempCanvas, np.array([0,54,0]), np.array([255,255,255])) # Only get the luminant parts of the board
 
 # --------------------------------------------------------------------
 
