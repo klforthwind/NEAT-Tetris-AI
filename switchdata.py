@@ -130,28 +130,26 @@ class SwitchData:
     def __makeQueue(self, frame):
         queue = self.__handleCanvas(frame)
         
-        queueMat = np.zeros((310, 65), dtype = uchar)
-        tempArr = np.zeros((17, 4), dtype = uchar)
-        for i in range(17):
-            # level = 0
-            for j in range(4):
-                if (i + 1) % 3 == 0:
-                    continue
-                val = 1 if queue[self.arr2[i] + 8][16 * j + 8] > 0 else 0
-                tempArr[i][j] = val
-                for m in range(self.arr[i]):
-                    if val == 0:
-                        break
+        queueMat = np.zeros((310, 65), dtype = uchar)                               # Queue Mat to display to the screen
+        tempArr = np.zeros((17, 4), dtype = uchar)                                  # Array to hold which tiles in queue are filled
+        for i in range(17):                                                         # Iterate over all of the rows
+            for j in range(4):                                                      # Iterate over the four tiles in a row
+                if i % 3 == 2:                                                      # Check to see if i is on an empty space in between blocks
+                    continue                                                        # Go to next row, so we don't handle bad row data
+                val = 1 if queue[self.arr2[i] + 8][16 * j + 8] > 0 else 0           # Obtain whether a given tile is filled or not
+                tempArr[i][j] = val                                                 # Add tile status to queue array
+                if val == 0:                                                        # Check to see if the tile is not filled
+                    continue                                                        # Continue to the next tile, since we don't need to draw in the tile
+                for m in range(self.arr[i]):                                        # Iterate over the tile in queueMat and draw a square where a tile exists
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
-        self.__queueArr = np.copy(tempArr)
-        cv2.imshow('Queue', queueMat)
-        del tempArr
+        self.__queueArr = np.copy(tempArr)                                          # Save the queueArr globally
+        cv2.imshow('Queue', queueMat)                                               # Show the queue
+        del tempArr                                                                 # Delete the temporary array
         del queue
 
     def __handleCanvas(self, canvas):
-        tempCanvas = canvas                                                         # Make a mat that only shows the canvas
-        tempCanvas = cv2.cvtColor(tempCanvas, cv2.COLOR_BGR2HLS)                    # Convert the queue to Hue Luminance and Saturation Mode
+        tempCanvas = cv2.cvtColor(canvas, cv2.COLOR_BGR2HLS)                        # Convert the queue to Hue Luminance and Saturation Mode
         return cv2.inRange(tempCanvas, np.array([0,54,0]), np.array([255,255,255])) # Only get the luminant parts of the board
 
 # --------------------------------------------------------------------
