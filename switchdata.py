@@ -57,9 +57,7 @@ class SwitchData:
 
 # --------------------------------------------------------------------
     
-    # Make and display boardArr, holdArr, and queueArr
-    def processCapture(self):
-        
+    def processCapture(self):                                                       # Make and display boardArr, holdArr, and queueArr
         _, frame = self.cap.read()                                                  # Read the capture card
         cv2.imshow('Frame', frame)                                                  # Show the capture card
 
@@ -69,7 +67,6 @@ class SwitchData:
 
     def __makeBoard(self, frame):
         board = self.__handleCanvas(frame)                                          # Add a luminance mask to the board mat
-        
         boardMat = np.zeros((640, 320), dtype = uint8)                              # Attempt to make a less noisy mask
         tempArr = np.zeros((20,10), dtype = uint8)                                  #Run through all 200 grid tiles
         lBoard = self.lastBoard                                                     # Make a copy of the tetris board
@@ -81,7 +78,7 @@ class SwitchData:
                 valArr = [4, 16, 28]
                 for i in valArr:
                     for j in valArr:
-                        if board[32 * y + i][32 * x + j] == 0:
+                        if board[32 * y + i][32 * x + j] == 0:                      # See if tile as specific pixel is filled or not
                             val = 0
                             break
                 tempArr[y][x] = val                                                 # Add to board array whether the tile was filled or not
@@ -90,9 +87,6 @@ class SwitchData:
                 if val == 1 and lBoard[y][x] == 0:                                  # Y = 0 refers to the top of the board
                     xyVals = np.append(xyVals, [[19-y],[x]], 1)                     # Save the coords of the filled block as [distance from bottom] and [x]
                     colorVal = 128                                                  # Set the color of the moving block to grey, so it is much more visible on the mat
-                # Add dotted pattern
-                # if x != 9 and y != 19:
-                #     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
                 if val == 0:                                                        # Skip coloring if tile is empty
                     continue
                 for m in range(32):                                                 # Color the tile if it is filled
@@ -158,20 +152,22 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
+# TODO: Add functions that were moved to DataHandler
+
+# --------------------------------------------------------------------
+
     # Determines if there is a piece that we can control
     def existsControllablePiece(self):
         return len(self.movingBlock[0]) == 4
 
-# --------------------------------------------------------------------  
-
-    def isDead(self):
+    def isDead(self):                                                               # Returns true if row 5 and row 10 (top starting at row 0) are both filled
         return np.amin(self.__boardArr[5]) == 1 and np.amin(self.__boardArr[10]) == 1
     
-    def shouldQuit(self):
+    def shouldQuit(self):                                                           # Returns true if the q button is pressed
         return cv2.waitKey(1) & 0xFF == ord('q')
 
-    def shouldPressA(self):
+    def shouldPressA(self):                                                         # Returns true if the a button is pressed
         return cv2.waitKey(1) & 0xFF == ord('a')
 
-    def __exit__(self, exec_type, exc_value, traceback):
+    def __exit__(self, exec_type, exc_value, traceback):                            # Exits out of the opencv capture once program is over
         self.cap.release()
