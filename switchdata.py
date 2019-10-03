@@ -72,10 +72,10 @@ class SwitchData:
     def __makeBoard(self, frame):
         board = self.__handleCanvas(frame)                                          # Add a luminance mask to the board mat
         
-        boardMat = np.zeros((640, 320), dtype = uchar)                              # Attempt to make a less noisy mask
-        tempArr = np.zeros((20,10), dtype = uchar)                                  #Run through all 200 grid tiles
+        boardMat = np.zeros((640, 320), dtype = uint8)                              # Attempt to make a less noisy mask
+        tempArr = np.zeros((20,10), dtype = uint8)                                  #Run through all 200 grid tiles
         lBoard = self.lastBoard                                                     # Make a copy of the tetris board
-        xyVals = np.zeros((2,0), dtype = uchar)                                     # Create an empty numpy array to add the locations of moving block to
+        xyVals = np.zeros((2,0), dtype = uint8)                                     # Create an empty numpy array to add the locations of moving block to
 
         for y in range(20):                                                         # Iterate over each row of the board
             for x in range(10):                                                     # Iterate over each tile in a row    
@@ -101,11 +101,10 @@ class SwitchData:
                     for n in range(32):
                         boardMat[y * 32 + m][x * 32 + n] = colorVal
         
-        self.movingBlock = np.copy(xyVals)
-        # Show the board with opencv
-        self.__boardArr = np.copy(tempArr)
-        cv2.imshow('Board', boardMat)
-        del tempArr
+        self.movingBlock = np.copy(xyVals)                                          # Create a copy of xyVals that other functions can access
+        self.__boardArr = np.copy(tempArr)                                          # Show the board with opencv
+        cv2.imshow('Board', boardMat)                                               # Show the board
+        del tempArr                                                                 # Delete the temporary array
         del board
 
     def __makeHold(self, frame):
@@ -115,15 +114,15 @@ class SwitchData:
         for y in range(2):                                                          # Iterate over the two rows of the hold block
             for x in range(4):                                                      # Iterate over the four tiles in a row
                 tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0       # Set the value in the temp array to whether the hold block was filled at the specific tile
-        self.__holdArr = np.copy(tempArr)                                           # Create a copy of temp array
+        self.__holdArr = np.copy(tempArr)                                           # Create a copy of temp array that other functions can access
         del tempArr                                                                 # Delete the temporary array
         del hold
 
     def __makeQueue(self, frame):
         queue = self.__handleCanvas(frame)                                          # Add a luminance mask to the queue mat
         
-        queueMat = np.zeros((310, 65), dtype = uchar)                               # Queue Mat to display to the screen
-        tempArr = np.zeros((17, 4), dtype = uchar)                                  # Array to hold which tiles in queue are filled
+        queueMat = np.zeros((310, 65), dtype = uint8)                               # Queue Mat to display to the screen
+        tempArr = np.zeros((17, 4), dtype = uint8)                                  # Array to hold which tiles in queue are filled
         for i in range(17):                                                         # Iterate over all of the rows
             for j in range(4):                                                      # Iterate over the four tiles in a row
                 if i % 3 == 2:                                                      # Check to see if i is on an empty space in between blocks
@@ -135,7 +134,7 @@ class SwitchData:
                 for m in range(self.arr[i]):                                        # Iterate over the tile in queueMat and draw a square where a tile exists
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
-        self.__queueArr = np.copy(tempArr)                                          # Save the queueArr globally
+        self.__queueArr = np.copy(tempArr)                                          # Create a copy of temp array that other functions can access
         cv2.imshow('Queue', queueMat)                                               # Show the queue
         del tempArr                                                                 # Delete the temporary array
         del queue
@@ -146,19 +145,18 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
-    def clearLastBoard(self):
-        self.lastBoard = np.zeros((20, 10), dtype = uchar)
-        self.lastQueue = np.zeros((17,4), dtype = uchar)
-        self.nextBlock = np.zeros((2,4), dtype = uchar)
-        self.movingBlock = np.zeros((2,4), dtype = uchar)
+    def clearLastBoard(self):                                                       # Clear the last board data
+        self.lastBoard = np.zeros((20, 10), dtype = uint8)                          # Reset values for the last board
+        self.lastQueue = np.zeros((17,4), dtype = uint8)                            # Reset values for the last queue
+        self.nextBlock = np.zeros((2,4), dtype = uint8)                             # Reset values for the next block
+        self.movingBlock = np.zeros((2,4), dtype = uint8)                           # Reset values for the moving block
 
-    # Make sure the block in hand doesnt show up on the board to plan things out
     def updateLastBoard(self):
-        self.lastBoard = np.copy(self.__boardArr)
-        for i in range(2):
+        self.lastBoard = np.copy(self.__boardArr)                                   # Copy over the board array into the last board, since the current block just got placed
+        for i in range(2):                                                          # Iterate over the tiles that the new tetris block spawns at
             for j in range(4):
-                if self.nextBlock[i][j] == 1 and self.lastBoard[i][j + 3] == 1:
-                    self.lastBoard[i][j + 3] = 0
+                if self.nextBlock[i][j] == 1 and self.lastBoard[i][j + 3] == 1:     # If the tile exists on the new block in hand, and it is filled on the last board, it should not be filled on the last board
+                    self.lastBoard[i][j + 3] = 0                                    # Set the conflicting tile to not filled
 
     # Returns if the block being used has been placed (queue changes)
     def didBlockChange(self):
@@ -301,7 +299,7 @@ class SwitchData:
                 if 
 
 
-        arr = np.zeros((int(width)), dtype = uchar)
+        arr = np.zeros((int(width)), dtype = uint8)
         
         return (arr, high)
 
