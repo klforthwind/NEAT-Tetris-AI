@@ -1,7 +1,7 @@
 from numpy import uint8
 import numpy as np
 
-class ImageHandler:
+class DataHandler:
 
     #Initialize if needed
     # def __init__(self):
@@ -65,9 +65,6 @@ class ImageHandler:
                     qChange += 1
         tileCount = np.sum(self.lastQueue)
         return qChange > 5 and tileCount > 20 and tileCount < 28 and oldTileCount > 20 and oldTileCount < 28
-
-
-
 
     def getNextBestMove(self, thelist, nodeNet):
         board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
@@ -184,7 +181,6 @@ class ImageHandler:
             lowest[i] = highest
             for t in range(len(blockData[0])):
                 if 
-
 
         arr = np.zeros((int(width)), dtype = uint8)
         
