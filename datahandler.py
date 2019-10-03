@@ -6,6 +6,12 @@ class ImageHandler:
     #Initialize if needed
     # def __init__(self):
 
+    # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
+    def getHeights(self, board):
+        heights = np.argmax(board, axis=0)
+        heights = np.where(heights == 0, heights, 20)
+        return np.subtract(20, heights)
+
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self, queueArr):
         blocks = np.zeros((6, 2, 4), dtype = uint8)     # Create a 3d blocks array that holds 6 tetris blocks
