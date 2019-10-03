@@ -4,8 +4,6 @@ import numpy as np
 import threading
 import cv2
 
-# --------------------------------------------------------------------
-
 class SwitchData:
 
     # Initialize variables
@@ -158,175 +156,12 @@ class SwitchData:
                 if self.nextBlock[i][j] == 1 and self.lastBoard[i][j + 3] == 1:     # If the tile exists on the new block in hand, and it is filled on the last board, it should not be filled on the last board
                     self.lastBoard[i][j + 3] = 0                                    # Set the conflicting tile to not filled
 
-    # Returns if the block being used has been placed (queue changes)
-    def didBlockChange(self):
-        qChange = 0
-        oldTileCount = np.sum(self.lastQueue)
-        for i in range(17):
-            for j in range(4):
-                if i < 2:
-                    self.nextBlock[i][j] = self.lastQueue[i][j]
-                if (i + 1) % 3 == 0:
-                    continue
-                if self.__queueArr[i][j] != self.lastQueue[i][j]:
-                    self.lastQueue[i][j] = self.__queueArr[i][j]
-                    qChange += 1
-        tileCount = np.sum(self.lastQueue)
-        return qChange > 5 and tileCount > 20 and tileCount < 28 and oldTileCount > 20 and oldTileCount < 28
-
-
-# --------------------------------------------------------------------
-
-    def getNextBestMove(self, thelist, nodeNet):
-        board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
-        heights = self.getHeights(lBoard)
-        qBlocks = self.getQueueBlocks()
-        zeroed = self.zero(self.movingBlock)
-        fitness = -1
-        move = (0, 0)
-
-        theboard = np.copy(lBoard)
-        for item in range(len(thelist)):
-            if item == 0:
-                b1, width = self.rotate(zeroed, thelist[item][1])
-                xval = thelist[item][0]
-                if np.amax(heights[xval:xval + width]) > 16:
-                    continue
-                theboard = self.getNewBoard(heights, xval, b1, width, theboard)
-            else:
-                heights = self.getHeights(theboard)
-                b1, width = self.rotate(self.analyzeQBlock(qBlocks[item - 1]), thelist[item][1])
-                xval = thelist[item][0]
-                if np.amax(heights[xval:xval + width]) > 16:
-                    continue
-                theboard = self.getNewBoard(heights, xval, b1, width, theboard)
-        newBlock = qBlocks[len(thelist) - 1]
-        heights = self.getHeights(theboard)
-        for r1 in range(4):
-            b1, width = self.rotate(self.analyzeQBlock(newBlock), r1)
-            for x1 in range(int(11 - width)):
-                if np.amax(heights[x1:x1 + width]) > 16:
-                    continue
-                theboard = self.getNewBoard(heights, x1, b1, width, theboard)
-                fit = self.getFitness(theboard, nodeNet)
-                if  fit >= fitness:
-                    fitness = fit
-                    move = (r1, 0 ,x1)
-                    print(theboard)
-        return move
-
-    # Returns initial good placements
-    def getBestMoves(self, nodeNet):
-        board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
-        heights = self.getHeights(lBoard)
-        qBlocks = self.getQueueBlocks()
-        firstBlock = self.zero(self.movingBlock)
-        fitness = -1
-        moveArr = []
-        
-        for r1 in range(4):
-            b1, width = self.rotate(firstBlock, r1)
-            for x1 in range(int(11 - width)):
-                if np.amax(heights[x1:x1 + width]) > 16:
-                    continue
-                newBoard = self.getNewBoard(heights, x1, b1, width, lBoard)
-                newHeights = self.getHeights(newBoard)
-                for r2 in range(4):
-                    b2, width2 = self.rotate(self.analyzeQBlock(qBlocks[0]), r2)
-                    for x2 in range(int(11 - width2)):
-                        if np.amax(heights[x2:x2 + width]) > 16:
-	                        continue
-                        newBoard2 = self.getNewBoard(newHeights, x2, b2, width2, newBoard)
-                        fit = self.getFitness(newBoard2, nodeNet)
-                        if  fit >= fitness:
-                            fitness = fit
-                            arr = []
-                            tup1 = (r1, 0, x1)
-                            arr.append(tup1)
-                            tup2 = (r2, 0, x2)
-                            arr.append(tup2)
-                        del newBoard2
-                    del b2
-                del newBoard
-            del b1
-        return arr
-
 # --------------------------------------------------------------------
 
     # Determines if there is a piece that we can control
     def existsControllablePiece(self):
         return len(self.movingBlock[0]) == 4
 
-# --------------------------------------------------------------------
-    
-    def getFitness(self, board, nodeNet):
-        fitness = 0
-        heights = self.getHeights(board)
-
-        # Aggregate Height
-        heightTotal = np.sum(heights)
-
-        # Holes (not 100% correct, but will work)
-        sumOfBoard = np.sum(board) - 4
-        holes = 0
-        if heightTotal - sumOfBoard >= 0:
-            holes = heightTotal - sumOfBoard
-
-        bump = 0
-        # Bumpiness
-        for i in range(len(heights)-1):
-            bump += abs(heights[i] - heights[i + 1])
-
-        fitness += nodeNet[0] * heightTotal
-        fitness += nodeNet[1] * holes
-        fitness += nodeNet[2] * bump
-
-        # Complete Lines
-        lines = np.sum(np.amin(board, axis=1))
-        fitness += nodeNet[3] * lines
-
-        return fitness
-
-    def getLowestBlocks(self, blockData, width):
-        blockData = self.zero(blockData)
-        maxx = np.amax(blockData[1])
-        highest = np.amax(blockData[0])
-        lowest = np.zeros((maxx))
-
-        for i in range(maxx + 1):
-            lowest[i] = highest
-            for t in range(len(blockData[0])):
-                if 
-
-
-        arr = np.zeros((int(width)), dtype = uint8)
-        
-        return (arr, high)
-
-# --------------------------------------------------------------------
-    
-    def getNewBoard(self, heights, x, b1, width, b):
-        board = np.copy(b)
-        lowTuple = self.getLowestBlocks(b1, width)
-        lowestBlocks = lowTuple[0]
-        highBoi = lowTuple[1]
-        high = 0
-        height = 0
-        yOrigin = 0
-        for col in range(int(width)):
-            val = heights[x + col] + (highBoi - lowestBlocks[col])
-            if val > high:
-                high = val
-                height = heights[x + col]
-                yOrigin = lowestBlocks[col]
-        for i in range(len(b1[0])):
-            yAxis = int(self.zero(b1)[0][i] - yOrigin + height)
-            xAxis = int(x + self.zero(b1)[1][i])
-            board[19 - yAxis][xAxis] = 1
-        return np.copy(board)
-
-# --------------------------------------------------------------------
-                
 # --------------------------------------------------------------------  
 
     def isDead(self):
