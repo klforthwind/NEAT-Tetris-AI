@@ -193,32 +193,6 @@ class SwitchData:
         tileCount = np.sum(self.lastQueue)
         return qChange > 5 and tileCount > 20 and tileCount < 28 and oldTileCount > 20 and oldTileCount < 28
 
-    
-
-    # Get x and y values closest to 0 without breaking formation
-    def zero(self, blockData):
-        data = np.copy(blockData)
-        lows = np.amin(data, axis=1)
-        data[0] -= lows[0]
-        data[1] -= lows[1]
-        return data
-
-    def rotate(self, blockData, rotationCount):
-        tempData = np.copy(blockData)
-        for r in range(rotationCount):
-            yTemp = tempData[0]
-            tempData[0] = tempData[1]
-            for index in range(len(blockData[0])):
-                tempData[1][index] = 3 - yTemp[index]
-        return self.zero(tempData), self.getWidth(tempData)
-
-    def getWidth(self, blockData):
-        return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
-    
-    def analyzeQBlock(self, qBlock):
-        newData = np.nonzero(qBlock)
-        newData[0] = np.subtract(1, newData[0])
-        return newData
 
 # --------------------------------------------------------------------
 
