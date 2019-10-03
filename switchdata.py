@@ -62,51 +62,44 @@ class SwitchData:
     # Make and display boardArr, holdArr, and queueArr
     def processCapture(self):
         
-        _, frame = self.cap.read()                      # Read the capture card
-        cv2.imshow('Frame', frame)                      # Show the capture card
+        _, frame = self.cap.read()                                                  # Read the capture card
+        cv2.imshow('Frame', frame)                                                  # Show the capture card
 
-        self.__makeBoard(frame[40:680, 480:800])        # Process and show the board
-        self.__makeHold(frame[80:120, 396:468])         # Process the hold
-        self.__makeQueue(frame[80:390, 815:880])        # Process the queue
+        self.__makeBoard(frame[40:680, 480:800])                                    # Process and show the board
+        self.__makeHold(frame[80:120, 396:468])                                     # Process the hold
+        self.__makeQueue(frame[80:390, 815:880])                                    # Process the queue
 
     def __makeBoard(self, frame):
-        board = self.__handleCanvas(frame)
+        board = self.__handleCanvas(frame)                                          # Add a luminance mask to the board mat
+        
+        boardMat = np.zeros((640, 320), dtype = uchar)                              # Attempt to make a less noisy mask
+        tempArr = np.zeros((20,10), dtype = uchar)                                  #Run through all 200 grid tiles
+        lBoard = self.lastBoard                                                     # Make a copy of the tetris board
+        xyVals = np.zeros((2,0), dtype = uchar)                                     # Create an empty numpy array to add the locations of moving block to
 
-        # Attempt to make a less noisy mask
-        boardMat = np.zeros((640, 320), dtype = uchar)
-        #Run through all 200 grid tiles
-        tempArr = np.zeros((20,10), dtype = uchar)
-
-        # Make a copy of the tetris board
-        lBoard = self.lastBoard
-        # Create an empty numpy array to add the locations of moving block to
-        xyVals = np.zeros((2,0), dtype = uchar)
-
-        for y in range(20):
-            for x in range(10):
-                # Get correct value of the indexed tiles
-                val = 1
+        for y in range(20):                                                         # Iterate over each row of the board
+            for x in range(10):                                                     # Iterate over each tile in a row    
+                val = 1                                                             # Get correct value of the indexed tiles
                 valArr = [4, 16, 28]
                 for i in valArr:
                     for j in valArr:
                         if board[32 * y + i][32 * x + j] == 0:
                             val = 0
                             break
-                tempArr[y][x] = val
+                tempArr[y][x] = val                                                 # Add to board array whether the tile was filled or not
 
                 colorVal = val * 255
-                if val == 1 and lBoard[y][x] == 0: # Y = 0 refers to the top of the board
-                    # Save the coords of the filled block as [distance from bottom] and [x]
-                    xyVals = np.append(xyVals, [[19-y],[x]], 1)
-                    colorVal = 128
-                for m in range(32):
-                    if val == 0:
-                        break
+                if val == 1 and lBoard[y][x] == 0:                                  # Y = 0 refers to the top of the board
+                    xyVals = np.append(xyVals, [[19-y],[x]], 1)                     # Save the coords of the filled block as [distance from bottom] and [x]
+                    colorVal = 128                                                  # Set the color of the moving block to grey, so it is much more visible on the mat
+                # Add dotted pattern
+                # if x != 9 and y != 19:
+                #     boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
+                if val == 0:                                                        # Skip coloring if tile is empty
+                    continue
+                for m in range(32):                                                 # Color the tile if it is filled
                     for n in range(32):
                         boardMat[y * 32 + m][x * 32 + n] = colorVal
-                # Add dotted pattern
-                if x != 9 and y != 19:
-                    boardMat[(y + 1) * 32 - 1][(x + 1) * 32 - 1] = 1
         
         self.movingBlock = np.copy(xyVals)
         # Show the board with opencv
@@ -116,19 +109,18 @@ class SwitchData:
         del board
 
     def __makeHold(self, frame):
-        hold = self.__handleCanvas(frame)
+        hold = self.__handleCanvas(frame)                                           # Add a luminance mask to the hold mat
 
-        # Check every hold tile to see if its filled
-        tempArr = np.zeros((2, 4))
-        for y in range(2):
-            for x in range(4): 
-                tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
-        self.__holdArr = np.copy(tempArr)
-        del tempArr
+        tempArr = np.zeros((2, 4))                                                  # Array to hold which tiles in hold are filled
+        for y in range(2):                                                          # Iterate over the two rows of the hold block
+            for x in range(4):                                                      # Iterate over the four tiles in a row
+                tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0       # Set the value in the temp array to whether the hold block was filled at the specific tile
+        self.__holdArr = np.copy(tempArr)                                           # Create a copy of temp array
+        del tempArr                                                                 # Delete the temporary array
         del hold
 
     def __makeQueue(self, frame):
-        queue = self.__handleCanvas(frame)
+        queue = self.__handleCanvas(frame)                                          # Add a luminance mask to the queue mat
         
         queueMat = np.zeros((310, 65), dtype = uchar)                               # Queue Mat to display to the screen
         tempArr = np.zeros((17, 4), dtype = uchar)                                  # Array to hold which tiles in queue are filled
