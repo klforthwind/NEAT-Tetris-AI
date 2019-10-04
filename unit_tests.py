@@ -4,7 +4,7 @@ import unittest
 
 class TestDataHandler(unittest.TestCase):
 	def __init__(self, *args, **kwargs):
-        super(TestingClass, self).__init__(*args, **kwargs)
+		super(TestingClass, self).__init__(*args, **kwargs)
 		self.test_case = np.array([[1, 0, 0], [1, 1, 0]], uint8)
 		self.dh = DataHandler()
 
