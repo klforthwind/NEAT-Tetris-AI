@@ -11,6 +11,12 @@ class DataHandler:
         heights = np.argmax(board, axis=0)              # Get the highest filled tile in each column
         heights = np.where(heights > 0, heights, 20)    # Replace heights that are 0 with 20 (bottom of board)
         return np.subtract(20, heights)                 # Subtract each value from 20, to flip the board to get heights correctly
+    
+    # Turns a grid of isFilled and notFilled tiles into relative xy coordinates
+    def getXYVals(self, block):
+        xyTuple = np.nonzero(block)                     # Tuple in the form (yArr, xArr)
+        xyTuple = (np.subtract(1, xyTuple[0]), xyTuple[1])# Flip data so top y is 1, bottom y = 0
+        return xyTuple                                  # Return the tuple
 
     # Returns a list of blocks in the Queue
     def getQueueBlocks(self, queueArr):
@@ -23,7 +29,7 @@ class DataHandler:
                 block = int((i - row) / 3)              # Get block index that we are working with
                 blocks[block][row][j] = queueArr[i][j]  # Plug in the (isFilled) array of data values (no xy coords yet)
         for b in range(6):                              # Iterate over all 6 blocks in queue
-            blocks[b] = self.analyzeQBlock(blocks[b])   # Convert block data into xy value coordinates of data ([[0,1,1,0],[1,1,0,0]] becomes [[1,1,0,0],[1,2,0,1]])
+            blocks[b] = self.getXYVals(blocks[b])       # Convert block data into xy value coordinates of data ([[0,1,1,0],[1,1,0,0]] becomes [[1,1,0,0],[1,2,0,1]])
         return np.copy(blocks)                          # Return a copy of the blocks
 
     # Get x and y values closest to 0 without breaking formation
@@ -45,11 +51,6 @@ class DataHandler:
 
     def getWidth(self, blockData):
         return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
-    
-    def analyzeQBlock(self, qBlock):
-        newData = np.nonzero(qBlock)
-        newData[0] = np.subtract(1, newData[0])
-        return newData
     
     def didBlockChange(self):                                                       # Returns if the block being used has been placed (queue changes)
         qChange = 0
