@@ -18,6 +18,9 @@ class TestDataHandler(unittest.TestCase):
         self.equality(expected[0], actual[0])
         self.assertEqual(expected[1], actual[1], 
             "Should be {}, but was {}".format(expected[1], actual[1]))
+    
+    def isTrue(self, actual):
+            self.assertEqual(actual, True, "Should be True but wasn't")
 
     def test_getHeights(self):
         self.equality(getH1C, self.dh.getHeights(getH1))
@@ -47,7 +50,8 @@ class TestDataHandler(unittest.TestCase):
         self.tup_equal(r2C2, self.dh.rotate(r2, 2))
     
     def test_didBlockChange(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+        self.isTrue(self.dh.didBlockChange(dBCLast, dBCArr, dBCNext))
+        self.equality(dBCNextC, dBCNext)
 
     def test_getNextBestMove(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
