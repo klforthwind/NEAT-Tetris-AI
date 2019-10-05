@@ -34,11 +34,11 @@ class DataHandler:
 
     # Get x and y values closest to 0 without breaking formation
     def zero(self, blockData):
-        data = np.copy(blockData)
-        lows = np.amin(data, axis=1)
-        data[0] -= lows[0]
-        data[1] -= lows[1]
-        return data
+        data = np.copy(blockData)                       # Take a copy of the array / list
+        lows = np.amin(data, axis=1)                    # Get the smallest value in each subarray (lowest x and lowest y from respective arrays)
+        data[0] -= lows[0]                              # Subtract the lowest y value from all y values
+        data[1] -= lows[1]                              # Subtract the lowest x value from all x values
+        return data                                     # Return 2d array touching x = 0 y = 0, but not necessarily (0,0)
 
     def rotate(self, blockData, rotationCount):
         tempData = np.copy(blockData)

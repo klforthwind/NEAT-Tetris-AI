@@ -27,7 +27,7 @@ class TestDataHandler(unittest.TestCase):
         self.equality(getQB1C, self.dh.getQueueBlocks(getQB1))
     
     def test_zero(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+        self.equality(z1C, self.dh.zero(z1))
 
     def test_rotate(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
