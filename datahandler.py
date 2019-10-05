@@ -46,15 +46,15 @@ class DataHandler:
         return (rightMost - leftMost + 1)               # Width = right - left + 1
 
     def rotate(self, blockData, rotationCount):
-        tempData = np.copy(blockData)
-        for r in range(rotationCount):
-            yTemp = tempData[0]
-            tempData[0] = tempData[1]
-            for index in range(len(blockData[0])):
-                tempData[1][index] = 3 - yTemp[index]
-        return self.zero(tempData), self.getWidth(tempData)
+        tempData = self.zero(np.copy(blockData))        # Create a copy of the blockData, zeroed
+        for r in range(rotationCount):                  # Rotate it r times
+            yTemp = tempData[0]                         # Create a temp of old y data
+            tempData[0] = tempData[1]                   # Set the y data to the x data
+            tempData[1] = np.subtract(3, yTemp)         # Set the x data to 3 minus the old y data
+        return self.zero(tempData), self.getWidth(tempData) # Make sure the array is zeroed, and return the width
     
-    def didBlockChange(self):                                                       # Returns if the block being used has been placed (queue changes)
+    # Returns if the block being used has been placed (queue changes)
+    def didBlockChange(self):                                      
         qChange = 0
         oldTileCount = np.sum(self.lastQueue)
         for i in range(17):
