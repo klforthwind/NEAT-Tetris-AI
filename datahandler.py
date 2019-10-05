@@ -18,7 +18,7 @@ class DataHandler:
         xyTuple = (np.subtract(1, xyTuple[0]), xyTuple[1])# Flip data so top y is 1, bottom y = 0
         return xyTuple                                  # Return the tuple
 
-    # Returns a list of blocks in the Queue
+    # Returns a list of blocks in the Queue (in XY form)
     def getQueueBlocks(self, queueArr):
         blocks = np.zeros((6, 2, 4), dtype = uint8)     # Create a 3d blocks array that holds 6 tetris blocks
         for i in range(17):                             # Iterate over all 17 rows in the queue mask (2 per block, 5 empty spaces in between)
@@ -39,6 +39,9 @@ class DataHandler:
         data[0] -= lows[0]                              # Subtract the lowest y value from all y values
         data[1] -= lows[1]                              # Subtract the lowest x value from all x values
         return data                                     # Return 2d array touching x = 0 y = 0, but not necessarily (0,0)
+    
+    def getWidth(self, blockData):
+        return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
 
     def rotate(self, blockData, rotationCount):
         tempData = np.copy(blockData)
@@ -48,9 +51,6 @@ class DataHandler:
             for index in range(len(blockData[0])):
                 tempData[1][index] = 3 - yTemp[index]
         return self.zero(tempData), self.getWidth(tempData)
-
-    def getWidth(self, blockData):
-        return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
     
     def didBlockChange(self):                                                       # Returns if the block being used has been placed (queue changes)
         qChange = 0
