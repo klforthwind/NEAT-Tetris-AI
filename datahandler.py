@@ -54,20 +54,22 @@ class DataHandler:
         return self.zero(tempData), self.getWidth(tempData) # Make sure the array is zeroed, and return the width
     
     # Returns if the block being used has been placed (queue changes)
-    def didBlockChange(self):                                      
-        qChange = 0
-        oldTileCount = np.sum(self.lastQueue)
-        for i in range(17):
-            for j in range(4):
-                if i < 2:
-                    self.nextBlock[i][j] = self.lastQueue[i][j]
-                if (i + 1) % 3 == 0:
-                    continue
-                if self.__queueArr[i][j] != self.lastQueue[i][j]:
-                    self.lastQueue[i][j] = self.__queueArr[i][j]
-                    qChange += 1
-        tileCount = np.sum(self.lastQueue)
-        return qChange > 5 and tileCount > 20 and tileCount < 28 and oldTileCount > 20 and oldTileCount < 28
+    def didBlockChange(self, lastQ, qArr, nextBlock):
+        qChange = 0                                                 # Keep track of queue changes
+        oldTileCount = np.sum(lastQ)                                # Get the old queue tile count
+        for i in range(17):                                         # Iterate over all of the rows
+            for j in range(4):                                      # Iterate over all of the columns
+                if i < 2:                                           # Make sure data we are reading is for the next block
+                    nextBlock[i][j] = lastQ[i][j]                   # Update nextblock to place
+                if (i + 1) % 3 == 0:                                # Check to see if this queue row is important
+                    continue                                        # Skip if queue row is not important
+                if qArr[i][j] != lastQ[i][j]:                       # Check to see if new queue tile matches old queue tile
+                    lastQ[i][j] = qArr[i][j]                        # Update old queue to match new queue
+                    qChange += 1                                    # Increment when the old queue is not the same as the new queue
+        tileCount = np.sum(lastQ)                                   # Get the new queue tile count
+        return (qChange > 5 and                                     # Return true if we have moved onto the next block
+            22 < tileCount < 26 and
+            22 < oldTileCount < 26)
 
     def getNextBestMove(self, thelist, nodeNet):
         board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
