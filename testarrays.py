@@ -111,3 +111,25 @@ getW3 = np.array(
     [5,6,5,6]], uint8)
 
 getW3C = 2
+
+r1 = np.array(
+    [[1,1,1,1],
+    [0,1,2,3]], uint8)
+
+r1C1 = np.array([[0,1,2,3],[0,0,0,0]], uint8), 1
+r1C2 = np.array([[0,0,0,0],[3,2,1,0]], uint8), 4
+r1C3 = np.array([[3,2,1,0],[0,0,0,0]], uint8), 1
+
+r2 = np.array(
+    [[1,1,0,0],
+    [1,2,1,2]], uint8)
+
+r2C1 = np.array(
+    [[0,1,0,1],
+    [0,0,1,1]], uint8), 2
+
+r2C2 = np.array(
+    [[0,0,1,1],
+    [1,0,1,0]], uint8), 2
+
+empty = np.array([[],[]], uint8)

@@ -48,9 +48,9 @@ class DataHandler:
     def rotate(self, blockData, rotationCount):
         tempData = self.zero(np.copy(blockData))        # Create a copy of the blockData, zeroed
         for r in range(rotationCount):                  # Rotate it r times
-            yTemp = tempData[0]                         # Create a temp of old y data
-            tempData[0] = tempData[1]                   # Set the y data to the x data
-            tempData[1] = np.subtract(3, yTemp)         # Set the x data to 3 minus the old y data
+            yTemp = list(tempData[0])                   # Create a temp of old y data
+            tempData[0] = list(tempData[1])             # Set the y data to the x data
+            tempData[1] = list(np.subtract(3, yTemp))   # Set the x data to 3 minus the old y data
         return self.zero(tempData), self.getWidth(tempData) # Make sure the array is zeroed, and return the width
     
     # Returns if the block being used has been placed (queue changes)
