@@ -36,6 +36,9 @@ class TestDataHandler(unittest.TestCase):
     
     def test_zero(self):
         self.equality(z1C, self.dh.zero(z1))
+
+    def test_getLowestBlocks(self):
+        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
     
     def test_getWidth(self):
         self.equality(getW1C, self.dh.getWidth(getW1))
@@ -62,9 +65,6 @@ class TestDataHandler(unittest.TestCase):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
     
     def test_getFitness(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
-
-    def test_getLowestBlocks(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
         
     def test_getNewBoard(self):

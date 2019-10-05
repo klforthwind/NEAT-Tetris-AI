@@ -40,17 +40,32 @@ class DataHandler:
         data[1] -= lows[1]                              # Subtract the lowest x value from all x values
         return data                                     # Return 2d array touching x = 0 y = 0, but not necessarily (0,0)
     
+    def getLowestBlocks(self, blockData, width):
+        blockData = self.zero(blockData)
+        maxx = np.amax(blockData[1])
+        highest = np.amax(blockData[0])
+        lowest = np.zeros((maxx))
+
+        for i in range(maxx + 1):
+            lowest[i] = highest
+            for t in range(len(blockData[0])):
+                if 
+
+        arr = np.zeros((int(width)), dtype = uint8)
+        
+        return (arr, high)
+     
     def getWidth(self, blockData):
         rightMost = np.amax(blockData[1])               # Get the rightMost X value
         leftMost = np.amin(blockData[1])                # Get the leftMost X value
         return (rightMost - leftMost + 1)               # Width = right - left + 1
 
     def rotate(self, blockData, rotationCount):
-        tempData = self.zero(np.copy(blockData))        # Create a copy of the blockData, zeroed
-        for r in range(rotationCount):                  # Rotate it r times
-            yTemp = list(tempData[0])                   # Create a temp of old y data
-            tempData[0] = list(tempData[1])             # Set the y data to the x data
-            tempData[1] = list(np.subtract(3, yTemp))   # Set the x data to 3 minus the old y data
+        tempData = self.zero(np.copy(blockData))            # Create a copy of the blockData, zeroed
+        for r in range(rotationCount):                      # Rotate it r times
+            yTemp = list(tempData[0])                       # Create a temp of old y data
+            tempData[0] = list(tempData[1])                 # Set the y data to the x data
+            tempData[1] = list(np.subtract(3, yTemp))       # Set the x data to 3 minus the old y data
         return self.zero(tempData), self.getWidth(tempData) # Make sure the array is zeroed, and return the width
     
     # Returns if the block being used has been placed (queue changes)
@@ -176,20 +191,6 @@ class DataHandler:
 
         return fitness
 
-    # def getLowestBlocks(self, blockData, width):
-    #     blockData = self.zero(blockData)
-    #     maxx = np.amax(blockData[1])
-    #     highest = np.amax(blockData[0])
-    #     lowest = np.zeros((maxx))
-
-    #     for i in range(maxx + 1):
-    #         lowest[i] = highest
-    #         for t in range(len(blockData[0])):
-    #             if 
-
-    #     arr = np.zeros((int(width)), dtype = uint8)
-        
-    #     return (arr, high)
 
 # --------------------------------------------------------------------
     
