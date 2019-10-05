@@ -50,7 +50,9 @@ class TestDataHandler(unittest.TestCase):
         self.tup_equal(r2C2, self.dh.rotate(r2, 2))
     
     def test_didBlockChange(self):
-        self.isTrue(self.dh.didBlockChange(dBCLast, dBCArr, dBCNext))
+        self.isTrue(not self.dh.didBlockChange(dBCLast2, dBCArr, dBCNext))
+        self.isTrue(not self.dh.didBlockChange(dBCArr, dBCLast2, dBCNext))
+        self.isTrue(self.dh.didBlockChange(dBCLast1, dBCArr, dBCNext))
         self.equality(dBCNextC, dBCNext)
 
     def test_getNextBestMove(self):
