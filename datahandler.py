@@ -41,7 +41,9 @@ class DataHandler:
         return data                                     # Return 2d array touching x = 0 y = 0, but not necessarily (0,0)
     
     def getWidth(self, blockData):
-        return (np.amax(blockData[1]) - np.amin(blockData[1]) + 1)
+        rightMost = np.amax(blockData[1])               # Get the rightMost X value
+        leftMost = np.amin(blockData[1])                # Get the leftMost X value
+        return (rightMost - leftMost + 1)               # Width = right - left + 1
 
     def rotate(self, blockData, rotationCount):
         tempData = np.copy(blockData)

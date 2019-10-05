@@ -30,8 +30,10 @@ class TestDataHandler(unittest.TestCase):
         self.equality(z1C, self.dh.zero(z1))
     
     def test_getWidth(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
-        
+        self.equality(getW1C, self.dh.getWidth(getW1))
+        self.equality(getW2C, self.dh.getWidth(getW2))
+        self.equality(getW3C, self.dh.getWidth(getW3))
+
     def test_rotate(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
     

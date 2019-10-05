@@ -93,3 +93,21 @@ z1 = np.array(
 z1C = np.array(
     [[1,1,0,0],
     [0,1,1,2]], uint8)
+
+getW1 = np.array(
+    [[1,1,1,1],
+    [0,1,2,3]])
+
+getW1C = 4
+
+getW2 = np.array(
+    [[19,19,18,18],
+    [5,6,6,7]], uint8)
+
+getW2C = 3
+
+getW3 = np.array(
+    [[19,19,18,18],
+    [5,6,5,6]], uint8)
+
+getW3C = 2
