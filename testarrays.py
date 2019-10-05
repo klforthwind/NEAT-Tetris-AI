@@ -26,3 +26,5 @@ test1 = np.array(
 test1Compare = np.array([9,8,7,6,5,4,3,2,1,0], uint8)
 
 test2 = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]*20, uint8)
+
+test2Compare = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], uint8)

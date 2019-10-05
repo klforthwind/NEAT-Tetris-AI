@@ -11,10 +11,12 @@ class TestDataHandler(unittest.TestCase):
         self.dh = DataHandler()
 
     def test_getHeights(self):
-        print(self.dh.getHeights(test1))
         self.assertEqual(
             aequal(self.dh.getHeights(test1), test1Compare), True, 
             "Should be {}, but was {}".format(test1Compare, self.dh.getHeights(test1)))
+        self.assertEqual(
+            aequal(self.dh.getHeights(test2), test2Compare), True, 
+            "Should be {}, but was {}".format(test2Compare, self.dh.getHeights(test2)))
 
     def test_getQueueBlocks(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
