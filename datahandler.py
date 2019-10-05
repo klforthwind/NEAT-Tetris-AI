@@ -171,20 +171,20 @@ class DataHandler:
 
         return fitness
 
-    def getLowestBlocks(self, blockData, width):
-        blockData = self.zero(blockData)
-        maxx = np.amax(blockData[1])
-        highest = np.amax(blockData[0])
-        lowest = np.zeros((maxx))
+    # def getLowestBlocks(self, blockData, width):
+    #     blockData = self.zero(blockData)
+    #     maxx = np.amax(blockData[1])
+    #     highest = np.amax(blockData[0])
+    #     lowest = np.zeros((maxx))
 
-        for i in range(maxx + 1):
-            lowest[i] = highest
-            for t in range(len(blockData[0])):
-                if 
+    #     for i in range(maxx + 1):
+    #         lowest[i] = highest
+    #         for t in range(len(blockData[0])):
+    #             if 
 
-        arr = np.zeros((int(width)), dtype = uint8)
+    #     arr = np.zeros((int(width)), dtype = uint8)
         
-        return (arr, high)
+    #     return (arr, high)
 
 # --------------------------------------------------------------------
     

@@ -1,16 +1,20 @@
+from numpy import array_equal as aequal
+from datahandler import DataHandler
+from testarrays import *
 from numpy import uint8
-import datahandler
+import numpy as np
 import unittest
 
 class TestDataHandler(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestingClass, self).__init__(*args, **kwargs)
-        self.test_case = np.array([[1, 0, 0], [1, 1, 0]], uint8)
+        super(TestDataHandler, self).__init__(*args, **kwargs)
         self.dh = DataHandler()
 
     def test_getHeights(self):
-        print(self.dh.getHeights(self.test_case))
-        self.assertEqual(self.dh.getHeights(self.test_case), np.array([2,1,0]), "Should be 6")
+        print(self.dh.getHeights(test1))
+        self.assertEqual(
+            aequal(self.dh.getHeights(test1), test1Compare), True, 
+            "Should be {}, but was {}".format(test1Compare, self.dh.getHeights(test1)))
 
     def test_getQueueBlocks(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
