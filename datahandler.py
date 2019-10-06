@@ -40,20 +40,20 @@ class DataHandler:
         data[1] -= lows[1]                              # Subtract the lowest x value from all x values
         return data                                     # Return 2d array touching x = 0 y = 0, but not necessarily (0,0)
     
-    def getLowestBlocks(self, blockData, width):
-        blockData = self.zero(blockData)
-        maxx = np.amax(blockData[1])
+    def getLowestBlocks(self, blockData):
+        blockData = self.zero(blockData)                # Get x and y values closest to 0 without breaking formation
+        width = np.amax(blockData[1])
         highest = np.amax(blockData[0])
-        lowest = np.zeros((maxx))
+        lowest = np.zeros((width), uint8)
 
-        for i in range(maxx + 1):
-            lowest[i] = highest
-            for t in range(len(blockData[0])):
-                if 
-
-        arr = np.zeros((int(width)), dtype = uint8)
+        for i in range(len(blackData[0])):
+            x = blackData[1][i]
+            y = blackData[0][i]
+            if lowest[val] < y:
+                lowest[val] = y
+        lowest = np.subtract(highest, lowest)
         
-        return (arr, high)
+        return (lowest, highest)
      
     def getWidth(self, blockData):
         rightMost = np.amax(blockData[1])               # Get the rightMost X value
