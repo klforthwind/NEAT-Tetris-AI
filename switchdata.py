@@ -1,5 +1,5 @@
 from numpy import uint8
-import DataHandler
+from datahandler import DataHandler
 import numpy as np
 import threading
 import cv2
@@ -156,7 +156,7 @@ class SwitchData:
         return self.dh.didBlockChange(self.lastQueue, self.__queueArr, self.nextBlock)
 
     def getNextBestMove(self, thelist, nodeNet):
-        return self.dh.nextBestMove(thelist, self.__queueArr, self.lastBoard, self.movingBlock, nodeNet)
+        return self.dh.getNextBestMove(thelist, self.__queueArr, self.lastBoard, self.movingBlock, nodeNet)
 
     def getBestMoves(self, nodeNet):
         return self.dh.getBestMoves(self.__queueArr, self.lastBoard, self.movingBlock, nodeNet)

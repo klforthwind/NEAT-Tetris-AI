@@ -17,17 +17,20 @@ class DataHandler:
 
     # Returns a list of blocks in the Queue (in XY form)
     def getQueueBlocks(self, queueArr):
-        blocks = np.zeros((6, 2, 4), dtype = uint8)     # Create a 3d blocks array that holds 6 tetris blocks
-        for i in range(17):                             # Iterate over all 17 rows in the queue mask (2 per block, 5 empty spaces in between)
-            if i % 3 == 2:                              # Check to see if i is on an empty space in between blocks
-                continue                                # Go to next row, so we won't handle bad row data
-            for j in range(4):                          # Iterate all four tiles in a row
-                row = i % 3                             # Get relative row of current block
-                block = int((i - row) / 3)              # Get block index that we are working with
-                blocks[block][row][j] = queueArr[i][j]  # Plug in the (isFilled) array of data values (no xy coords yet)
-        for b in range(6):                              # Iterate over all 6 blocks in queue
-            blocks[b] = self.getXYVals(blocks[b])       # Convert block data into xy value coordinates of data ([[0,1,1,0],[1,1,0,0]] becomes [[1,1,0,0],[1,2,0,1]])
-        return np.copy(blocks)                          # Return a copy of the blocks
+        if 23 < np.sum(queueArr) < 25:
+            blocks = np.zeros((6, 2, 4), dtype = uint8)     # Create a 3d blocks array that holds 6 tetris blocks
+            for i in range(17):                             # Iterate over all 17 rows in the queue mask (2 per block, 5 empty spaces in between)
+                if i % 3 == 2:                              # Check to see if i is on an empty space in between blocks
+                    continue                                # Go to next row, so we won't handle bad row data
+                for j in range(4):                          # Iterate all four tiles in a row
+                    row = i % 3                             # Get relative row of current block
+                    block = int((i - row) / 3)              # Get block index that we are working with
+                    blocks[block][row][j] = queueArr[i][j]  # Plug in the (isFilled) array of data values (no xy coords yet)
+            for b in range(6):                              # Iterate over all 6 blocks in queue
+                blocks[b] = self.getXYVals(blocks[b])       # Convert block data into xy value coordinates of data ([[0,1,1,0],[1,1,0,0]] becomes [[1,1,0,0],[1,2,0,1]])
+            return np.copy(blocks)                          # Return a copy of the blocks
+        else:
+            return np.zeros((6, 2, 4), dtype = uint8)
 
     # Get x and y values closest to 0 without breaking formation
     def zero(self, blockData):
@@ -43,7 +46,8 @@ class DataHandler:
         highest = np.amax(blockData[0])                 # Get the height minus 1 of the block
         lowest = np.array([20]*(width), uint8)          # Create an array with width items
 
-        for i in range(len(blockData[0])):              # Iterate over the blockdata
+        rangeee = 4 if len(blockData[0]) > 4 else len(blockData[0])
+        for i in range(rangeee):                        # Iterate over the blockdata
             x = blockData[1][i]                         # Obtain the x at the blockData index
             y = blockData[0][i]                         # Obtain the y at the blockData index
             if lowest[x] > y:                           # See if the y value is lower than the lowest one at the specific index
@@ -140,15 +144,16 @@ class DataHandler:
                 newBoard = self.getNewBoard(xval, b1, newBoard)         # Create a new board using the moving block
             else:                                                       # Iterate over the queue blocks
                 heights = self.getHeights(newBoard)                     # Get the heights of the new board
-                b1 = self.rotate(self.getXYVals(qBlocks[item - 1]), thelist[item][1]) # Rotate the block
+                b1 = self.rotate(qBlocks[item - 1], thelist[item][1])   # Rotate the block
                 xval = thelist[item][0]                                 # Get the correct xvalue of the block placement
                 if np.amax(heights[xval:xval + width]) > 16:            # See if the heights of the columns being placed on is too high
                     continue                                            # Continue if we should not place on those columns
                 newBoard = self.getNewBoard(xval, b1, newBoard)         # Update the newboard using a specific queue block
         newBlock = qBlocks[len(thelist) - 1]                            # Get the next queueblock in list
         heights = self.getHeights(newBoard)                             # Get the heights of the new bloard
+        goodBoard = lBoard
         for r1 in range(4):
-            b1 = self.rotate(self.getXYVals(newBlock), r1)
+            b1 = self.rotate(newBlock, r1)
             width = self.getWidth(b1)                                   # Get the width of the block
             for x1 in range(int(11 - width)):
                 if np.amax(heights[x1:x1 + width]) > 16:                # See if the heights of the columns being placed on is too high
@@ -158,6 +163,8 @@ class DataHandler:
                 if  fit > fitness:                                     # Check to see if fitness beats best fitness
                     fitness = fit                                       # Set best fitness to this fitness if so
                     move = (r1, 0 ,x1)                                  # Set the preferred move to what we just did
+                    goodBoard = np.copy(theboard)
+        print(goodBoard)
         return move                                                     # Return the best move
 
     # Returns initial good placements
@@ -177,7 +184,7 @@ class DataHandler:
                 newBoard = self.getNewBoard(x1, b1, lastBoard)              # Create the newBoard
                 newHeights = self.getHeights(newBoard)                      # Get the new heights of the board
                 for r2 in range(4):                                         # Iterate over all rotations
-                    b2 = self.rotate(self.getXYVals(qBlocks[0]), r2)        # Rotate the block r2 times
+                    b2 = self.rotate(qBlocks[0], r2)                        # Rotate the block r2 times
                     width2 = self.getWidth(b2)                              # Get the width of the block
                     for x2 in range(int(11 - width2)):                      # Iterate over all columns, skipping the right (width - 1) many (to not overflow)
                         if np.amax(newHeights[x2:x2 + width2]) > 16:        # See if the heights of the columns being placed on is too high
