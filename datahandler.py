@@ -2,10 +2,7 @@ from numpy import uint8
 import numpy as np
 
 class DataHandler:
-
-    #Initialize if needed
-    # def __init__(self):
-
+    
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
         heights = np.argmax(board, axis=0)              # Get the highest filled tile in each column
