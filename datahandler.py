@@ -126,41 +126,41 @@ class DataHandler:
 
         return fitness                              # Return total fitness
 
-    def getNextBestMove(self, thelist, board, hold, queue, lBoard, nodeNet):
-        heights = self.getHeights(lBoard)
-        qBlocks = self.getQueueBlocks()
-        zeroed = self.zero(self.movingBlock)
-        fitness = -1
-        move = (0, 0)
+    def getNextBestMove(self, thelist, board, queue, lBoard, nodeNet):
+        heights = self.getHeights(lBoard)                                                   # Get the heights of the board without the moving block
+        qBlocks = self.getQueueBlocks()                                                     # Get the queue blocks to handle
+        zeroed = self.zero(self.movingBlock)                                                # Get the zeroed moving block
+        fitness = -1                                                                        # Start fitness at -1
+        move = (0, 0)                                                                       # Create a move tracker?
 
-        theboard = np.copy(lBoard)
-        for item in range(len(thelist)):
+        theboard = np.copy(lBoard)                                                          # Take a copy of lastBoard
+        for item in range(len(thelist)):            
             if item == 0:
-                b1, width = self.rotate(zeroed, thelist[item][1])
+                b1 = self.rotate(zeroed, thelist[item][1])
+                width = self.getWidth(b1)
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
-                theboard = self.getNewBoard(heights, xval, b1, width, theboard)
+                theboard = self.getNewBoard(xval, b1, theboard)
             else:
                 heights = self.getHeights(theboard)
-                b1, width = self.rotate(self.analyzeQBlock(qBlocks[item - 1]), thelist[item][1])
+                b1 = self.rotate(self.getXYVals(qBlocks[item - 1]), thelist[item][1])
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
-                theboard = self.getNewBoard(xval, b1, width, theboard)
+                theboard = self.getNewBoard(xval, b1, theboard)
         newBlock = qBlocks[len(thelist) - 1]
         heights = self.getHeights(theboard)
         for r1 in range(4):
-            b1, width = self.rotate(self.analyzeQBlock(newBlock), r1)
+            b1, width = self.rotate(self.getXYVals(newBlock), r1)
             for x1 in range(int(11 - width)):
                 if np.amax(heights[x1:x1 + width]) > 16:
                     continue
-                theboard = self.getNewBoard(heights, x1, b1, width, theboard)
+                theboard = self.getNewBoard(x1, b1, theboard)
                 fit = self.getFitness(theboard, nodeNet)
                 if  fit >= fitness:
                     fitness = fit
                     move = (r1, 0 ,x1)
-                    print(theboard)
         return move
 
     # Returns initial good placements
