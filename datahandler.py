@@ -87,7 +87,7 @@ class DataHandler:
             22 < oldTileCount < 26)
     
     def getNewBoard(self, xVal, block, b):
-        blockData = self.zero(block)                                # Zero blockData
+        blockData = self.zero(np.copy(block))                       # Zero blockData
         highest = np.amax(blockData[0])
         heights = self.getHeights(b)                                # Get the heights of the board
         board = np.copy(b)                                          # Create a copy of the board
@@ -165,35 +165,37 @@ class DataHandler:
 
     # Returns initial good placements
     def getBestMoves(self, boardArr, holdArr, qArr, lastBoard, movingBlock, nodeNet):
-        heights = self.getHeights(lBoard)
-        qBlocks = self.getQueueBlocks(qArr)
-        firstBlock = self.zero(movingBlock)
-        fitness = -1
-        moveArr = []
+        heights = self.getHeights(lastBoard)                                # Get the heights of the board without the moving block
+        qBlocks = self.getQueueBlocks(qArr)                                 # Get the queue blocks
+        firstBlock = self.zero(movingBlock)                                 # Zero the moving block
+        fitness = -1                                                        # Set fitness to its initial value
+        moveArr = []                                                        # Initialize a list of moves
         
-        for r1 in range(4):
-            b1, width = self.rotate(firstBlock, r1)
-            for x1 in range(int(11 - width)):
-                if np.amax(heights[x1:x1 + width]) > 16:
-                    continue
-                newBoard = self.getNewBoard(heights, x1, b1, width, lBoard)
-                newHeights = self.getHeights(newBoard)
-                for r2 in range(4):
-                    b2, width2 = self.rotate(self.analyzeQBlock(qBlocks[0]), r2)
-                    for x2 in range(int(11 - width2)):
-                        if np.amax(heights[x2:x2 + width]) > 16:
-	                        continue
-                        newBoard2 = self.getNewBoard(newHeights, x2, b2, width2, newBoard)
-                        fit = self.getFitness(newBoard2, nodeNet)
-                        if  fit >= fitness:
-                            fitness = fit
-                            arr = []
-                            tup1 = (r1, 0, x1)
-                            arr.append(tup1)
-                            tup2 = (r2, 0, x2)
-                            arr.append(tup2)
-                        del newBoard2
-                    del b2
-                del newBoard
-            del b1
-        return arr
+        for r1 in range(4):                                                 # Iterate over all rotations
+            b1 = self.rotate(firstBlock, r1)                                # Rotate the block r1 times
+            width = self.getWidth(b1)                                       # Get the width of the block
+            for x1 in range(int(11 - width)):                               # Iterate over all columns, skipping the right (width - 1) many (to not overflow)
+                if np.amax(heights[x1:x1 + width]) > 16:                    # See if the heights of the columns being placed on is too high
+                    continue                                                # Continue if we should not place on those columns
+                newBoard = self.getNewBoard(x1, b1, lBoard)                 # Create the newBoard
+                newHeights = self.getHeights(newBoard)                      # Get the new heights of the board
+                for r2 in range(4):                                         # Iterate over all rotations
+                    b2 = self.rotate(self.getXYVals(qBlocks[0]), r2)        # Rotate the block r2 times
+                    width2 = self.getWidth(b2)                              # Get the width of the block
+                    for x2 in range(int(11 - width2)):                      # Iterate over all columns, skipping the right (width - 1) many (to not overflow)
+                        if np.amax(newHeights[x2:x2 + width2]) > 16:        # See if the heights of the columns being placed on is too high
+	                        continue                                        # Continue if we should not place on those columns
+                        newBoard2 = self.getNewBoard(x2, b2, newBoard)      # Create a new newboard
+                        fit = self.getFitness(newBoard2, nodeNet)           # Get the fitness of said new board
+                        if  fit >= fitness:                                 # Check to see if this fitness beats the best fitness
+                            fitness = fit                                   # Set the best fitness to this fitness
+                            moveArr = []                                    # Make moveArr empty
+                            tup1 = (r1, 0, x1)                              # Create a tuple for the first move representing required actions
+                            arr.append(tup1)                                # Append said tuple to the move array
+                            tup2 = (r2, 0, x2)                              # Create a tuple for the second move representing required actions
+                            arr.append(tup2)                                # Append said tuple to the move array
+                        del newBoard2                                       # Delete newBoard2 since we wont need it
+                    del b2                                                  # Delete block 2 since we won't need it
+                del newBoard                                                # Delete newBoard since we won't need it
+            del b1                                                          # Delete block 1 since we won't need it
+        return moveArr                                                      # Return the moveArr with good moves to run
