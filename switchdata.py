@@ -24,7 +24,7 @@ class SwitchData:
         self.__boardArr = np.zeros((20, 10), dtype = uint8)
         self.__queueArr = np.zeros((17, 4), dtype = uint8)
         self.__holdArr = np.zeros((2, 4), dtype = uint8)
-        self.datahandler = DataHandler()
+        self.dh = DataHandler()
         self.clearLastBoard()
 
     # Start the capture thread
@@ -152,7 +152,14 @@ class SwitchData:
 
 # --------------------------------------------------------------------
 
-# TODO: Add functions that were moved to DataHandler
+    def didBlockChange(self):
+        return self.dh.didBlockChange(self.lastQueue, self.__queueArr, self.nextBlock)
+
+    def getNextBestMove(self, thelist, nodeNet):
+        return self.dh.nextBestMove(thelist, self.__queueArr, self.lastBoard, self.movingBlock, nodeNet)
+
+    def getBestMoves(self, nodeNet):
+        return self.dh.getBestMoves(self.__queueArr, self.lastBoard, self.movingBlock, nodeNet)
 
 # --------------------------------------------------------------------
 
