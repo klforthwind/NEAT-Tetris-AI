@@ -62,6 +62,7 @@ class NEAT:
         if self.currentGenome == len(self.genomes):
             self.sortGenomes()
             self.increaseGeneration()
+        print(self.genomes[self.currentGenome].nodeNet)
     
     # Sorts genomes by fitness, such that list[0] has the highest fitness
     def sortGenomes(self):

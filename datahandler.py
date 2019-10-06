@@ -164,7 +164,11 @@ class DataHandler:
                     fitness = fit                                       # Set best fitness to this fitness if so
                     move = (r1, 0 ,x1)                                  # Set the preferred move to what we just did
                     goodBoard = np.copy(theboard)
-        print(goodBoard)
+        # for i in range(20):
+        #     for j in range(10):
+        #         val = ". " if goodBoard[i][j] == 0 else "X "
+        #         print(val, end="")
+        #     print("")
         return move                                                     # Return the best move
 
     # Returns initial good placements
