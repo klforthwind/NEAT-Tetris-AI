@@ -94,6 +94,24 @@ z1C = np.array(
     [[1,1,0,0],
     [0,1,1,2]], uint8)
 
+getLB1 = np.array(
+    [[1,1,1,1],
+    [0,1,2,3]], uint8)
+
+getLB1C = np.array([0,0,0,0], uint8), 0
+
+getLB2 = np.array(
+    [[19,19,18,18],
+    [5,6,6,7]], uint8)
+
+getLB2C = np.array([0,1,1], uint8), 1
+
+getLB3 = np.array(
+    [[19,19,18,18],
+    [5,6,5,6]], uint8)
+
+getLB3C = np.array([1,1], uint8), 1
+
 getW1 = np.array(
     [[1,1,1,1],
     [0,1,2,3]])

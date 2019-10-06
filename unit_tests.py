@@ -38,7 +38,9 @@ class TestDataHandler(unittest.TestCase):
         self.equality(z1C, self.dh.zero(z1))
 
     def test_getLowestBlocks(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+        self.tup_equal(getLB1C, self.dh.getLowestBlocks(getLB1))
+        self.tup_equal(getLB2C, self.dh.getLowestBlocks(getLB2))
+        self.tup_equal(getLB3C, self.dh.getLowestBlocks(getLB3))
     
     def test_getWidth(self):
         self.equality(getW1C, self.dh.getWidth(getW1))
