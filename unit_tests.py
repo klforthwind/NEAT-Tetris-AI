@@ -64,7 +64,8 @@ class TestDataHandler(unittest.TestCase):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
     
     def test_getFitness(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+        self.equality(getF1FN1C, self.dh.getFitness(getF1, getFN1))
+        self.equality(getF1FN2C, self.dh.getFitness(getF1, getFN2))
 
     def test_getNextBestMove(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
