@@ -42,15 +42,15 @@ class DataHandler:
     
     def getLowestBlocks(self, blockData):
         blockData = self.zero(blockData)                # Get x and y values closest to 0 without breaking formation
-        width = np.amax(blockData[1])                   # Get the width of the block
+        width = self.getWidth(blockData)                # Get the width of the block
         highest = np.amax(blockData[0])                 # Get the height minus 1 of the block
-        lowest = np.zeros((width), uint8)               # Create an array with width items
+        lowest = np.array([20]*(width), uint8)          # Create an array with width items
 
         for i in range(len(blockData[0])):              # Iterate over the blockdata
             x = blockData[1][i]                         # Obtain the x at the blockData index
             y = blockData[0][i]                         # Obtain the y at the blockData index
-            if lowest[val] < y:                         # See if the y value is lower than the lowest one at the specific index
-                lowest[val] = y                         # Put y in the lowest at matching index if y is lower
+            if lowest[x] > y:                           # See if the y value is lower than the lowest one at the specific index
+                lowest[x] = y                           # Put y in the lowest at matching index if y is lower
         lowest = np.subtract(highest, lowest)           # Make the lower blocks have the higher value, and vice versa
         
         return (lowest, highest)                        # Return vals, height minus one
