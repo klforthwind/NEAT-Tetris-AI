@@ -60,6 +60,9 @@ class TestDataHandler(unittest.TestCase):
         self.isTrue(self.dh.didBlockChange(dBCLast1, dBCArr, dBCNext))
         self.equality(dBCNextC, dBCNext)
     
+    def test_getNewBoard(self):
+        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+    
     def test_getFitness(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
 
@@ -67,9 +70,6 @@ class TestDataHandler(unittest.TestCase):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
     
     def test_getBestMoves(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")=
-        
-    def test_getNewBoard(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
 
 if __name__ == '__main__':

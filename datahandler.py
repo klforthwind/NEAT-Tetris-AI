@@ -85,6 +85,26 @@ class DataHandler:
         return (qChange > 5 and                                     # Return true if we have moved onto the next block
             22 < tileCount < 26 and
             22 < oldTileCount < 26)
+    
+    def getNewBoard(self, heights, x, b1, width, b):
+        board = np.copy(b)
+        lowTuple = self.getLowestBlocks(b1)
+        lowestBlocks = lowTuple[0]
+        highBoi = lowTuple[1]
+        high = 0
+        height = 0
+        yOrigin = 0
+        for col in range(int(width)):
+            val = heights[x + col] + (highBoi - lowestBlocks[col])
+            if val > high:
+                high = val
+                height = heights[x + col]
+                yOrigin = lowestBlocks[col]
+        for i in range(len(b1[0])):
+            yAxis = int(self.zero(b1)[0][i] - yOrigin + height)
+            xAxis = int(x + self.zero(b1)[1][i])
+            board[19 - yAxis][xAxis] = 1
+        return np.copy(board)
 
     # Get fitness of a specific board
     def getFitness(self, board, nodeNet):
@@ -178,23 +198,3 @@ class DataHandler:
                 del newBoard
             del b1
         return arr
-
-    def getNewBoard(self, heights, x, b1, width, b):
-        board = np.copy(b)
-        lowTuple = self.getLowestBlocks(b1)
-        lowestBlocks = lowTuple[0]
-        highBoi = lowTuple[1]
-        high = 0
-        height = 0
-        yOrigin = 0
-        for col in range(int(width)):
-            val = heights[x + col] + (highBoi - lowestBlocks[col])
-            if val > high:
-                high = val
-                height = heights[x + col]
-                yOrigin = lowestBlocks[col]
-        for i in range(len(b1[0])):
-            yAxis = int(self.zero(b1)[0][i] - yOrigin + height)
-            xAxis = int(x + self.zero(b1)[1][i])
-            board[19 - yAxis][xAxis] = 1
-        return np.copy(board)
