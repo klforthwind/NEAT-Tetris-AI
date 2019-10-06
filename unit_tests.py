@@ -63,15 +63,17 @@ class TestDataHandler(unittest.TestCase):
     def test_getNewBoard(self):
         self.equality(getNB1C, self.dh.getNewBoard(getNB1x,getNB1bd,getNB1b))
         self.equality(getNB2C, self.dh.getNewBoard(getNB2x,getNB2bd,getNB2b))
+        self.equality(getNB3C, self.dh.getNewBoard(getNB3x,getNB3bd,getNB3b))
     
     def test_getFitness(self):
         self.equality(getF1FN1C, self.dh.getFitness(getF1, getFN1))
         self.equality(getF1FN2C, self.dh.getFitness(getF1, getFN2))
-
-    def test_getNextBestMove(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
     
     def test_getBestMoves(self):
+        self.equality(getNBM1C, self.dh.getBestMoves(getNBM1q, getNBM1b, getNBM1mb, getNBM1nn1))
+        self.equality(getNBM2C, self.dh.getBestMoves(getNBM1q, getNBM1b, getNBM1mb, getNBM1nn2))
+
+    def test_getNextBestMove(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
 
 if __name__ == '__main__':

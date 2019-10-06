@@ -92,15 +92,14 @@ class DataHandler:
         heights = self.getHeights(b)                                # Get the heights of the board
         board = np.copy(b)                                          # Create a copy of the board
         lowestBlock = self.getLowestBlocks(blockData)               # Get the lowest blocks as an inverted value
-        high, height, yOrigin = 0, 0, 0                             # Initialize some variable to utilize
+        high, height = 0, 0                                         # Initialize some variable to utilize
         for col in range(int(len(lowestBlock))):                    # Iterate over the width of the block
             val = heights[xVal + col] + lowestBlock[col]            # Determine the significance of the column
             if val > high:                                          # Check to see if this column is limiting factor in placement
                 high = val                                          # Set high to this value of importance
-                height = heights[xVal + col]                        # Keep track of the height of placement
-                yOrigin = highest - lowestBlock[col]                # Set yorigin to lowest Block
+                height = heights[xVal + col] - (highest - lowestBlock[col])  # Keep track of the height of placement
         for i in range(len(blockData[0])):                          # Iterate over the block data
-            yAxis = int(blockData[0][i] - yOrigin + height)         # Calculate the y value of tile in block
+            yAxis = int(blockData[0][i] + height)                   # Calculate the y value of tile in block
             xAxis = int(xVal + self.zero(blockData)[1][i])          # Calculate the x value of specific tile in block
             board[19 - yAxis][xAxis] = 1                            # Update the board
         return np.copy(board)                                       # Return a copy of this board
@@ -164,7 +163,7 @@ class DataHandler:
         return move                                                     # Return the best move
 
     # Returns initial good placements
-    def getBestMoves(self, boardArr, qArr, lastBoard, movingBlock, nodeNet):
+    def getBestMoves(self, qArr, lastBoard, movingBlock, nodeNet):
         heights = self.getHeights(lastBoard)                                # Get the heights of the board without the moving block
         qBlocks = self.getQueueBlocks(qArr)                                 # Get the queue blocks
         firstBlock = self.zero(movingBlock)                                 # Zero the moving block
@@ -177,7 +176,7 @@ class DataHandler:
             for x1 in range(int(11 - width)):                               # Iterate over all columns, skipping the right (width - 1) many (to not overflow)
                 if np.amax(heights[x1:x1 + width]) > 16:                    # See if the heights of the columns being placed on is too high
                     continue                                                # Continue if we should not place on those columns
-                newBoard = self.getNewBoard(x1, b1, lBoard)                 # Create the newBoard
+                newBoard = self.getNewBoard(x1, b1, lastBoard)              # Create the newBoard
                 newHeights = self.getHeights(newBoard)                      # Get the new heights of the board
                 for r2 in range(4):                                         # Iterate over all rotations
                     b2 = self.rotate(self.getXYVals(qBlocks[0]), r2)        # Rotate the block r2 times
@@ -187,13 +186,13 @@ class DataHandler:
 	                        continue                                        # Continue if we should not place on those columns
                         newBoard2 = self.getNewBoard(x2, b2, newBoard)      # Create a new newboard
                         fit = self.getFitness(newBoard2, nodeNet)           # Get the fitness of said new board
-                        if  fit >= fitness:                                 # Check to see if this fitness beats the best fitness
+                        if  fit > fitness:                                  # Check to see if this fitness beats the best fitness
                             fitness = fit                                   # Set the best fitness to this fitness
                             moveArr = []                                    # Make moveArr empty
                             tup1 = (r1, 0, x1)                              # Create a tuple for the first move representing required actions
-                            arr.append(tup1)                                # Append said tuple to the move array
+                            moveArr.append(tup1)                            # Append said tuple to the move array
                             tup2 = (r2, 0, x2)                              # Create a tuple for the second move representing required actions
-                            arr.append(tup2)                                # Append said tuple to the move array
+                            moveArr.append(tup2)                            # Append said tuple to the move array
                         del newBoard2                                       # Delete newBoard2 since we wont need it
                     del b2                                                  # Delete block 2 since we won't need it
                 del newBoard                                                # Delete newBoard since we won't need it
