@@ -86,19 +86,22 @@ class DataHandler:
             22 < tileCount < 26 and
             22 < oldTileCount < 26)
     
-    def getNewBoard(self, heights, xVal, blockData, b):
+    def getNewBoard(self, xVal, block, b):
+        blockData = self.zero(block)                                # Zero blockData
+        highest = np.amax(blockData[0])
+        heights = self.getHeights(b)                                # Get the heights of the board
         board = np.copy(b)                                          # Create a copy of the board
-        lowestBlocks = self.getLowestBlocks(blockData)              # Get the lowest blocks as an inverted value
+        lowestBlock = self.getLowestBlocks(blockData)               # Get the lowest blocks as an inverted value
         high, height, yOrigin = 0, 0, 0                             # Initialize some variable to utilize
-        for col in range(int(len(lowestBlocks))):                   # Iterate over the width of the block
-            val = heights[x + col] + lowestBlock[col]               # Determine the significance of the column
+        for col in range(int(len(lowestBlock))):                    # Iterate over the width of the block
+            val = heights[xVal + col] + lowestBlock[col]            # Determine the significance of the column
             if val > high:                                          # Check to see if this column is limiting factor in placement
                 high = val                                          # Set high to this value of importance
-                height = heights[x + col]                           # Keep track of the height of placement
-                yOrigin = lowestBlocks[col]                         # Set yorigin to lowest Block
+                height = heights[xVal + col]                        # Keep track of the height of placement
+                yOrigin = highest - lowestBlock[col]                # Set yorigin to lowest Block
         for i in range(len(blockData[0])):                          # Iterate over the block data
-            yAxis = int(self.zero(blockData)[0][i] - yOrigin + height)  # Calculate the y value of tile in block
-            xAxis = int(x + self.zero(blockData)[1][i])             # Calculate the x value of specific tile in block
+            yAxis = int(blockData[0][i] - yOrigin + height)         # Calculate the y value of tile in block
+            xAxis = int(xVal + self.zero(blockData)[1][i])          # Calculate the x value of specific tile in block
             board[19 - yAxis][xAxis] = 1                            # Update the board
         return np.copy(board)                                       # Return a copy of this board
 
@@ -144,7 +147,7 @@ class DataHandler:
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
-                theboard = self.getNewBoard(heights, xval, b1, width, theboard)
+                theboard = self.getNewBoard(xval, b1, width, theboard)
         newBlock = qBlocks[len(thelist) - 1]
         heights = self.getHeights(theboard)
         for r1 in range(4):

@@ -61,7 +61,8 @@ class TestDataHandler(unittest.TestCase):
         self.equality(dBCNextC, dBCNext)
     
     def test_getNewBoard(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+        self.equality(getNB1C, self.dh.getNewBoard(getNB1x,getNB1bd,getNB1b))
+        self.equality(getNB2C, self.dh.getNewBoard(getNB2x,getNB2bd,getNB2b))
     
     def test_getFitness(self):
         self.equality(getF1FN1C, self.dh.getFitness(getF1, getFN1))
