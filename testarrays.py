@@ -393,7 +393,7 @@ getNB3C = np.array(
     [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]], uint8)
 
-getNBM1q = np.array(
+getBM1q = np.array(
     [[1,1,0,0],
     [0,1,1,0],
     [0,0,0,0],
@@ -412,7 +412,7 @@ getNBM1q = np.array(
     [0,1,1,1],
     [0,1,0,0]], uint8)
 
-getNBM1b = np.array(
+getBM1b = np.array(
     [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -434,13 +434,17 @@ getNBM1b = np.array(
     [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]], uint8)
 
-getNBM1mb = np.array(
+getBM1mb = np.array(
     [[19,18,18,17],
     [6,5,6,5]], uint8)
 
-getNBM1nn1 = np.array([0,0,0,0], uint8)
+getBM1nn1 = np.array([0,0,0,0], uint8)
 
-getNBM1nn2 = np.array([1,1,1,1], uint8)
+getBM1nn2 = np.array([1,1,1,1], uint8)
 
-getNBM1C = [(0,0,0),(0,0,0)]
-getNBM2C = [(0,0,0),(2,0,1)]
+getBM1C = [(0,0,0),(0,0,0)]
+getBM2C = [(0,0,0),(2,0,1)]
+
+getNBM1C = (0,0,0)
+
+getNBM2C = (0,0,5)

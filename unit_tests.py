@@ -70,11 +70,15 @@ class TestDataHandler(unittest.TestCase):
         self.equality(getF1FN2C, self.dh.getFitness(getF1, getFN2))
     
     def test_getBestMoves(self):
-        self.equality(getNBM1C, self.dh.getBestMoves(getNBM1q, getNBM1b, getNBM1mb, getNBM1nn1))
-        self.equality(getNBM2C, self.dh.getBestMoves(getNBM1q, getNBM1b, getNBM1mb, getNBM1nn2))
+        self.equality(getBM1C, self.dh.getBestMoves(getBM1q, getBM1b, getBM1mb, getBM1nn1))
+        self.equality(getBM2C, self.dh.getBestMoves(getBM1q, getBM1b, getBM1mb, getBM1nn2))
 
     def test_getNextBestMove(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+        moveArr = self.dh.getBestMoves(getBM1q, getBM1b, getBM1mb, getBM1nn1)
+        self.equality(getNBM1C, self.dh.getNextBestMove(moveArr, getBM1q, getBM1b, getBM1mb, getBM1nn1))
+        moveArr = self.dh.getBestMoves(getBM1q, getBM1b, getBM1mb, getBM1nn2)
+        self.equality(getNBM2C, self.dh.getNextBestMove(moveArr, getBM1q, getBM1b, getBM1mb, getBM1nn2))
+
 
 if __name__ == '__main__':
     unittest.main()
