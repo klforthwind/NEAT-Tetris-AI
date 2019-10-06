@@ -59,15 +59,15 @@ class TestDataHandler(unittest.TestCase):
         self.isTrue(not self.dh.didBlockChange(dBCArr, dBCLast2, dBCNext))
         self.isTrue(self.dh.didBlockChange(dBCLast1, dBCArr, dBCNext))
         self.equality(dBCNextC, dBCNext)
+    
+    def test_getFitness(self):
+        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
 
     def test_getNextBestMove(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
     
     def test_getBestMoves(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
-    
-    def test_getFitness(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")=
         
     def test_getNewBoard(self):
         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")

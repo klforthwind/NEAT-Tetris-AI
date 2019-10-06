@@ -86,6 +86,27 @@ class DataHandler:
             22 < tileCount < 26 and
             22 < oldTileCount < 26)
 
+    # Get fitness of a specific board
+    def getFitness(self, board, nodeNet):
+        fitness = 0                                 # Start fitness at 0
+        heights = self.getHeights(board)            # Get array of heights
+
+        totalHeight = np.sum(heights)               # Aggregate Height
+        holes = totalHeight - (np.sum(board) - 4)   # Holes
+
+        bump = 0                                    # Bumpiness
+        for i in range(len(heights)-1):
+            bump += abs(heights[i] - heights[i + 1])
+        
+        lines = np.sum(np.amin(board, axis=1))      # Complete Lines
+
+        fitness += nodeNet[0] * totalHeight         # Aggregate Height
+        fitness += nodeNet[1] * holes               # Holes
+        fitness += nodeNet[2] * bump                # Bumpiness
+        fitness += nodeNet[3] * lines               # Complete Lines
+
+        return fitness                              # Return total fitness
+
     def getNextBestMove(self, thelist, board, hold, queue, lBoard, nodeNet):
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
@@ -158,32 +179,6 @@ class DataHandler:
             del b1
         return arr
 
-
-    # --------------------------------------------------------------------
-    
-    # Get fitness of a specific board
-    def getFitness(self, board, nodeNet):
-        fitness = 0                                 # Start fitness at 0
-        heights = self.getHeights(board)            # Get array of heights
-
-        totalHeight = np.sum(heights)               # Aggregate Height
-        holes = totalHeight - (np.sum(board) - 4)   # Holes
-
-        bump = 0                                    # Bumpiness
-        for i in range(len(heights)-1):
-            bump += abs(heights[i] - heights[i + 1])
-        
-        lines = np.sum(np.amin(board, axis=1))      # Complete Lines
-
-        fitness += nodeNet[0] * totalHeight         # Aggregate Height
-        fitness += nodeNet[1] * holes               # Holes
-        fitness += nodeNet[2] * bump                # Bumpiness
-        fitness += nodeNet[3] * lines               # Complete Lines
-
-        return fitness                              # Return total fitness
-
-# --------------------------------------------------------------------
-    
     def getNewBoard(self, heights, x, b1, width, b):
         board = np.copy(b)
         lowTuple = self.getLowestBlocks(b1)
