@@ -124,10 +124,10 @@ class DataHandler:
         return move
 
     # Returns initial good placements
-    def getBestMoves(self, boardArr, holdArr, qArr, lastBoard, nodeNet):
+    def getBestMoves(self, boardArr, holdArr, qArr, lastBoard, movingBlock, nodeNet):
         heights = self.getHeights(lBoard)
-        qBlocks = self.getQueueBlocks()
-        firstBlock = self.zero(self.movingBlock)
+        qBlocks = self.getQueueBlocks(qArr)
+        firstBlock = self.zero(movingBlock)
         fitness = -1
         moveArr = []
         
@@ -161,34 +161,26 @@ class DataHandler:
 
     # --------------------------------------------------------------------
     
+    # Get fitness of a specific board
     def getFitness(self, board, nodeNet):
-        fitness = 0
-        heights = self.getHeights(board)
+        fitness = 0                                 # Start fitness at 0
+        heights = self.getHeights(board)            # Get array of heights
 
-        # Aggregate Height
-        heightTotal = np.sum(heights)
+        totalHeight = np.sum(heights)               # Aggregate Height
+        holes = totalHeight - (np.sum(board) - 4)   # Holes
 
-        # Holes (not 100% correct, but will work)
-        sumOfBoard = np.sum(board) - 4
-        holes = 0
-        if heightTotal - sumOfBoard >= 0:
-            holes = heightTotal - sumOfBoard
-
-        bump = 0
-        # Bumpiness
+        bump = 0                                    # Bumpiness
         for i in range(len(heights)-1):
             bump += abs(heights[i] - heights[i + 1])
+        
+        lines = np.sum(np.amin(board, axis=1))      # Complete Lines
 
-        fitness += nodeNet[0] * heightTotal
-        fitness += nodeNet[1] * holes
-        fitness += nodeNet[2] * bump
+        fitness += nodeNet[0] * totalHeight         # Aggregate Height
+        fitness += nodeNet[1] * holes               # Holes
+        fitness += nodeNet[2] * bump                # Bumpiness
+        fitness += nodeNet[3] * lines               # Complete Lines
 
-        # Complete Lines
-        lines = np.sum(np.amin(board, axis=1))
-        fitness += nodeNet[3] * lines
-
-        return fitness
-
+        return fitness                              # Return total fitness
 
 # --------------------------------------------------------------------
     
