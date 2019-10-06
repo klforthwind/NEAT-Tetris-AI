@@ -127,41 +127,41 @@ class DataHandler:
         return fitness                              # Return total fitness
 
     def getNextBestMove(self, thelist, board, queue, lBoard, nodeNet):
-        heights = self.getHeights(lBoard)                                                   # Get the heights of the board without the moving block
-        qBlocks = self.getQueueBlocks()                                                     # Get the queue blocks to handle
-        zeroed = self.zero(self.movingBlock)                                                # Get the zeroed moving block
-        fitness = -1                                                                        # Start fitness at -1
-        move = (0, 0)                                                                       # Create a move tracker?
+        heights = self.getHeights(lBoard)                               # Get the heights of the board without the moving block
+        qBlocks = self.getQueueBlocks()                                 # Get the queue blocks to handle
+        zeroed = self.zero(self.movingBlock)                            # Get the zeroed moving block
+        fitness = -1                                                    # Start fitness at -1
+        move = (0, 0, 0)                                                # Create a move tracker?
 
-        theboard = np.copy(lBoard)                                                          # Take a copy of lastBoard
-        for item in range(len(thelist)):            
-            if item == 0:
-                b1 = self.rotate(zeroed, thelist[item][1])
-                width = self.getWidth(b1)
-                xval = thelist[item][0]
-                if np.amax(heights[xval:xval + width]) > 16:
-                    continue
-                theboard = self.getNewBoard(xval, b1, theboard)
-            else:
-                heights = self.getHeights(theboard)
-                b1 = self.rotate(self.getXYVals(qBlocks[item - 1]), thelist[item][1])
-                xval = thelist[item][0]
-                if np.amax(heights[xval:xval + width]) > 16:
-                    continue
-                theboard = self.getNewBoard(xval, b1, theboard)
-        newBlock = qBlocks[len(thelist) - 1]
-        heights = self.getHeights(theboard)
+        newBoard = np.copy(lBoard)                                      # Take a copy of lastBoard
+        for item in range(len(thelist)):                                # Iterate over items in list
+            if item == 0:                                               # Check to see if the item is the moving block
+                b1 = self.rotate(zeroed, thelist[item][1])              # Rotate the block
+                width = self.getWidth(b1)                               # Get the width of the block
+                xval = thelist[item][0]                                 # Get the correct xvalue of the block placement
+                if np.amax(heights[xval:xval + width]) > 16:            # See if the heights of the columns being placed on is too high
+                    continue                                            # Continue if we should not place on those columns
+                newBoard = self.getNewBoard(xval, b1, newBoard)         # Create a new board using the moving block
+            else:                                                       # Iterate over the queue blocks
+                heights = self.getHeights(theboard)                     # Get the heights of the new board
+                b1 = self.rotate(self.getXYVals(qBlocks[item - 1]), thelist[item][1]) # Rotate the block
+                xval = thelist[item][0]                                 # Get the correct xvalue of the block placement
+                if np.amax(heights[xval:xval + width]) > 16:            # See if the heights of the columns being placed on is too high
+                    continue                                            # Continue if we should not place on those columns
+                newBoard = self.getNewBoard(xval, b1, newBoard)         # Update the newboard using a specific queue block
+        newBlock = qBlocks[len(thelist) - 1]                            # Get the next queueblock in list
+        heights = self.getHeights(newBoard)                             # Get the heights of the new bloard
         for r1 in range(4):
             b1, width = self.rotate(self.getXYVals(newBlock), r1)
             for x1 in range(int(11 - width)):
-                if np.amax(heights[x1:x1 + width]) > 16:
-                    continue
-                theboard = self.getNewBoard(x1, b1, theboard)
-                fit = self.getFitness(theboard, nodeNet)
-                if  fit >= fitness:
-                    fitness = fit
-                    move = (r1, 0 ,x1)
-        return move
+                if np.amax(heights[x1:x1 + width]) > 16:                # See if the heights of the columns being placed on is too high
+                    continue                                            # Continue if we should not place on those columns
+                theboard = self.getNewBoard(x1, b1, newBoard)           # Create a different board in order to find the fitness of it
+                fit = self.getFitness(theboard, nodeNet)                # Get the fitness of this specific board
+                if  fit >= fitness:                                     # Check to see if fitness beats best fitness
+                    fitness = fit                                       # Set best fitness to this fitness if so
+                    move = (r1, 0 ,x1)                                  # Set the preferred move to what we just did
+        return move                                                     # Return the best move
 
     # Returns initial good placements
     def getBestMoves(self, boardArr, qArr, lastBoard, movingBlock, nodeNet):
