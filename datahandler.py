@@ -196,7 +196,7 @@ class DataHandler:
     
     def getNewBoard(self, heights, x, b1, width, b):
         board = np.copy(b)
-        lowTuple = self.getLowestBlocks(b1, width)
+        lowTuple = self.getLowestBlocks(b1)
         lowestBlocks = lowTuple[0]
         highBoi = lowTuple[1]
         high = 0
