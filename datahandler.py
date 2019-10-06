@@ -86,21 +86,21 @@ class DataHandler:
             22 < tileCount < 26 and
             22 < oldTileCount < 26)
     
-    def getNewBoard(self, heights, x, b1, width, b):
+    def getNewBoard(self, heights, xVal, blockData, b):
         board = np.copy(b)                                          # Create a copy of the board
-        lowestBlocks = self.getLowestBlocks(b1)                     # Get the lowest blocks as an inverted value
+        lowestBlocks = self.getLowestBlocks(blockData)              # Get the lowest blocks as an inverted value
         high, height, yOrigin = 0, 0, 0                             # Initialize some variable to utilize
-        for col in range(int(width)):                               # Iterate
-            val = heights[x + col] + (highBoi - lowestBlocks[col])
-            if val > high:
-                high = val
-                height = heights[x + col]
-                yOrigin = lowestBlocks[col]
-        for i in range(len(b1[0])):
-            yAxis = int(self.zero(b1)[0][i] - yOrigin + height)
-            xAxis = int(x + self.zero(b1)[1][i])
-            board[19 - yAxis][xAxis] = 1
-        return np.copy(board)
+        for col in range(int(len(lowestBlocks))):                   # Iterate over the width of the block
+            val = heights[x + col] + lowestBlock[col]               # Determine the significance of the column
+            if val > high:                                          # Check to see if this column is limiting factor in placement
+                high = val                                          # Set high to this value of importance
+                height = heights[x + col]                           # Keep track of the height of placement
+                yOrigin = lowestBlocks[col]                         # Set yorigin to lowest Block
+        for i in range(len(blockData[0])):                          # Iterate over the block data
+            yAxis = int(self.zero(blockData)[0][i] - yOrigin + height)  # Calculate the y value of tile in block
+            xAxis = int(x + self.zero(blockData)[1][i])             # Calculate the x value of specific tile in block
+            board[19 - yAxis][xAxis] = 1                            # Update the board
+        return np.copy(board)                                       # Return a copy of this board
 
     # Get fitness of a specific board
     def getFitness(self, board, nodeNet):
