@@ -38,9 +38,9 @@ class TestDataHandler(unittest.TestCase):
         self.equality(z1C, self.dh.zero(z1))
 
     def test_getLowestBlocks(self):
-        self.tup_equal(getLB1C, self.dh.getLowestBlocks(getLB1))
-        self.tup_equal(getLB2C, self.dh.getLowestBlocks(getLB2))
-        self.tup_equal(getLB3C, self.dh.getLowestBlocks(getLB3))
+        self.equality(getLB1C, self.dh.getLowestBlocks(getLB1))
+        self.equality(getLB2C, self.dh.getLowestBlocks(getLB2))
+        self.equality(getLB3C, self.dh.getLowestBlocks(getLB3))
     
     def test_getWidth(self):
         self.equality(getW1C, self.dh.getWidth(getW1))
@@ -48,11 +48,11 @@ class TestDataHandler(unittest.TestCase):
         self.equality(getW3C, self.dh.getWidth(getW3))
 
     def test_rotate(self):
-        self.tup_equal(r1C1, self.dh.rotate(r1, 1))
-        self.tup_equal(r1C2, self.dh.rotate(r1, 2))
-        self.tup_equal(r1C3, self.dh.rotate(r1, 3))
-        self.tup_equal(r2C1, self.dh.rotate(r2, 1))
-        self.tup_equal(r2C2, self.dh.rotate(r2, 2))
+        self.equality(r1C1, self.dh.rotate(r1, 1))
+        self.equality(r1C2, self.dh.rotate(r1, 2))
+        self.equality(r1C3, self.dh.rotate(r1, 3))
+        self.equality(r2C1, self.dh.rotate(r2, 1))
+        self.equality(r2C2, self.dh.rotate(r2, 2))
     
     def test_didBlockChange(self):
         self.isTrue(not self.dh.didBlockChange(dBCLast2, dBCArr, dBCNext))
