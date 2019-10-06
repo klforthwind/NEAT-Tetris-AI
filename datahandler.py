@@ -2,7 +2,7 @@ from numpy import uint8
 import numpy as np
 
 class DataHandler:
-    
+
     # Returns heights of the board, height is relative from distance between bottom and heighest filled tile (0 is empty column)
     def getHeights(self, board):
         heights = np.argmax(board, axis=0)              # Get the highest filled tile in each column
@@ -103,24 +103,24 @@ class DataHandler:
 
     # Get fitness of a specific board
     def getFitness(self, board, nodeNet):
-        fitness = 0                                 # Start fitness at 0
-        heights = self.getHeights(board)            # Get array of heights
+        fitness = 0                                                 # Start fitness at 0
+        heights = self.getHeights(board)                            # Get array of heights
 
-        totalHeight = np.sum(heights)               # Aggregate Height
-        holes = totalHeight - (np.sum(board) - 4)   # Holes
+        totalHeight = np.sum(heights)                               # Aggregate Height
+        holes = totalHeight - (np.sum(board) - 4)                   # Holes
 
-        bump = 0                                    # Bumpiness
+        bump = 0                                                    # Bumpiness
         for i in range(len(heights)-1):
             bump += abs(heights[i] - heights[i + 1])
         
-        lines = np.sum(np.amin(board, axis=1))      # Complete Lines
+        lines = np.sum(np.amin(board, axis=1))                      # Complete Lines
 
-        fitness += nodeNet[0] * totalHeight         # Aggregate Height
-        fitness += nodeNet[1] * holes               # Holes
-        fitness += nodeNet[2] * bump                # Bumpiness
-        fitness += nodeNet[3] * lines               # Complete Lines
+        fitness += nodeNet[0] * totalHeight                         # Aggregate Height
+        fitness += nodeNet[1] * holes                               # Holes
+        fitness += nodeNet[2] * bump                                # Bumpiness
+        fitness += nodeNet[3] * lines                               # Complete Lines
 
-        return fitness                              # Return total fitness
+        return fitness                                              # Return total fitness
 
     def getNextBestMove(self, thelist, queue, lBoard, movingBlock, nodeNet):
         heights = self.getHeights(lBoard)                               # Get the heights of the board without the moving block
