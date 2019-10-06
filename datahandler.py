@@ -164,7 +164,7 @@ class DataHandler:
         return move
 
     # Returns initial good placements
-    def getBestMoves(self, boardArr, holdArr, qArr, lastBoard, movingBlock, nodeNet):
+    def getBestMoves(self, boardArr, qArr, lastBoard, movingBlock, nodeNet):
         heights = self.getHeights(lastBoard)                                # Get the heights of the board without the moving block
         qBlocks = self.getQueueBlocks(qArr)                                 # Get the queue blocks
         firstBlock = self.zero(movingBlock)                                 # Zero the moving block
