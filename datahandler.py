@@ -86,8 +86,7 @@ class DataHandler:
             22 < tileCount < 26 and
             22 < oldTileCount < 26)
 
-    def getNextBestMove(self, thelist, nodeNet):
-        board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
+    def getNextBestMove(self, thelist, board, hold, queue, lBoard, nodeNet):
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
         zeroed = self.zero(self.movingBlock)
@@ -125,8 +124,7 @@ class DataHandler:
         return move
 
     # Returns initial good placements
-    def getBestMoves(self, nodeNet):
-        board, hold, queue, lBoard = self.__boardArr, self.__holdArr, self.__queueArr, self.lastBoard
+    def getBestMoves(self, boardArr, holdArr, qArr, lastBoard, nodeNet):
         heights = self.getHeights(lBoard)
         qBlocks = self.getQueueBlocks()
         firstBlock = self.zero(self.movingBlock)
