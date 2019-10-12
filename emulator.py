@@ -93,7 +93,6 @@ class Emulator:
 
     def runButton(self, outputNode, cmd):
         if int(outputNode) == 1:
-            # print(cmd)
             self.send_input(cmd)
 
     # Send signals to the controller that stop buttons from staying pressed down
@@ -125,7 +124,7 @@ class Emulator:
 
 # --------------------------------------------------------
 
-        # Compute x and y based on angle and intensity
+    # Compute x and y based on angle and intensity
     def angle(self, angle, intensity):
         # y is negative because on the Y input, UP = 0 and DOWN = 255
         x =  int((math.cos(math.radians(angle)) * 0x7F) * intensity / 0xFF) + 0x80
