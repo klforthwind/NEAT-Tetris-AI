@@ -17,7 +17,7 @@ class DataHandler:
 
     # Returns a list of blocks in the Queue (in XY form)
     def getQueueBlocks(self, queueArr):
-        if 23 < np.sum(queueArr) < 25:
+        if np.sum(queueArr) == 24:
             blocks = np.zeros((6, 2, 4), dtype = uint8)     # Create a 3d blocks array that holds 6 tetris blocks
             for i in range(17):                             # Iterate over all 17 rows in the queue mask (2 per block, 5 empty spaces in between)
                 if i % 3 == 2:                              # Check to see if i is on an empty space in between blocks
@@ -30,7 +30,7 @@ class DataHandler:
                 blocks[b] = self.getXYVals(blocks[b])       # Convert block data into xy value coordinates of data ([[0,1,1,0],[1,1,0,0]] becomes [[1,1,0,0],[1,2,0,1]])
             return np.copy(blocks)                          # Return a copy of the blocks
         else:
-            return np.zeros((6, 2, 4), dtype = uint8)
+            return np.zeros((6, 2, 4), dtype = uint8)       # Return empty array of data since we don't have a correct number of blocks filled
 
     # Get x and y values closest to 0 without breaking formation
     def zero(self, blockData):
