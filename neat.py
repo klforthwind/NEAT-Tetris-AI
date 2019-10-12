@@ -15,34 +15,26 @@ class NEAT:
         
     # Create the initial genomes
     def createPopulation(self):
-        for genomeNum in range(self.popSize):
-            genome = Genome()
-            genome.mutate()
-            self.genomes.append(genome)
-            del genome
+        for genomeNum in range(self.popSize):                               # Iterate over population size
+            genome = Genome()                                               # Make a new genome
+            genome.mutate()                                                 # Try to mutate the genome
+            self.genomes.append(genome)                                     # Append the new genome to the genome list
         #Let's save some stats
-        for genomeNum in range(len(self.genomes)):
-            txt = "data/"+str(self.generation)+"-"+str(genomeNum)+".txt"
-            np.savetxt(txt, self.genomes[genomeNum].nodeNet, fmt="%f")
-            del txt
+        for genomeNum in range(len(self.genomes)):                          # Iterate over all genomes
+            txt = "data/"+str(self.generation)+"-"+str(genomeNum)+".txt"    # Create a file name
+            np.savetxt(txt, self.genomes[genomeNum].nodeNet, fmt="%f")      # Save the nodenet of a genome to a file correspoding to generation and genomeNumber
 
     # Repopulate genomes from the latest generation that exists (in saved text files)
     def repopulate(self, generation):
-        # Iterate over the population size
-        for genomeNum in range(self.popSize):
+        for genomeNum in range(self.popSize):                               # Iterate over the population size
             genome = Genome()
             filename = "data/"+str(generation)+"-"+str(genomeNum)+".txt"
             file = open(filename, "r")
             lines = file.read().splitlines()
-            # Save the neural network to the genome
-            for lineNum in range(genome.nodeCount):
-                genome.nodeNet[lineNum] = float(lines[lineNum])
-            # Clean up memory
-            del lines
+            for lineNum in range(genome.nodeCount):                         # Iterate over all node 
+                genome.nodeNet[lineNum] = float(lines[lineNum])             # Put the node net in the file into the genome object
             file.close()
-            # Add genome to the genome list
-            self.genomes.append(genome)
-            del genome
+            self.genomes.append(genome)                                     # Append the genome to the genome list
         self.generation = generation
 
     # Return the correct button inputs from the currentGenome
