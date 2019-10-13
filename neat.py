@@ -12,17 +12,15 @@ class NEAT:
         self.genomes = []                                                   # Create an empty list of genomes
         self.currentGenome = 0                                              # Set the currentGenome index to 0
         self.t = time()                                                     # Set self.t to a relative point in time
-        
+
     # Create the initial genomes
     def createPopulation(self):
-        for genomeNum in range(self.popSize):                               # Iterate over population size
+        for genomeNum in range(self.popSize):                               # Iterate over the population (size)
             genome = Genome()                                               # Make a new genome
-            genome.mutate()                                                 # Try to mutate the genome
+            genome.mutate()                                                 # Mutate the genome
             self.genomes.append(genome)                                     # Append the new genome to the genome list
-        #Let's save some stats
-        for genomeNum in range(len(self.genomes)):                          # Iterate over all genomes
             txt = "data/"+str(self.generation)+"-"+str(genomeNum)+".txt"    # Create a file name
-            np.savetxt(txt, self.genomes[genomeNum].nodeNet, fmt="%f")      # Save the nodenet of a genome to a file correspoding to generation and genomeNumber
+            np.savetxt(txt, genome.nodeNet, fmt="%f")                       # Save the nodenet of a genome to a file correspoding to generation and genomeNumber
 
     # Repopulate genomes from the latest generation that exists (in saved text files)
     def repopulate(self, generation):
@@ -55,7 +53,7 @@ class NEAT:
             self.sortGenomes()
             self.increaseGeneration()
         print(self.genomes[self.currentGenome].nodeNet)
-    
+
     # Sorts genomes by fitness, such that list[0] has the highest fitness
     def sortGenomes(self):
         self.genomes.sort(key=lambda x: x.fitness, reverse=True)
@@ -71,7 +69,7 @@ class NEAT:
         # Reduce the genome list to the first half
         while len(self.genomes) > self.popSize / 2:
             self.genomes.pop(len(self.genomes)-1)
-            
+        
         # Make children and append them to a new list
         children = []
         self.genomes[0].fitness = 0
