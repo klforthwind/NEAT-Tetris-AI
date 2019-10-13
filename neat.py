@@ -7,11 +7,11 @@ class NEAT:
 
     # Initialize variables
     def __init__(self, populationSize):
-        self.popSize = populationSize
-        self.generation = 0
-        self.genomes = []
-        self.currentGenome = 0
-        self.t = time()
+        self.popSize = populationSize                                       # Set the NEAT population size
+        self.generation = 0                                                 # Set the generation to 0
+        self.genomes = []                                                   # Create an empty list of genomes
+        self.currentGenome = 0                                              # Set the currentGenome index to 0
+        self.t = time()                                                     # Set self.t to a relative point in time
         
     # Create the initial genomes
     def createPopulation(self):
