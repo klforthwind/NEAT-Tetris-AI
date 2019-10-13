@@ -5,100 +5,83 @@ from time import time
 
 class NEAT:
 
-    # Initialize variables
-    def __init__(self, populationSize):
+    def __init__(self, populationSize):                                     # Initialize variables
         self.popSize = populationSize                                       # Set the NEAT population size
         self.generation = 0                                                 # Set the generation to 0
         self.genomes = []                                                   # Create an empty list of genomes
         self.currentGenome = 0                                              # Set the currentGenome index to 0
         self.t = time()                                                     # Set self.t to a relative point in time
 
-    # Create the initial genomes
-    def createPopulation(self):
-        for genomeNum in range(self.popSize):                               # Iterate over the population (size)
+    def createPopulation(self):                                             # Create the initial genomes
+        for genomeNum in range(self.popSize):                               # Iterate over the genome population
             genome = Genome()                                               # Make a new genome
             genome.mutate()                                                 # Mutate the genome
             self.genomes.append(genome)                                     # Append the new genome to the genome list
             txt = "data/"+str(self.generation)+"-"+str(genomeNum)+".txt"    # Create a file name
             np.savetxt(txt, genome.nodeNet, fmt="%f")                       # Save the nodenet of a genome to a file correspoding to generation and genomeNumber
 
-    # Repopulate genomes from the latest generation that exists (in saved text files)
-    def repopulate(self, generation):
-        for genomeNum in range(self.popSize):                               # Iterate over the population size
-            genome = Genome()
-            filename = "data/"+str(generation)+"-"+str(genomeNum)+".txt"
-            file = open(filename, "r")
-            lines = file.read().splitlines()
-            for lineNum in range(genome.nodeCount):                         # Iterate over all node 
-                genome.nodeNet[lineNum] = float(lines[lineNum])             # Put the node net in the file into the genome object
-            file.close()
+    def repopulate(self, generation):                                       # Repopulate genomes from the latest generation that exists (in saved text files)
+        for genomeNum in range(self.popSize):                               # Iterate over the genome population
+            genome = Genome()                                               # Make a new genome
+            filename = "data/"+str(generation)+"-"+str(genomeNum)+".txt"    # Create a filename to retrieve data from
+            file = open(filename, "r")                                      # Open said file
+            lines = file.read().splitlines()                                # Get all of the data in the file
+            for lineNum in range(genome.nodeCount):                         # Iterate over all nodes in the nodeNet
+                genome.nodeNet[lineNum] = float(lines[lineNum])             # Put each node from the file into the genome's node net
+            file.close()                                                    # Close the file
             self.genomes.append(genome)                                     # Append the genome to the genome list
-        self.generation = generation
+        self.generation = generation                                        # Set the generation to the correct generation
 
-    # Return the correct button inputs from the currentGenome
-    def getMovements(self, capture, blockChange):
-        return self.genomes[self.currentGenome].getButtons(capture, blockChange)
+    def getMovements(self, capture, blockChange):                           # Return the correct button inputs from the currentGenome
+        return self.genomes[self.currentGenome].getButtons(capture, blockChange)    # Return the genome's thoughts on what buttons to press
     
     def printFitness(self):
-        self.genomes[self.currentGenome].fitness += time() - self.t
-        print(" ",self.generation, " - ", self.currentGenome, " - ", self.genomes[self.currentGenome].fitness)
-        self.t = time()
+        self.genomes[self.currentGenome].fitness += time() - self.t         # Update the genomes fitness
+        print(" {} - {} - {}".format(                                       # Print out fitness of the genome
+            self.generation, self.currentGenome, 
+            self.genomes[self.currentGenome].fitness))
+        self.t = time()                                                     # Update the relative point of time
 
-    # Go to the next genome
-    # If we just did the last genome of one generation, increase generation
-    def loop(self):
-        self.currentGenome += 1
-        self.t = time()
-        if self.currentGenome == len(self.genomes):
-            self.sortGenomes()
-            self.increaseGeneration()
-        print(self.genomes[self.currentGenome].nodeNet)
+    def loop(self):                                                         # Go to the next genome or increase generation
+        self.currentGenome += 1                                             # Increase the currentGenome index
+        self.t = time()                                                     # Update the relative point of time
+        if self.currentGenome == len(self.genomes):                         # Check to see if the currentGenome index is out of bounds of the genomes list
+            self.sortGenomes()                                              # Sort the genomes by fitness, highest will be first in list
+            self.increaseGeneration()                                       # Increase the generation
 
-    # Sorts genomes by fitness, such that list[0] has the highest fitness
     def sortGenomes(self):
-        self.genomes.sort(key=lambda x: x.fitness, reverse=True)
+        self.genomes.sort(key=lambda x: x.fitness, reverse=True)            # Sort the genomes by fitness, highest will be first in list
     
-    # Increase the generation number,
-    # reset currentGenome to 0,
-    # and evolve the next generation 
     def increaseGeneration(self):
         print("Generation ", self.generation ," evaluated.")
-        self.currentGenome = 0
-        self.generation += 1
+        self.currentGenome = 0                                              # Reset the currentGenome index to 0
+        self.generation += 1                                                # Increase the generation number
 
-        # Reduce the genome list to the first half
-        while len(self.genomes) > self.popSize / 2:
-            self.genomes.pop(len(self.genomes)-1)
+        while len(self.genomes) > self.popSize / 2:                         # Reduce the genome list to the first half
+            self.genomes.pop(len(self.genomes)-1)                           # Pop off the last genome
         
-        # Make children and append them to a new list
-        children = []
-        self.genomes[0].fitness = 0
-        children.append(self.genomes[0])
-        for c in range(self.popSize - 1):
-            children.append(self.makeChild(self.randChoice(),self.randChoice()))
+        children = []                                                       # Make children and append them to a new list
+        self.genomes[0].fitness = 0                                         # Set the fitness of the genome from the last generation to 0
+        children.append(self.genomes[0])                                    # Append the best genome from last generation to this genome list
+        for c in range(self.popSize - 1):                                   # Iterate over population size minus one
+            children.append(self.makeChild(self.randChoice(),self.randChoice()))    # Append a child to the children list
 
-        self.genomes = children
-        del children
+        self.genomes = children                                             # Set the genome list to the children list
 
-        #Let's save some stats
-        for g in range(len(self.genomes)):
-            txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
-            np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")
-            del txt
+        for g in range(len(self.genomes)):                                  # Iterate over all of the created genomes
+            txt = "data/"+str(self.generation)+"-"+str(g)+".txt"            # Create a filename to save data to
+            np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")              # Save the nodenet to the txt file
 
-    # Makes a child genome from parent genomes + random mutations
     def makeChild(self, mom, dad):
-        child = Genome()
-        for n in range(child.nodeCount):
-            child.nodeNet[n] = mom.nodeNet[n] if random() < 0.5 else dad.nodeNet[n]
-        child.mutate()
-        return child
+        child = Genome()                                                            # Create a new child genome
+        for n in range(child.nodeCount):                                            # Iterate over all nodes in the child's node net
+            child.nodeNet[n] = mom.nodeNet[n] if random() < 0.5 else dad.nodeNet[n] # Set a node in the child's node net to either the mother's or father's
+        child.mutate()                                                              # Mutate the node net
+        return child                                                                # Return the child
 
-    # Returns a random genome
     def randChoice(self):
-        return self.genomes[int(self.randWeightedNumBetween(0, len(self.genomes)-1))]
+        return self.genomes[int(self.randWeightedNumBetween(0, len(self.genomes)-1))]   # Returns a random genome
 
-    # Returns a number between min and max that is more likely to be skewed towards min
     def randWeightedNumBetween(self, min, max):
-        return np.floor(np.power(random(), 2) * (max - min + 1) + min)
+        return np.floor(np.power(random(), 2) * (max - min + 1) + min)      # Return a number between min and max, skewed towards min
     
