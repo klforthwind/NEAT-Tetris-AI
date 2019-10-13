@@ -62,4 +62,3 @@ class Genome:
         if len(self.list) > 0 and not yikes:
             self.list[0] = info
         return arr
-
