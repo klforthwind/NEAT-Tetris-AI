@@ -6,24 +6,20 @@ import numpy.random as rng
 from neat import NEAT
 from time import time
 
-# Controlled randomness, doesn't matter that much with Tetris though, since tetris block placement is random
-rng.seed(666)
+rng.seed(666)               # Controlled randomness, although Tetris blocks are random :P
 
-# Get a relative point of time
-t0 = time()
+t0 = time()                 # Get a relative point of time
 
-# Connect to the Switch Capture, and run it asynchronously
-capture = SwitchData()
-capture.start()
+capture = SwitchData()      # Connect to the Switch Capture
+capture.start()             # Run the Switch Capture asynchronously
 
-# Begin our population
-populationSize = 50
-neat = NEAT(populationSize)
+populationSize = 50         # Set the population size
+neat = NEAT(populationSize) # Begin our population
 
 # Check to see if there is save data for the neural network to return to
-fileManager = FileManager()
-loadable = fileManager.loadable()
-if loadable[0]:
+fileManager = FileManager() # Initialize a file manager to create / read files
+loadable = fileManager.loadable()   # Get a tuple of (Boolean, Generation) as to whether the genome files are loadable
+if loadable[0]:             # C
     neat.repopulate(loadable[1])
 else:
     neat.createPopulation()
