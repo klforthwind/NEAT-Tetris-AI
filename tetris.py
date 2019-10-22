@@ -19,10 +19,10 @@ neat = NEAT(populationSize) # Begin our population
 # Check to see if there is save data for the neural network to return to
 fileManager = FileManager() # Initialize a file manager to create / read files
 loadable = fileManager.loadable()   # Get a tuple of (Boolean, Generation) as to whether the genome files are loadable
-if loadable[0]:             # C
-    neat.repopulate(loadable[1])
+if loadable[0]:             # Check to see if genomes files exist
+    neat.repopulate(loadable[1])    # Repopulate with the oldest existent genome generation
 else:
-    neat.createPopulation()
+    neat.createPopulation() # Create a new population since none exist
 
 #Get connected to an emulator
 port = "COM3"
