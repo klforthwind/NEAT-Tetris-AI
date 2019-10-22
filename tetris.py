@@ -24,33 +24,23 @@ if loadable[0]:             # Check to see if genomes files exist
 else:
     neat.createPopulation() # Create a new population since none exist
 
-#Get connected to an emulator
-port = "COM3"
-emulator = Emulator(port)
+port = "COM3"               # Set port for emulation
+emulator = Emulator(port)   # Create emulation on the specific port
 
-# Main code loop :)
-while True:
+while True:                 # Main code loop :)
     
-    # Check to see if we should end the program (if we pressed q)
-    if (capture.shouldQuit()):
-        emulator.stop_input()
-        break
+    if (capture.shouldQuit()):  #Check to see if the program should end (if we pressed q)
+        emulator.stop_input()   # Stop any inputs to the emulator
+        break                   # Break out of the while loop
 
-    # Make and display the board, hold, and queue, and game frame
-    capture.processCapture()
+    capture.processCapture()    # Make and display the board, hold, and queue, and game frame
 
     # Check to see if we should press A (genome over, and it won't go to next genome),
     # or check to see if genome is dead to press A
     if capture.shouldPressA() or capture.isDead():
-        
-        # Hold the A button
-        emulator.nextGenome()
-        
-        # Go to next genome / generation
-        neat.loop()
-
-        # Clear last board
-        capture.clearLastBoard()
+        emulator.nextGenome()       # Hold the A button
+        neat.loop()                 # Go to next genome / generation
+        capture.clearLastBoard()    # Clear last board
 
     # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.2):
@@ -60,24 +50,14 @@ while True:
             capture.updateLastBoard()
 
         if capture.existsControllablePiece():
-
-            # Get the button array of recommended moves
-            btnArr = neat.getMovements(capture, blockChange)
-
-            # Send the correct button inputs
-            emulator.emulateTetris(btnArr)
+            btnArr = neat.getMovements(capture, blockChange)    # Get the button array of recommended moves
+            emulator.emulateTetris(btnArr)  # Send the correct button inputs
         else:
-            # Send signals to stop the emulator from sending button data
-            emulator.stop_input()
+            emulator.stop_input()   # Send signals to stop the emulator from sending button data
 
-        # Print the fitness
-        neat.printFitness()
+        neat.printFitness() # Print the fitness
     else:
-        # Send signals to stop the emulator from sending button data
-        emulator.stop_input()
+        emulator.stop_input()   # Send signals to stop the emulator from sending button data
 
-# Stop the capture thread
-capture.stop()
-
-# Stop the emulator
-emulator.close()
+capture.stop()      # Stop the capture thread
+emulator.close()    # Stop the emulator
