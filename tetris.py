@@ -7,7 +7,6 @@ from neat import NEAT
 from time import time
 
 rng.seed(666)                       # Controlled randomness, although Tetris blocks are random :P
-
 t0 = time()                         # Get a relative point of time
 
 capture = SwitchData()              # Connect to the Switch Capture
@@ -28,8 +27,7 @@ port = "COM3"                       # Set port for emulation
 emulator = Emulator(port)           # Create emulation on the specific port
 
 while True:                         # Main code loop :)
-    
-    if (capture.shouldQuit()):      #Check to see if the program should end (if we pressed q)
+    if (capture.shouldQuit()):      # Check to see if the program should end (if we pressed q)
         emulator.stop_input()       # Stop any inputs to the emulator
         break                       # Break out of the while loop
 

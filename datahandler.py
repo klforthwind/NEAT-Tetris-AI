@@ -118,7 +118,6 @@ class DataHandler:
             bump += abs(heights[i] - heights[i + 1])
         
         lines = np.sum(np.amin(board, axis=1))                              # Complete Lines
-
         fitness += nodeNet[0] * totalHeight                                 # Aggregate Height
         fitness += nodeNet[1] * holes                                       # Holes
         fitness += nodeNet[2] * bump                                        # Bumpiness
@@ -176,7 +175,7 @@ class DataHandler:
         heights = self.getHeights(lastBoard)                                # Get the heights of the board without the moving block
         qBlocks = self.getQueueBlocks(qArr)                                 # Get the queue blocks
         firstBlock = self.zero(movingBlock)                                 # Zero the moving block
-        fitness = -1                                                        # Set fitness to its initial value
+        fitness = -10000                                                    # Set fitness to its initial value
         moveArr = []                                                        # Initialize a list of moves
         
         for r1 in range(4):                                                 # Iterate over all rotations
@@ -202,8 +201,4 @@ class DataHandler:
                             moveArr.append(tup1)                            # Append said tuple to the move array
                             tup2 = (r2, 0, x2)                              # Create a tuple for the second move representing required actions
                             moveArr.append(tup2)                            # Append said tuple to the move array
-                        del newBoard2                                       # Delete newBoard2 since we wont need it
-                    del b2                                                  # Delete block 2 since we won't need it
-                del newBoard                                                # Delete newBoard since we won't need it
-            del b1                                                          # Delete block 1 since we won't need it
         return moveArr                                                      # Return the moveArr with good moves to run
