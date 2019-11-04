@@ -2,11 +2,9 @@
 from filemanager import FileManager
 from switchdata import SwitchData
 from emulator import Emulator
-import numpy.random as rng
 from neat import NEAT
 from time import time
 
-rng.seed(666)                       # Controlled randomness, although Tetris blocks are random :P
 t0 = time()                         # Get a relative point of time
 
 capture = SwitchData()              # Connect to the Switch Capture
