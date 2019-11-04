@@ -5,9 +5,9 @@ from emulator import Emulator
 from neat import NEAT
 from time import time
 
-t0 = time()                         # Get a relative point of time
+t0 = time()
 
-capture = SwitchData()              # Connect to the Switch Capture
+capture = SwitchData()
 capture.start()                     # Run the Switch Capture asynchronously
 
 populationSize = 50                 # Set the population size
