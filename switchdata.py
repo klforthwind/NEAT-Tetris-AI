@@ -89,8 +89,6 @@ class SwitchData:
         self.movingBlock = np.copy(xyVals)
         self.__boardArr = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
-        del tempArr
-        del board
 
     def __makeHold(self, frame):
         hold = self.__handleCanvas(frame)
@@ -100,8 +98,6 @@ class SwitchData:
             for x in range(4):
                 tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
                 self.__holdArr = np.copy(tempArr)
-        del tempArr
-        del hold
 
     def __makeQueue(self, frame):
         queue = self.__handleCanvas(frame)
@@ -121,8 +117,6 @@ class SwitchData:
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
         self.__queueArr = np.copy(tempArr)
         cv2.imshow('Queue', queueMat)
-        del tempArr
-        del queue
 
     def __handleCanvas(self, canvas):
         temp = cv2.cvtColor(canvas, cv2.COLOR_BGR2HLS)
