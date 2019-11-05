@@ -5,22 +5,18 @@ import cv2
 
 class Genome:
 
-    # Initialize some values
     def __init__(self):
 
-        # Make node net
         self.nodeCount = 4
         self.nodeNet = np.zeros((self.nodeCount))
         self.outputNodes = 7
 
-        # Set mutation rate, step, and fitness
         self.mutationRate = 0.2
         self.mutationStep = 0.1
         self.fitness = 0
 
         self.list = []
 
-    # Mutate values within the neural network
     def mutate(self):
         for n in range(self.nodeCount):
             isMutating = random()
@@ -35,7 +31,6 @@ class Genome:
         elif len(self.list) < 7:
             self.list.append(capture.getNextBestMove(self.list, self.nodeNet))
 
-    # Get all buttons and whether they should be pushed
     def getButtons(self, capture, blockChange):
         self.handleMoves(capture, blockChange)
         arr = np.zeros(self.outputNodes)
@@ -58,7 +53,6 @@ class Genome:
                 yikes = True
                 self.list.pop(0)
                 arr[0] = 1
-                #print(self.list)
         if len(self.list) > 0 and not yikes:
             self.list[0] = info
         return arr

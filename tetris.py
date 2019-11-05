@@ -1,4 +1,3 @@
-# Import packages and files
 from filemanager import FileManager
 from switchdata import SwitchData
 from emulator import Emulator
@@ -8,37 +7,33 @@ from time import time
 t0 = time()
 
 capture = SwitchData()
-capture.start()                     # Run the Switch Capture asynchronously
+capture.start()
 
-populationSize = 50                 # Set the population size
-neat = NEAT(populationSize)         # Begin our population
+populationSize = 50
+neat = NEAT(populationSize)
 
-# Check to see if there is save data for the neural network to return to
-fileManager = FileManager()         # Initialize a file manager to create / read files
-loadable = fileManager.loadable()   # Get a tuple of (Boolean, Generation) as to whether the genome files are loadable
-if loadable[0]:                     # Check to see if genomes files exist
-    neat.repopulate(loadable[1])    # Repopulate with the oldest existent genome generation
+fileManager = FileManager()
+loadable = fileManager.loadable()
+if loadable[0]:
+    neat.repopulate(loadable[1])
 else:
-    neat.createPopulation()         # Create a new population since none exist
+    neat.createPopulation()
 
-port = "COM3"                       # Set port for emulation
-emulator = Emulator(port)           # Create emulation on the specific port
+port = "COM3"
+emulator = Emulator(port)
 
-while True:                         # Main code loop :)
-    if (capture.shouldQuit()):      # Check to see if the program should end (if we pressed q)
-        emulator.stop_input()       # Stop any inputs to the emulator
-        break                       # Break out of the while loop
+while True:
+    if (capture.shouldQuit()):
+        emulator.stop_input()
+        break
 
-    capture.processCapture()        # Make and display the board, hold, and queue, and game frame
+    capture.processCapture()
 
-    # Check to see if we should press A (genome over, and it won't go to next genome),
-    # or check to see if genome is dead to press A
     if capture.shouldPressA() or capture.isDead():
-        emulator.nextGenome()       # Hold the A button
-        neat.loop()                 # Go to next genome / generation
-        capture.clearLastBoard()    # Clear last board
+        emulator.nextGenome()
+        neat.loop()
+        capture.clearLastBoard()
 
-    # Attempt a command if it has been X amount of seconds since the last command
     if (time()-t0 > 0.2):
         t0 = time()
         blockChange = capture.didBlockChange()
@@ -46,14 +41,14 @@ while True:                         # Main code loop :)
             capture.updateLastBoard()
 
         if capture.existsControllablePiece():
-            btnArr = neat.getMovements(capture, blockChange)    # Get the button array of recommended moves
-            emulator.emulateTetris(btnArr)  # Send the correct button inputs
+            btnArr = neat.getMovements(capture, blockChange)
+            emulator.emulateTetris(btnArr)
         else:
-            emulator.stop_input()   # Send signals to stop the emulator from sending button data
-
-        neat.printFitness()         # Print the fitness
+            emulator.stop_input()
+            
+        neat.printFitness()
     else:
-        emulator.stop_input()       # Send signals to stop the emulator from sending button data
+        emulator.stop_input()
 
-capture.stop()                      # Stop the capture thread
-emulator.close()                    # Stop the emulator
+capture.stop()
+emulator.close()
