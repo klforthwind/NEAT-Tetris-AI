@@ -24,11 +24,10 @@ class NEAT:
         for genomeNum in range(self.popSize):
             genome = Genome()
             filename = "data/"+str(generation)+"-"+str(genomeNum)+".txt"
-            file = open(filename, "r")
-            lines = file.read().splitlines()
-            for lineNum in range(genome.nodeCount):
-                genome.nodeNet[lineNum] = float(lines[lineNum])
-            file.close()
+            with open(filename) as fdata:
+                lines = fdata.read().splitlines()
+                for lineNum in range(genome.nodeCount):
+                    genome.nodeNet[lineNum] = float(lines[lineNum])
             self.genomes.append(genome)
         self.generation = generation
 
