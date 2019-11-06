@@ -9,7 +9,7 @@ class NEAT:
         self.generation = 0
         self.genomes = []
         self.current_genome = 0
-        self.relative_time = time()
+        self.t = time()
 
     def create_population(self):
         for genome_num in range(self.pop_size):
