@@ -1,7 +1,7 @@
 from numpy.random import random
+from numpy import savetxt
 from genome import Genome
 from time import time
-import numpy as np
 
 class NEAT:
     def __init__(self, population_size):
@@ -17,7 +17,7 @@ class NEAT:
             genome.mutate()
             self.genomes.append(genome)
             txt = "data/"+str(self.generation)+"-"+str(genome_num)+".txt"
-            np.savetxt(txt, genome.node_net, fmt="%f")
+            savetxt(txt, genome.node_net, fmt="%f")
 
     def repopulate(self, generation):
         for genome_num in range(self.pop_size):
@@ -59,7 +59,7 @@ class NEAT:
 
         for g in range(len(self.genomes)):
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
-            np.savetxt(txt, self.genomes[g].node_net, fmt="%f")
+            savetxt(txt, self.genomes[g].node_net, fmt="%f")
 
     def create_next_gen():
         past_gen = self.genomes[0:int(self.pop_size / 2)]
@@ -67,8 +67,8 @@ class NEAT:
         self.genomes = []
         self.genomes.append(self.past_gen[0])
         for g in range(self.pop_size - 1):
-            mom = self.rand_choice(past_gen)
-            dad = self.rand_choice(past_gen)
+            mom = self.rand_genome(past_gen)
+            dad = self.rand_genome(past_gen)
             self.genomes.append(self.make_child(mom, dad))
 
     def make_child(self, mom, dad):
@@ -79,8 +79,5 @@ class NEAT:
         child.mutate()
         return child
 
-    def rand_choice(self, genomes):
-        return genomes[self.rand_skewed_int(0, len(genomes)-1)]
-
-    def rand_skewed_int(self, min, max):
-        return int(np.power(random(), 2) * (max - min + 1) + min)
+    def rand_genome(self, genomes):
+        return genomes[int((random() ** 2) * (len(genomes)))]
