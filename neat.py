@@ -56,7 +56,7 @@ class NEAT:
         self.generation += 1
 
         while len(self.genomes) > self.pop_size / 2:
-            self.genomes.pop(len(self.genomes)-1)
+            self.genomes.pop()
         
         children = []
         self.genomes[0].fitness = 0
@@ -73,7 +73,8 @@ class NEAT:
     def make_child(self, mom, dad):
         child = Genome()
         for n in range(child.node_count):
-            child.node_net[n] = mom.node_net[n] if random() < 0.5 else dad.node_net[n]
+            giver = mom if random() < 0.5 else dad
+            child.node_net[n] = giver.node_net[n]
         child.mutate()
         return child
 
