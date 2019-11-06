@@ -1,7 +1,7 @@
-import numpy as np
-from genome import Genome
 from numpy.random import random
+from genome import Genome
 from time import time
+import numpy as np
 
 class NEAT:
     def __init__(self, population_size):
