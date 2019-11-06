@@ -83,4 +83,4 @@ class NEAT:
         return genomes[self.rand_skewed_int(0, len(genomes)-1)]
 
     def rand_skewed_int(self, min, max):
-        return int(np.floor(np.power(random(), 2) * (max - min + 1) + min))
+        return int(np.power(random(), 2) * (max - min + 1) + min)
