@@ -5,22 +5,20 @@ import threading
 import cv2
 
 class SwitchData:
-
     def __init__(self, src=0, width=1280, height=720):
-
         self.src = src
         self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        self.grabbed, self.frame = self.cap.read()
+        _, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
 
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
-        self.__boardArr = np.zeros((20, 10), dtype = uint8)
-        self.__queueArr = np.zeros((17, 4), dtype = uint8)
-        self.__holdArr = np.zeros((2, 4), dtype = uint8)
+        self.board_array = np.zeros((20, 10), dtype = uint8)
+        self.queue_array = np.zeros((17, 4), dtype = uint8)
+        self.hold_array = np.zeros((2, 4), dtype = uint8)
         self.dh = DataHandler()
         self.clear_last_board()
 
@@ -32,16 +30,9 @@ class SwitchData:
 
     def update(self):
         while self.started:
-            grabbed, frame = self.cap.read()
+            _, frame = self.cap.read()
             with self.read_lock:
-                self.grabbed = grabbed
                 self.frame = frame
-
-    def read(self):
-        with self.read_lock:
-            frame = self.frame
-            grabbed = self.grabbed
-        return grabbed, frame
 
     def stop(self):
         self.started = False
@@ -87,7 +78,7 @@ class SwitchData:
                         boardMat[y * 32 + m][x * 32 + n] = colorVal
         
         self.moving_block = np.copy(xyVals)
-        self.__boardArr = np.copy(tempArr)
+        self.board_array = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
 
     def __make_hold(self, frame):
@@ -97,7 +88,7 @@ class SwitchData:
         for y in range(2):
             for x in range(4):
                 tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
-                self.__holdArr = np.copy(tempArr)
+                self.hold_array = np.copy(tempArr)
 
     def __make_queue(self, frame):
         queue = self.__handleCanvas(frame)
@@ -115,7 +106,7 @@ class SwitchData:
                 for m in range(self.arr[i]):
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
-        self.__queueArr = np.copy(tempArr)
+        self.queue_array = np.copy(tempArr)
         cv2.imshow('Queue', queueMat)
 
     def __handleCanvas(self, canvas):
@@ -131,7 +122,7 @@ class SwitchData:
         self.moving_block = np.zeros((2,4), dtype = uint8)
         
     def update_last_board(self):
-        self.last_board = np.copy(self.__boardArr)
+        self.last_board = np.copy(self.board_array)
         for i in range(2):
             for j in range(4):
                 if self.next_block[i][j] == 1 and self.last_board[i][j + 3] == 1:
@@ -140,13 +131,13 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def did_block_change(self):
-        return self.dh.did_block_change(self.last_queue, self.__queueArr, self.next_block)
+        return self.dh.did_block_change(self.last_queue, self.queue_array, self.next_block)
 
     def get_next_best_move(self, thelist, node_net):
-        return self.dh.get_next_best_move(thelist, self.__queueArr, self.last_board, self.moving_block, node_net)
+        return self.dh.get_next_best_move(thelist, self.queue_array, self.last_board, self.moving_block, node_net)
 
     def get_best_moves(self, node_net):
-        return self.dh.get_best_moves(self.__queueArr, self.last_board, self.moving_block, node_net)
+        return self.dh.get_best_moves(self.queue_array, self.last_board, self.moving_block, node_net)
 
 # --------------------------------------------------------------------
 
@@ -154,7 +145,7 @@ class SwitchData:
         return len(self.moving_block[0]) == 4
 
     def is_dead(self):
-        return np.amin(self.__boardArr[5]) == 1 and np.amin(self.__boardArr[10]) == 1
+        return np.amin(self.board_array[5]) == 1 and np.amin(self.board_array[10]) == 1
     
     def should_quit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
