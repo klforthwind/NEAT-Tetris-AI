@@ -4,14 +4,18 @@ from genome import Genome
 from time import time
 
 class NEAT:
-    def __init__(self, population_size):
+    def __init__(self, population_size, loadable):
         self.pop_size = population_size
-        self.generation = 0
-        self.genomes = []
         self.current_genome = 0
+        self.genomes = []
         self.t = time()
+        if loadable[0]:
+            self.repopulate(loadable[1])
+        else:
+            self.create_population()
 
     def create_population(self):
+        self.generation = 0
         for genome_num in range(self.pop_size):
             genome = Genome()
             genome.mutate()
@@ -20,6 +24,7 @@ class NEAT:
             savetxt(txt, genome.node_net, fmt="%f")
 
     def repopulate(self, generation):
+        self.generation = generation
         for genome_num in range(self.pop_size):
             genome = Genome()
             file_name = "data/"+str(generation)+"-"+str(genome_num)+".txt"
@@ -28,7 +33,6 @@ class NEAT:
                 for line_num in range(genome.node_count):
                     genome.node_net[line_num] = float(lines[line_num])
             self.genomes.append(genome)
-        self.generation = generation
 
     def get_movements(self, capture, block_change):
         return self.genomes[self.current_genome].get_buttons(capture, block_change)
@@ -74,7 +78,7 @@ class NEAT:
     def make_child(self, mom, dad):
         child = Genome()
         for n in range(child.node_count):
-            giver = (mom, dad)[random() < 0.5]
+            giver = (mom, dad)[random() > 0.5]
             child.node_net[n] = giver.node_net[n]
         child.mutate()
         return child

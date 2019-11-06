@@ -87,7 +87,7 @@ class SwitchData:
         tempArr = np.zeros((2, 4))
         for y in range(2):
             for x in range(4):
-                tempArr[y][x] = (1, 0)[hold[20 * y + 10][18 * x + 9] > 0]
+                tempArr[y][x] = (0, 1)[hold[20 * y + 10][18 * x + 9] > 0]
                 self.hold_array = np.copy(tempArr)
 
     def __make_queue(self, frame):

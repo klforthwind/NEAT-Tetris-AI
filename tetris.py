@@ -9,15 +9,11 @@ t0 = time()
 capture = SwitchData()
 capture.start()
 
-population_size = 50
-neat = NEAT(population_size)
-
 file_manager = FileManager()
 loadable = file_manager.loadable()
-if loadable[0]:
-    neat.repopulate(loadable[1])
-else:
-    neat.create_population()
+
+population_size = 50
+neat = NEAT(population_size, loadable)
 
 emulator = Emulator("COM3")
 
