@@ -19,8 +19,7 @@ if loadable[0]:
 else:
     neat.create_population()
 
-port = "COM3"
-emulator = Emulator(port)
+emulator = Emulator("COM3")
 
 while True:
     if (capture.should_quit()):
@@ -29,7 +28,7 @@ while True:
 
     capture.process_capture()
 
-    if capture.should_press_a() or capture.is_dead():
+    if capture.should_press_a() or capture.game_over():
         emulator.next_genome()
         neat.loop()
         capture.clear_last_board()

@@ -74,7 +74,7 @@ class NEAT:
     def make_child(self, mom, dad):
         child = Genome()
         for n in range(child.node_count):
-            giver = mom if random() < 0.5 else dad
+            giver = (mom, dad)[random() < 0.5]
             child.node_net[n] = giver.node_net[n]
         child.mutate()
         return child

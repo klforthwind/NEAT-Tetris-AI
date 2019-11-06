@@ -87,7 +87,7 @@ class SwitchData:
         tempArr = np.zeros((2, 4))
         for y in range(2):
             for x in range(4):
-                tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
+                tempArr[y][x] = (1, 0)[hold[20 * y + 10][18 * x + 9] > 0]
                 self.hold_array = np.copy(tempArr)
 
     def __make_queue(self, frame):
@@ -99,7 +99,7 @@ class SwitchData:
             for j in range(4):
                 if i % 3 == 2:
                     continue
-                val = 1 if queue[self.arr2[i] + 8][16 * j + 8] > 0 else 0
+                val = (1,0)[queue[self.arr2[i] + 8][16 * j + 8] > 0]
                 tempArr[i][j] = val
                 if val == 0:
                     continue
@@ -144,7 +144,7 @@ class SwitchData:
     def exists_controllable_piece(self):
         return len(self.moving_block[0]) == 4
 
-    def is_dead(self):
+    def game_over(self):
         return np.amin(self.board_array[5]) == 1 and np.amin(self.board_array[10]) == 1
     
     def should_quit(self):

@@ -42,7 +42,7 @@ class DataHandler:
         highest = np.amax(block_data[0])
         lowest = np.array([20]*(width), uint8)
         
-        rangeee = 4 if len(block_data[0]) > 4 else len(block_data[0])
+        rangeee = (4, len(block_data[0]))[len(block_data[0]) > 4]
         for i in range(rangeee):
             x = block_data[1][i]
             y = block_data[0][i]
