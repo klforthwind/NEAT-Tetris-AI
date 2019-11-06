@@ -9,44 +9,44 @@ t0 = time()
 capture = SwitchData()
 capture.start()
 
-populationSize = 50
-neat = NEAT(populationSize)
+population_size = 50
+neat = NEAT(population_size)
 
-fileManager = FileManager()
-loadable = fileManager.loadable()
+file_manager = FileManager()
+loadable = file_manager.loadable()
 if loadable[0]:
     neat.repopulate(loadable[1])
 else:
-    neat.createPopulation()
+    neat.create_population()
 
 port = "COM3"
 emulator = Emulator(port)
 
 while True:
-    if (capture.shouldQuit()):
+    if (capture.should_quit()):
         emulator.stop_input()
         break
 
-    capture.processCapture()
+    capture.process_capture()
 
-    if capture.shouldPressA() or capture.isDead():
-        emulator.nextGenome()
+    if capture.should_press_a() or capture.is_dead():
+        emulator.next_genome()
         neat.loop()
-        capture.clearLastBoard()
+        capture.clear_last_board()
 
     if (time()-t0 > 0.2):
         t0 = time()
-        blockChange = capture.didBlockChange()
-        if blockChange:
-            capture.updateLastBoard()
+        block_change = capture.did_block_change()
+        if block_change:
+            capture.update_last_board()
 
-        if capture.existsControllablePiece():
-            btnArr = neat.getMovements(capture, blockChange)
-            emulator.emulateTetris(btnArr)
+        if capture.exists_controllable_piece():
+            btnArr = neat.get_movements(capture, block_change)
+            emulator.emulate_tetris(btnArr)
         else:
             emulator.stop_input()
             
-        neat.printFitness()
+        neat.print_fitness()
     else:
         emulator.stop_input()
 

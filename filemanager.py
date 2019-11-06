@@ -7,7 +7,7 @@ class FileManager:
 
     def loadable(self):
         gen = 0
-        isLoadable = isfile('data/0'+self.suffix)
+        is_loadable = isfile('data/0'+self.suffix)
         while(isfile('data/'+str(gen)+self.suffix)):
             gen += 1
-        return (isLoadable, gen - 1)
+        return (is_loadable, gen - 1)

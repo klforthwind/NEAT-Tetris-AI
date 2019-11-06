@@ -4,82 +4,81 @@ from numpy.random import random
 from time import time
 
 class NEAT:
-
-    def __init__(self, populationSize):
-        self.popSize = populationSize
+    def __init__(self, population_size):
+        self.pop_size = population_size
         self.generation = 0
         self.genomes = []
-        self.currentGenome = 0
-        self.t = time()
+        self.current_genome = 0
+        self.relative_time = time()
 
-    def createPopulation(self):
-        for genomeNum in range(self.popSize):
+    def create_population(self):
+        for genome_num in range(self.pop_size):
             genome = Genome()
             genome.mutate()
             self.genomes.append(genome)
-            txt = "data/"+str(self.generation)+"-"+str(genomeNum)+".txt"
-            np.savetxt(txt, genome.nodeNet, fmt="%f")
+            txt = "data/"+str(self.generation)+"-"+str(genome_num)+".txt"
+            np.savetxt(txt, genome.node_net, fmt="%f")
 
     def repopulate(self, generation):
-        for genomeNum in range(self.popSize):
+        for genome_num in range(self.pop_size):
             genome = Genome()
-            filename = "data/"+str(generation)+"-"+str(genomeNum)+".txt"
-            with open(filename) as fdata:
-                lines = fdata.read().splitlines()
-                for lineNum in range(genome.nodeCount):
-                    genome.nodeNet[lineNum] = float(lines[lineNum])
+            file_name = "data/"+str(generation)+"-"+str(genome_num)+".txt"
+            with open(file_name) as file_data:
+                lines = file_data.read().splitlines()
+                for line_num in range(genome.node_count):
+                    genome.node_net[line_num] = float(lines[line_num])
             self.genomes.append(genome)
         self.generation = generation
 
-    def getMovements(self, capture, blockChange):
-        return self.genomes[self.currentGenome].getButtons(capture, blockChange)
+    def get_movements(self, capture, block_change):
+        return self.genomes[self.current_genome].get_buttons(capture, block_change)
 
-    def printFitness(self):
-        self.genomes[self.currentGenome].fitness += time() - self.t
+    def print_fitness(self):
+        self.genomes[self.current_genome].fitness += time() - self.t
         print(" {} - {} - {}".format(
-            self.generation, self.currentGenome, 
-            self.genomes[self.currentGenome].fitness))
+            self.generation, self.current_genome, 
+            self.genomes[self.current_genome].fitness))
         self.t = time()
 
     def loop(self):
-        self.currentGenome += 1
+        self.current_genome += 1
         self.t = time()
-        if self.currentGenome == len(self.genomes):
-            self.sortGenomes()
-            self.increaseGeneration()
+        if self.current_genome == len(self.genomes):
+            self.sort_genomes()
+            self.increase_generation()
 
-    def sortGenomes(self):
+    def sort_genomes(self):
         self.genomes.sort(key=lambda x: x.fitness, reverse=True)
 
-    def increaseGeneration(self):
+    def increase_generation(self):
         print("Generation ", self.generation ," evaluated.")
-        self.currentGenome = 0
+        self.current_genome = 0
         self.generation += 1
 
-        while len(self.genomes) > self.popSize / 2:
+        while len(self.genomes) > self.pop_size / 2:
             self.genomes.pop(len(self.genomes)-1)
         
         children = []
         self.genomes[0].fitness = 0
         children.append(self.genomes[0])
-        for c in range(self.popSize - 1):
-            children.append(self.makeChild(self.randChoice(),self.randChoice()))
+        for c in range(self.pop_size - 1):
+            children.append(self.make_child(self.rand_choice(),self.rand_choice()))
 
         self.genomes = children
 
         for g in range(len(self.genomes)):
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
-            np.savetxt(txt, self.genomes[g].nodeNet, fmt="%f")
+            np.savetxt(txt, self.genomes[g].node_net, fmt="%f")
 
-    def makeChild(self, mom, dad):
+    def make_child(self, mom, dad):
         child = Genome()
-        for n in range(child.nodeCount):
-            child.nodeNet[n] = mom.nodeNet[n] if random() < 0.5 else dad.nodeNet[n]
+        for n in range(child.node_count):
+            child.node_net[n] = mom.node_net[n] if random() < 0.5 else dad.node_net[n]
         child.mutate()
         return child
 
-    def randChoice(self):
-        return self.genomes[int(self.randWeightedNumBetween(0, len(self.genomes)-1))]
+    def rand_choice(self):
+        return self.genomes[int(self.rand_num_weighted(0, len(self.genomes)-1))]
 
-    def randWeightedNumBetween(self, min, max):
+    def rand_num_weighted(self, min, max):
         return np.floor(np.power(random(), 2) * (max - min + 1) + min)

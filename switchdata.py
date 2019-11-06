@@ -22,7 +22,7 @@ class SwitchData:
         self.__queueArr = np.zeros((17, 4), dtype = uint8)
         self.__holdArr = np.zeros((2, 4), dtype = uint8)
         self.dh = DataHandler()
-        self.clearLastBoard()
+        self.clear_last_board()
 
     def start(self):
         self.started = True
@@ -50,19 +50,19 @@ class SwitchData:
 
 # --------------------------------------------------------------------
     
-    def processCapture(self):
+    def process_capture(self):
         _, frame = self.cap.read()
         cv2.imshow('Frame', frame)
         
-        self.__makeBoard(frame[40:680, 480:800])
-        self.__makeHold(frame[80:120, 396:468])
-        self.__makeQueue(frame[80:390, 815:880])
+        self.__make_board(frame[40:680, 480:800])
+        self.__make_hold(frame[80:120, 396:468])
+        self.__make_queue(frame[80:390, 815:880])
         
-    def __makeBoard(self, frame):
+    def __make_board(self, frame):
         board = self.__handleCanvas(frame)
         boardMat = np.zeros((640, 320), dtype = uint8)
         tempArr = np.zeros((20,10), dtype = uint8)
-        lBoard = self.lastBoard
+        lBoard = self.last_board
         xyVals = np.zeros((2,0), dtype = uint8)
         
         for y in range(20):
@@ -86,11 +86,11 @@ class SwitchData:
                     for n in range(32):
                         boardMat[y * 32 + m][x * 32 + n] = colorVal
         
-        self.movingBlock = np.copy(xyVals)
+        self.moving_block = np.copy(xyVals)
         self.__boardArr = np.copy(tempArr)
         cv2.imshow('Board', boardMat)
 
-    def __makeHold(self, frame):
+    def __make_hold(self, frame):
         hold = self.__handleCanvas(frame)
         
         tempArr = np.zeros((2, 4))
@@ -99,7 +99,7 @@ class SwitchData:
                 tempArr[y][x] = 1 if hold[20 * y + 10][18 * x + 9] > 0 else 0
                 self.__holdArr = np.copy(tempArr)
 
-    def __makeQueue(self, frame):
+    def __make_queue(self, frame):
         queue = self.__handleCanvas(frame)
         
         queueMat = np.zeros((310, 65), dtype = uint8)
@@ -124,42 +124,42 @@ class SwitchData:
         
 # --------------------------------------------------------------------
 
-    def clearLastBoard(self):
-        self.lastBoard = np.zeros((20, 10), dtype = uint8)
-        self.lastQueue = np.zeros((17,4), dtype = uint8)
-        self.nextBlock = np.zeros((2,4), dtype = uint8)
-        self.movingBlock = np.zeros((2,4), dtype = uint8)
+    def clear_last_board(self):
+        self.last_board = np.zeros((20, 10), dtype = uint8)
+        self.last_queue = np.zeros((17,4), dtype = uint8)
+        self.next_block = np.zeros((2,4), dtype = uint8)
+        self.moving_block = np.zeros((2,4), dtype = uint8)
         
-    def updateLastBoard(self):
-        self.lastBoard = np.copy(self.__boardArr)
+    def update_last_board(self):
+        self.last_board = np.copy(self.__boardArr)
         for i in range(2):
             for j in range(4):
-                if self.nextBlock[i][j] == 1 and self.lastBoard[i][j + 3] == 1:
-                    self.lastBoard[i][j + 3] = 0
+                if self.next_block[i][j] == 1 and self.last_board[i][j + 3] == 1:
+                    self.last_board[i][j + 3] = 0
                     
 # --------------------------------------------------------------------
 
-    def didBlockChange(self):
-        return self.dh.didBlockChange(self.lastQueue, self.__queueArr, self.nextBlock)
+    def did_block_change(self):
+        return self.dh.did_block_change(self.last_queue, self.__queueArr, self.next_block)
 
-    def getNextBestMove(self, thelist, nodeNet):
-        return self.dh.getNextBestMove(thelist, self.__queueArr, self.lastBoard, self.movingBlock, nodeNet)
+    def get_next_best_move(self, thelist, node_net):
+        return self.dh.get_next_best_move(thelist, self.__queueArr, self.last_board, self.moving_block, node_net)
 
-    def getBestMoves(self, nodeNet):
-        return self.dh.getBestMoves(self.__queueArr, self.lastBoard, self.movingBlock, nodeNet)
+    def get_best_moves(self, node_net):
+        return self.dh.get_best_moves(self.__queueArr, self.last_board, self.moving_block, node_net)
 
 # --------------------------------------------------------------------
 
-    def existsControllablePiece(self):
-        return len(self.movingBlock[0]) == 4
+    def exists_controllable_piece(self):
+        return len(self.moving_block[0]) == 4
 
-    def isDead(self):
+    def is_dead(self):
         return np.amin(self.__boardArr[5]) == 1 and np.amin(self.__boardArr[10]) == 1
     
-    def shouldQuit(self):
+    def should_quit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
 
-    def shouldPressA(self):
+    def should_press_a(self):
         return cv2.waitKey(1) & 0xFF == ord('a')
 
     def __exit__(self, exec_type, exc_value, traceback):
