@@ -4,28 +4,24 @@ from emulator import Emulator
 from neat import NEAT
 from time import time
 
-t0 = time()
-
+emulator = Emulator("COM3")
 capture = SwitchData()
 capture.start()
+t0 = time()
 
 population_size = 50
 file_manager = FileManager()
 neat = NEAT(population_size, file_manager.loadable())
 
-emulator = Emulator("COM3")
-
 while True:
     if (capture.should_quit()):
-        emulator.stop_input()
         break
 
     capture.process_capture()
-
     if capture.should_press_a() or capture.game_over():
         emulator.next_genome()
         neat.loop()
-        capture.clear_last_board()
+        capture.clear()
 
     if (time()-t0 > 0.2):
         t0 = time()
@@ -38,8 +34,7 @@ while True:
             emulator.emulate_tetris(btnArr)
             
         neat.print_fitness()
-    else:
+    elif (time()-t0 > 0.075):
         emulator.stop_input()
-
 capture.stop()
 emulator.close()

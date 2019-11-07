@@ -20,7 +20,7 @@ class SwitchData:
         self.queue_array = np.zeros((17, 4), dtype = uint8)
         self.hold_array = np.zeros((2, 4), dtype = uint8)
         self.dh = DataHandler()
-        self.clear_last_board()
+        self.clear()
 
     def start(self):
         self.started = True
@@ -115,7 +115,7 @@ class SwitchData:
         
 # --------------------------------------------------------------------
 
-    def clear_last_board(self):
+    def clear(self):
         self.last_board = np.zeros((20, 10), dtype = uint8)
         self.last_queue = np.zeros((17,4), dtype = uint8)
         self.next_block = np.zeros((2,4), dtype = uint8)
