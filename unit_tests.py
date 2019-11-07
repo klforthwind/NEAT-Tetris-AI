@@ -1,7 +1,9 @@
 from numpy import array_equal as aequal
 from datahandler import DataHandler
+from genome import Genome
 from testarrays import *
 from numpy import uint8
+from neat import NEAT
 import numpy as np
 import unittest
 
@@ -21,6 +23,19 @@ class TestDataHandler(unittest.TestCase):
     
     def isTrue(self, actual):
             self.assertEqual(actual, True, "Should be True but wasn't")
+
+    def test_neat(self):
+        neat = NEAT(5, (False, -1))
+        neat = NEAT(5, (True, 0))
+        neat.print_fitness()
+        neat.loop()
+        neat.loop()
+        neat.loop()
+        self.equality(3, neat.current_genome)
+
+    def test_genome(self):
+        genome = Genome()
+        genome.mutate()
 
     # def test_getHeights(self):
     #     self.equality(getH1C, self.dh.getHeights(getH1))

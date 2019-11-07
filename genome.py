@@ -1,7 +1,6 @@
 from numpy.random import random
 from time import time
 import numpy as np
-import cv2
 
 class Genome:
     def __init__(self):
