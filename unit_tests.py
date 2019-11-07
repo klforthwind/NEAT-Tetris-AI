@@ -1,5 +1,6 @@
 from numpy import array_equal as aequal
 from datahandler import DataHandler
+from filemanager import FileManager
 from genome import Genome
 from testarrays import *
 from numpy import uint8
@@ -36,6 +37,11 @@ class TestDataHandler(unittest.TestCase):
     def test_genome(self):
         genome = Genome()
         genome.mutate()
+
+    def test_file_manager(self):
+        file_manager = FileManager()
+        loadable = file_manager.loadable()
+        self.tup_equal((True, 0), loadable)
 
     # def test_getHeights(self):
     #     self.equality(getH1C, self.dh.getHeights(getH1))
