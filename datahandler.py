@@ -2,10 +2,10 @@ from numpy import uint8
 import numpy as np
 
 class DataHandler:
-
     def get_heights(self, board):
+        is_filled = np.amax(board, axis=0)
         heights = np.argmax(board, axis=0)
-        heights = np.where(heights > 0, heights, 20)
+        heights = np.where(is_filled, heights, 20)
         return np.subtract(20, heights)
     
     def get_xy_vals(self, block): 
@@ -13,8 +13,8 @@ class DataHandler:
         xyTuple = (np.subtract(1, xyTuple[0]), xyTuple[1])
         return xyTuple
         
-    def get_queue_blocks(self, queueArr):
-        if np.sum(queueArr) == 24:
+    def get_queue_blocks(self, queue_array):
+        if np.sum(queue_array) == 24:
             blocks = np.zeros((6, 2, 4), dtype = uint8)
             for i in range(17):
                 if i % 3 == 2:
@@ -22,7 +22,7 @@ class DataHandler:
                 for j in range(4):
                     row = i % 3
                     block = int((i - row) / 3)
-                    blocks[block][row][j] = queueArr[i][j]
+                    blocks[block][row][j] = queue_array[i][j]
             for b in range(6):
                 blocks[b] = self.get_xy_vals(blocks[b])
             return np.copy(blocks)
@@ -100,7 +100,7 @@ class DataHandler:
             board[19 - yAxis][xAxis] = 1
         return np.copy(board)
         
-    def get_fitness(self, board, nodeNet):
+    def get_fitness(self, board, node_net):
         fitness = 0
         heights = self.get_heights(board)
 
@@ -112,14 +112,14 @@ class DataHandler:
             bump += abs(heights[i] - heights[i + 1])
         
         lines = np.sum(np.amin(board, axis=1))
-        fitness += nodeNet[0] * total_height
-        fitness += nodeNet[1] * holes
-        fitness += nodeNet[2] * bump
-        fitness += nodeNet[3] * lines
+        fitness += node_net[0] * total_height
+        fitness += node_net[1] * holes
+        fitness += node_net[2] * bump
+        fitness += node_net[3] * lines
         
         return fitness
         
-    def get_next_best_move(self, thelist, queue, lBoard, movingBlock, nodeNet):
+    def get_next_best_move(self, thelist, queue, lBoard, movingBlock, node_net):
         heights = self.get_heights(lBoard)
         qBlocks = self._q(que_be)
         zeroed = self.zero(movingBlock)
@@ -152,14 +152,14 @@ class DataHandler:
                 if np.amax(heights[x1:x1 + width]) > 16:
                     continue
                 theboard = self.get_new_board(x1, b1, newBoard)
-                fit = self.get_fitness(theboard, nodeNet)
+                fit = self.get_fitness(theboard, node_net)
                 if  fit > fitness:
                     fitness = fit
                     move = (r1, 0 ,x1)
                     goodBoard = np.copy(theboard)
         return move_array
 
-    def getBestMoves(self, queue_array, lastBoard, movingBlock, nodeNet):
+    def getBestMoves(self, queue_array, lastBoard, movingBlock, node_net):
         heights = self.get_heights(lastBoard)
         qBlocks = self._q(qAr_b)
         firstBlock = self.zero(movingBlock)
@@ -181,7 +181,7 @@ class DataHandler:
                         if np.amax(newHeights[x2:x2 + width2]) > 16:
                             continue
                         newBoard2 = self.get_new_board(x2, b2, newBoard)
-                        fit = self.get_fitness(newBoard2, nodeNet)
+                        fit = self.get_fitness(newBoard2, node_net)
                         if  fit > fitness:
                             fitness = fit
                             move_array = []
