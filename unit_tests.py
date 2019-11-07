@@ -79,14 +79,14 @@ class TestDataHandler(unittest.TestCase):
     #     moveArr = self.dh.getBestMoves(getBM1q, getBM1b, getBM1mb, getBM1nn2)
     #     self.equality(getNBM2C, self.dh.getNextBestMove(moveArr, getBM1q, getBM1b, getBM1mb, getBM1nn2))
 
-    def test_AllSevenMoves(self):
-        moveArr = self.dh.getBestMoves(getASM1q, getASM1b, getASM1mb, getASM1nn1)
-        moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
-        moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
-        moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
-        moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
-        moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
-        self.equality(getASM1C, moveArr)
+    # def test_AllSevenMoves(self):
+    #     moveArr = self.dh.getBestMoves(getASM1q, getASM1b, getASM1mb, getASM1nn1)
+    #     moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
+    #     moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
+    #     moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
+    #     moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
+    #     moveArr.append(self.dh.getNextBestMove(moveArr, getASM1q, getASM1b, getASM1mb, getASM1nn1))
+    #     self.equality(getASM1C, moveArr)
 
     # def test_dwadoiawjdoiwaj(self):
         # print("awdahdowhdiwiodjwoiajdoi")
