@@ -9,25 +9,21 @@ class DataHandler:
         return np.subtract(20, heights)
     
     def get_xy_vals(self, block): 
-        xyTuple = np.nonzero(block)
-        xyTuple = (np.subtract(1, xyTuple[0]), xyTuple[1])
-        return xyTuple
+        xy_vals = np.nonzero(block)
+        return (np.subtract(1, xy_vals[0]), xy_vals[1])
         
-    def get_queue_blocks(self, queue_array):
-        if np.sum(queue_array) == 24:
-            blocks = np.zeros((6, 2, 4), dtype = uint8)
+    def get_queue_blocks(self, queue):
+        blocks = np.zeros((6, 2, 4), dtype = uint8)
+        if np.sum(queue) == 24:
             for i in range(17):
-                if i % 3 == 2:
-                    continue
-                for j in range(4):
+                if i % 3 != 2:
                     row = i % 3
-                    block = int((i - row) / 3)
-                    blocks[block][row][j] = queue_array[i][j]
+                    for j in range(4):
+                        block = int((i - row) / 3)
+                        blocks[block][row][j] = queue[i][j]
             for b in range(6):
                 blocks[b] = self.get_xy_vals(blocks[b])
-            return np.copy(blocks)
-        else:
-            return np.zeros((6, 2, 4), dtype = uint8)
+        return blocks
 
     def zero(self, block_data):
         data = np.copy(block_data)
@@ -42,7 +38,7 @@ class DataHandler:
         highest = np.amax(block_data[0])
         lowest = np.array([20]*(width), uint8)
         
-        rangeee = (len(block_data[0]),4)[len(block_data[0]) > 4]
+        rangeee = min(len(block_data[0]),4)
         for i in range(rangeee):
             x = block_data[1][i]
             y = block_data[0][i]
@@ -53,9 +49,9 @@ class DataHandler:
         return lowest
         
     def get_width(self, block_data):
-        rightMost = np.amax(block_data[1])
-        leftMost = np.amin(block_data[1])
-        return (rightMost - leftMost + 1)
+        right_most = np.amax(block_data[1])
+        left_most = np.amin(block_data[1])
+        return (right_most - left_most + 1)
         
     def rotate(self, block_data, rotationCount):
         tempData = self.zero(np.copy(block_data))
@@ -65,7 +61,7 @@ class DataHandler:
             tempData[1] = list(np.subtract(3, yTemp))
         return self.zero(tempData)
         
-    def did_block_change(self, last_queue, queue_array, next_block):
+    def did_block_change(self, last_queue, queue, next_block):
         queue_change = 0
         oldtile_count = np.sum(last_queue)
         for i in range(17):
@@ -74,8 +70,8 @@ class DataHandler:
                     next_block[i][j] = last_queue[i][j]
                 if (i + 1) % 3 == 0:
                     continue
-                if queue_array[i][j] != last_queue[i][j]:
-                    last_queue[i][j] = queue_array[i][j]
+                if queue[i][j] != last_queue[i][j]:
+                    last_queue[i][j] = queue[i][j]
                     queue_change += 1
         tile_count = np.sum(last_queue)
         return (queue_change > 5 and
@@ -159,7 +155,7 @@ class DataHandler:
                     goodBoard = np.copy(theboard)
         return move_array
 
-    def getBestMoves(self, queue_array, lastBoard, movingBlock, node_net):
+    def getBestMoves(self, queue, lastBoard, movingBlock, node_net):
         heights = self.get_heights(lastBoard)
         qBlocks = self._q(qAr_b)
         firstBlock = self.zero(movingBlock)
