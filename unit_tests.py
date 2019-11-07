@@ -43,17 +43,17 @@ class TestDataHandler(unittest.TestCase):
         loadable = file_manager.loadable()
         self.tup_equal((True, 0), loadable)
 
-    # def test_getHeights(self):
-    #     self.equality(getH1C, self.dh.getHeights(getH1))
-    #     self.equality(getH2C, self.dh.getHeights(getH2))
+    def test_get_heights(self):
+        self.equality(getH1C, self.dh.get_heights(getH1))
+        self.equality(getH2C, self.dh.get_heights(getH2))
 
-    # def test_getXYVals(self):
-    #     self.equality(getXYV1C, self.dh.getXYVals(getXYV1))
-    #     self.equality(getXYV2C, self.dh.getXYVals(getXYV2))
-    #     self.equality(getXYV3C, self.dh.getXYVals(getXYV3))
+    def test_get_xy_vals(self):
+        self.equality(getXYV1C, self.dh.get_xy_vals(getXYV1))
+        self.equality(getXYV2C, self.dh.get_xy_vals(getXYV2))
+        self.equality(getXYV3C, self.dh.get_xy_vals(getXYV3))
 
-    # def test_getQueueBlocks(self):
-    #     self.equality(getQB1C, self.dh.getQueueBlocks(getQB1))
+    def test_get_queue_blocks(self):
+        self.equality(getQB1C, self.dh.get_queue_blocks(getQB1))
     
     # def test_zero(self):
     #     self.equality(z1C, self.dh.zero(z1))
