@@ -104,13 +104,13 @@ getLB2 = np.array(
     [[19,19,18,18],
     [5,6,6,7]], uint8)
 
-getLB2C = np.array([0,1,1], uint8)
+getLB2C = np.array([1,0,0], uint8)
 
 getLB3 = np.array(
     [[19,19,18,18],
     [5,6,5,6]], uint8)
 
-getLB3C = np.array([1,1], uint8)
+getLB3C = np.array([0,0], uint8)
 
 getW1 = np.array(
     [[1,1,1,1],
@@ -239,7 +239,8 @@ getFN2 = np.array([1,1,1,1], uint8)
 
 getF1FN1C = 0
 
-getF1FN2C = 58.0
+# 45 + 0 + 9 + 0
+getF1FN2C = 54.0
 
 empty = np.array([[],[]], uint8)
 

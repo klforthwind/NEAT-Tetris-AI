@@ -2,22 +2,23 @@ from numpy import uint8
 import numpy as np
 
 class DataHandler:
+
     def get_heights(self, board):
         is_filled = np.amax(board, axis=0)
         heights = np.argmax(board, axis=0)
         heights = np.where(is_filled, heights, 20)
         return np.subtract(20, heights)
     
-    def get_xy_vals(self, block): 
-        xy_vals = np.nonzero(block)
+    def get_xy_vals(self, block_data): 
+        xy_vals = np.nonzero(block_data)
         return (np.subtract(1, xy_vals[0]), xy_vals[1])
         
     def get_queue_blocks(self, queue):
         blocks = np.zeros((6, 2, 4), dtype = uint8)
         if np.sum(queue) == 24:
             for i in range(17):
-                if i % 3 != 2:
-                    row = i % 3
+                row = i % 3
+                if row != 2:
                     for j in range(4):
                         block = int((i - row) / 3)
                         blocks[block][row][j] = queue[i][j]
@@ -32,34 +33,29 @@ class DataHandler:
         data[1] -= lows[1]
         return data
     
-    def get_lowest_blocks(self, block_data):
-        block_data = self.zero(block_data)
-        width = self.get_width(block_data)
-        highest = np.amax(block_data[0])
+    def get_lowest_blocks(self, xy_data):
+        xy_zeroed = self.zero(xy_data)
+        width = self.get_width(xy_zeroed)
         lowest = np.array([20]*(width), uint8)
         
-        rangeee = min(len(block_data[0]),4)
-        for i in range(rangeee):
-            x = block_data[1][i]
-            y = block_data[0][i]
-            if lowest[x] > y:
-                lowest[x] = y
-        lowest = np.subtract(highest, lowest)
-        
+        for i in range(min(len(xy_zeroed[0]),4)):
+            x = xy_zeroed[1][i]
+            y = xy_zeroed[0][i]
+            lowest[x] = min(y, lowest[x])
         return lowest
         
-    def get_width(self, block_data):
-        right_most = np.amax(block_data[1])
-        left_most = np.amin(block_data[1])
+    def get_width(self, xy_data):
+        right_most = np.amax(xy_data[1])
+        left_most = np.amin(xy_data[1])
         return (right_most - left_most + 1)
         
-    def rotate(self, block_data, rotationCount):
-        tempData = self.zero(np.copy(block_data))
+    def rotate(self, xy_data, rotationCount):
+        xy_zeroed = self.zero(xy_data)
         for r in range(rotationCount):
-            yTemp = list(tempData[0])
-            tempData[0] = list(tempData[1])
-            tempData[1] = list(np.subtract(3, yTemp))
-        return self.zero(tempData)
+            yTemp = list(xy_zeroed[0])
+            xy_zeroed[0] = xy_zeroed[1]
+            xy_zeroed[1] = np.subtract(3, yTemp)
+        return self.zero(xy_zeroed)
         
     def did_block_change(self, last_queue, queue, next_block):
         queue_change = 0
@@ -68,7 +64,7 @@ class DataHandler:
             for j in range(4):
                 if i < 2:
                     next_block[i][j] = last_queue[i][j]
-                if (i + 1) % 3 == 0:
+                if i % 3 == 2:
                     continue
                 if queue[i][j] != last_queue[i][j]:
                     last_queue[i][j] = queue[i][j]
@@ -101,23 +97,22 @@ class DataHandler:
         heights = self.get_heights(board)
 
         total_height = np.sum(heights)
-        holes = total_height - (np.sum(board) - 4)
+        holes = total_height - np.sum(board)
+        lines = np.sum(np.amin(board, axis=1))
         
         bump = 0
         for i in range(len(heights)-1):
             bump += abs(heights[i] - heights[i + 1])
         
-        lines = np.sum(np.amin(board, axis=1))
-        fitness += node_net[0] * total_height
-        fitness += node_net[1] * holes
-        fitness += node_net[2] * bump
-        fitness += node_net[3] * lines
+        stats = [total_height, holes, bump, lines]
+        for stat_num in range(len(stats)):
+            fitness += node_net[stat_num] * stats[stat_num]
         
         return fitness
         
     def get_next_best_move(self, thelist, queue, lBoard, moving_block, node_net):
         heights = self.get_heights(lBoard)
-        qBlocks = self.get_queue_blocks(queue)
+        queue_blocks = self.get_queue_blocks(queue)
         zeroed = self.zero(moving_block)
         fitness = -1
         move = (0, 0, 0)
@@ -133,12 +128,12 @@ class DataHandler:
                 new_board = self.get_new_board(xval, b1, new_board)
             else:
                 heights = self.get_heights(new_board)
-                b1 = self.rotate(qBlocks[item - 1], thelist[item][1])
+                b1 = self.rotate(queue_blocks[item - 1], thelist[item][1])
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
                 new_board = self.get_new_board(xval, b1, new_board)
-        new_block = qBlocks[len(thelist) - 1]
+        new_block = queue_blocks[len(thelist) - 1]
         heights = self.get_heights(new_board)
         good_board = lBoard
         for r1 in range(4):
@@ -155,23 +150,23 @@ class DataHandler:
                     good_board = np.copy(theboard)
         return move
 
-    def get_best_moves(self, queue, lastBoard, moving_block, node_net):
-        heights = self.get_heights(lastBoard)
-        qBlocks = self.get_queue_blocks(queue)
-        firstBlock = self.zero(moving_block)
-        fitness = -10000
+    def get_best_moves(self, queue, last_board, moving_block, node_net):
+        heights = self.get_heights(last_board)
+        queue_blocks = self.get_queue_blocks(queue)
+        first_block = self.zero(moving_block)
+        fitness = -100000
         move_array = []
         
         for r1 in range(4):
-            b1 = self.rotate(firstBlock, r1)
+            b1 = self.rotate(first_block, r1)
             width = self.get_width(b1)
             for x1 in range(int(11 - width)):
                 if np.amax(heights[x1:x1 + width]) > 16:
                     continue
-                new_board = self.get_new_board(x1, b1, lastBoard)
+                new_board = self.get_new_board(x1, b1, last_board)
                 newHeights = self.get_heights(new_board)
                 for r2 in range(4):
-                    b2 = self.rotate(qBlocks[0], r2)
+                    b2 = self.rotate(queue_blocks[0], r2)
                     width2 = self.get_width(b2)
                     for x2 in range(int(11 - width2)):
                         if np.amax(newHeights[x2:x2 + width2]) > 16:

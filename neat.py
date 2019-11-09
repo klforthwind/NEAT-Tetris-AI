@@ -4,6 +4,7 @@ from genome import Genome
 from time import time
 
 class NEAT:
+    
     def __init__(self, population_size, loadable):
         self.pop_size = population_size
         self.current_genome = 0
