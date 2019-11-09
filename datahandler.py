@@ -120,29 +120,29 @@ class DataHandler:
         new_board = np.copy(lBoard)
         for item in range(len(thelist)):
             if item == 0:
-                b1 = self.rotate(zeroed, thelist[item][1])
-                width = self.get_width(b1)
+                block_one = self.rotate(zeroed, thelist[item][1])
+                width = self.get_width(block_one)
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
-                new_board = self.get_new_board(xval, b1, new_board)
+                new_board = self.get_new_board(xval, block_one, new_board)
             else:
                 heights = self.get_heights(new_board)
-                b1 = self.rotate(queue_blocks[item - 1], thelist[item][1])
+                block_one = self.rotate(queue_blocks[item - 1], thelist[item][1])
                 xval = thelist[item][0]
                 if np.amax(heights[xval:xval + width]) > 16:
                     continue
-                new_board = self.get_new_board(xval, b1, new_board)
+                new_board = self.get_new_board(xval, block_one, new_board)
         new_block = queue_blocks[len(thelist) - 1]
         heights = self.get_heights(new_board)
         good_board = lBoard
         for r1 in range(4):
-            b1 = self.rotate(new_block, r1)
-            width = self.get_width(b1)
+            block_one = self.rotate(new_block, r1)
+            width = self.get_width(block_one)
             for x1 in range(int(11 - width)):
                 if np.amax(heights[x1:x1 + width]) > 16:
                     continue
-                theboard = self.get_new_board(x1, b1, new_board)
+                theboard = self.get_new_board(x1, block_one, new_board)
                 fit = self.get_fitness(theboard, node_net)
                 if  fit > fitness:
                     fitness = fit
@@ -158,20 +158,20 @@ class DataHandler:
         move_array = []
         
         for r1 in range(4):
-            b1 = self.rotate(first_block, r1)
-            width = self.get_width(b1)
+            block_one = self.rotate(first_block, r1)
+            width = self.get_width(block_one)
             for x1 in range(int(11 - width)):
-                if np.amax(heights[x1:x1 + width]) > 16:
+                if np.amax(heights[x1:x1 + width]) > 18:
                     continue
-                new_board = self.get_new_board(x1, b1, last_board)
-                newHeights = self.get_heights(new_board)
+                new_board = self.get_new_board(x1, block_one, last_board)
+                new_heights = self.get_heights(new_board)
                 for r2 in range(4):
-                    b2 = self.rotate(queue_blocks[0], r2)
-                    width2 = self.get_width(b2)
+                    block_two = self.rotate(queue_blocks[0], r2)
+                    width2 = self.get_width(block_two)
                     for x2 in range(int(11 - width2)):
-                        if np.amax(newHeights[x2:x2 + width2]) > 16:
+                        if np.amax(new_heights[x2:x2 + width2]) > 18:
                             continue
-                        new_board2 = self.get_new_board(x2, b2, new_board)
+                        new_board2 = self.get_new_board(x2, block_two, new_board)
                         fit = self.get_fitness(new_board2, node_net)
                         if  fit > fitness:
                             fitness = fit
