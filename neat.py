@@ -38,6 +38,9 @@ class NEAT:
     def has_placed(self):
         return self.genomes[self.current_genome].yikes
 
+    def stop_yikes(self):
+        self.genomes[self.current_genome].yikes = False
+
     def get_movements(self, capture, block_change):
         return self.genomes[self.current_genome].get_buttons(capture, block_change)
 
@@ -63,13 +66,13 @@ class NEAT:
         self.current_genome = 0
         self.generation += 1
 
-        create_next_gen()
+        self.create_next_gen()
 
         for g in range(len(self.genomes)):
             txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
             savetxt(txt, self.genomes[g].node_net, fmt="%f")
 
-    def create_next_gen():
+    def create_next_gen(self):
         past_gen = self.genomes[0:int(self.pop_size / 2)]
         past_gen[0].fitness = 0
         self.genomes = []

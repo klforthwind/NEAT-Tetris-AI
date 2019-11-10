@@ -54,7 +54,7 @@ class SwitchData:
         board = self.__handleCanvas(frame)
         boardMat = np.zeros((640, 320), dtype = uint8)
         tempArr = np.zeros((20,10), dtype = uint8)
-        lBoard = self.last_board
+        last_board = np.copy(self.last_board)
         xyVals = np.zeros((2,0), dtype = uint8)
         
         for y in range(20):
@@ -69,7 +69,7 @@ class SwitchData:
                 tempArr[y][x] = val
                 
                 colorVal = val * 255
-                if val == 1 and lBoard[y][x] == 0:
+                if val == 1 and last_board[y][x] == 0:
                     xyVals = np.append(xyVals, [[19-y],[x]], 1)
                     colorVal = 128
                 if val == 0:
@@ -100,7 +100,7 @@ class SwitchData:
             for j in range(4):
                 if i % 3 == 2:
                     continue
-                val = (1,0)[queue[self.arr2[i] + 8][16 * j + 8] > 0]
+                val = (0,1)[queue[self.arr2[i] + 8][16 * j + 8] > 0]
                 tempArr[i][j] = val
                 if val == 0:
                     continue
@@ -136,6 +136,9 @@ class SwitchData:
         did_change = self.dh.did_block_change(self.last_queue, self.queue_array, self.temp_block)
         self.next_block = self.next_block if not did_change else self.temp_block
         return did_change
+
+    def queue_filled(self):
+        return self.dh.is_queue_filled(self.queue_array)
 
     def get_next_best_move(self, thelist, node_net):
         return self.dh.get_next_best_move(thelist, self.queue_array, self.last_board, self.moving_block, node_net)

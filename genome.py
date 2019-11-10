@@ -9,6 +9,7 @@ class Genome:
         self.node_net = np.zeros((self.node_count))
         self.output_nodes = 7
 
+        self.yikes = False
         self.mutate_rate = 0.2
         self.mutate_step = 0.1
         self.fitness = 0
@@ -49,6 +50,7 @@ class Genome:
                 self.yikes = True
                 self.moves.pop(0)
                 arr[0] = 1
+                self.fitness += 3
         if len(self.moves) > 0 and not self.yikes:
             self.moves[0] = info
         return arr

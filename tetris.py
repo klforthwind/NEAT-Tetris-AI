@@ -7,7 +7,7 @@ emulator = Emulator("COM3")
 capture = SwitchData()
 capture.start()
 
-population_size = 50
+population_size = 5
 file_manager = FileManager()
 loadable = file_manager.loadable()
 neat = NEAT(population_size, loadable)
@@ -25,8 +25,9 @@ while True:
     block_change = capture.did_block_change()
     if block_change:
         capture.update_last_board()
+        neat.stop_yikes()
 
-    if capture.exists_controllable_piece() and not neat.has_placed():
+    if capture.exists_controllable_piece() and (not neat.has_placed()) and capture.queue_filled():
         btnArr = neat.get_movements(capture, block_change)
         emulator.emulate_tetris(btnArr)
         neat.print_fitness()

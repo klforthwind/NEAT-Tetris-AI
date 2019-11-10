@@ -72,6 +72,15 @@ class DataHandler:
         return (queue_change > 5 and
             22 < tile_count < 26 and
             22 < oldtile_count < 26)
+
+    def is_queue_filled(self, queue):
+        middle_count = 0
+        for i in range(17):
+            for j in range(4):
+                if i % 3 != 2:
+                    if queue[i][j] == 1 and (j == 1 or j == 2):
+                        middle_count += 1
+        return (middle_count >= 12)
     
     def get_new_board(self, x_val, block, board):
         block_data = self.zero(block)
@@ -79,13 +88,13 @@ class DataHandler:
         heights = self.get_heights(board)
         temp_board = np.copy(board)
         lowest_blocks = self.get_lowest_blocks(block_data)
-        lowest_blocks = np.subtract(highest, lowest_blocks)
+        invert_blocks = np.subtract(highest, lowest_blocks)
         high, height = 0, 0
         for col in range(len(lowest_blocks)):
-            val = heights[x_val + col] + lowest_blocks[col]
+            val = heights[x_val + col] + invert_blocks[col]
             if val > high:
                 high = val
-                height = heights[x_val + col] - (highest - lowest_blocks[col])
+                height = heights[x_val + col] - lowest_blocks[col]
         for i in range(len(block_data[0])):
             yAxis = int(block_data[0][i] + height)
             xAxis = int(x_val + self.zero(block_data)[1][i])
