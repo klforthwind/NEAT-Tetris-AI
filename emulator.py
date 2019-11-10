@@ -86,12 +86,12 @@ class Emulator:
         # Successfully connected if we've reached this line
         print('Successful Connection!')
 
-    def nextGenome(self):
+    def next_genome(self):
         tt = time.time()
         while(time.time() - tt < 3):
             self.send_input(BTN_A)
 
-    def runButton(self, outputNode, cmd):
+    def run_button(self, outputNode, cmd):
         if int(outputNode) == 1:
             self.send_input(cmd)
 
@@ -100,21 +100,21 @@ class Emulator:
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
 
-    def emulateTetris(self, arr):
+    def emulate_tetris(self, arr):
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
         self.wait(0.05)
-        self.runButton(arr[0], DPAD_U)
-        self.runButton(arr[1], DPAD_R)
-        self.runButton(arr[2], DPAD_D)
-        self.runButton(arr[3], DPAD_L)
-        self.runButton(arr[4], BTN_L)
-        self.runButton(arr[5], BTN_Y)
-        self.runButton(arr[6], BTN_B)
-        # self.runButton(arr[7], self.rstick_angle(0, 0xFF))
-        # self.runButton(arr[8], self.rstick_angle(90, 0xFF))
-        # self.runButton(arr[9], self.rstick_angle(180, 0xFF))
-        # self.runButton(arr[10], self.rstick_angle(270, 0xFF))
+        self.run_button(arr[0], DPAD_U)
+        self.run_button(arr[1], DPAD_R)
+        self.run_button(arr[2], DPAD_D)
+        self.run_button(arr[3], DPAD_L)
+        self.run_button(arr[4], BTN_L)
+        self.run_button(arr[5], BTN_Y)
+        self.run_button(arr[6], BTN_B)
+        # self.run_button(arr[7], self.rstick_angle(0, 0xFF))
+        # self.run_button(arr[8], self.rstick_angle(90, 0xFF))
+        # self.run_button(arr[9], self.rstick_angle(180, 0xFF))
+        # self.run_button(arr[10], self.rstick_angle(270, 0xFF))
         self.wait(0.05)
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
