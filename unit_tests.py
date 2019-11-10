@@ -90,9 +90,9 @@ class TestDataHandler(unittest.TestCase):
         self.equality(getF1FN1C, self.dh.get_fitness(getF1, getFN1))
         self.equality(getF1FN2C, self.dh.get_fitness(getF1, getFN2))
     
-    # def test_get_best_moves(self):
-    #     self.equality(getBM1C, self.dh.get_best_moves(getBM1q, getBM1b, getBM1mb, getBM1nn1))
-    #     self.equality(getBM2C, self.dh.get_best_moves(getBM1q, getBM1b, getBM1mb, getBM1nn2))
+    def test_get_best_moves(self):
+        self.equality(getBM1C, self.dh.get_best_moves(getBM1q, getBM1b, getBM1mb, getBM1nn1))
+        self.equality(getBM2C, self.dh.get_best_moves(getBM1q, getBM1b, getBM1mb, getBM1nn2))
 
     # def test_get_next_best_move(self):
     #     moveArr = self.dh.get_best_moves(getBM1q, getBM1b, getBM1mb, getBM1nn1)

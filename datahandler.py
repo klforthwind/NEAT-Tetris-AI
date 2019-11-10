@@ -22,8 +22,8 @@ class DataHandler:
                     for j in range(4):
                         block = int((i - row) / 3)
                         blocks[block][row][j] = queue[i][j]
-            for b in range(6):
-                blocks[b] = self.get_xy_vals(blocks[b])
+            for board in range(6):
+                blocks[board] = self.get_xy_vals(blocks[board])
         return blocks
 
     def zero(self, block_data):
@@ -74,23 +74,24 @@ class DataHandler:
             22 < tile_count < 26 and
             22 < oldtile_count < 26)
     
-    def get_new_board(self, xVal, block, b):
-        block_data = self.zero(np.copy(block))
+    def get_new_board(self, x_val, block, board):
+        block_data = self.zero(block)
         highest = np.amax(block_data[0])
-        heights = self.get_heights(b)
-        board = np.copy(b)
-        lowestBlock = self.get_lowest_blocks(block_data)
+        heights = self.get_heights(board)
+        temp_board = np.copy(board)
+        lowest_blocks = self.get_lowest_blocks(block_data)
+        lowest_blocks = np.subtract(highest, lowest_blocks)
         high, height = 0, 0
-        for col in range(int(len(lowestBlock))):
-            val = heights[xVal + col] + lowestBlock[col]
+        for col in range(len(lowest_blocks)):
+            val = heights[x_val + col] + lowest_blocks[col]
             if val > high:
                 high = val
-                height = heights[xVal + col] - (highest - lowestBlock[col])
+                height = heights[x_val + col] - (highest - lowest_blocks[col])
         for i in range(len(block_data[0])):
             yAxis = int(block_data[0][i] + height)
-            xAxis = int(xVal + self.zero(block_data)[1][i])
-            board[19 - yAxis][xAxis] = 1
-        return np.copy(board)
+            xAxis = int(x_val + self.zero(block_data)[1][i])
+            temp_board[19 - yAxis][xAxis] = 1
+        return temp_board
         
     def get_fitness(self, board, node_net):
         fitness = 0
@@ -122,20 +123,20 @@ class DataHandler:
             if item == 0:
                 block_one = self.rotate(zeroed, thelist[item][1])
                 width = self.get_width(block_one)
-                xval = thelist[item][0]
-                if np.amax(heights[xval:xval + width]) > 16:
+                x_val = thelist[item][0]
+                if np.amax(heights[x_val:x_val + width]) > 16:
                     continue
-                new_board = self.get_new_board(xval, block_one, new_board)
+                new_board = self.get_new_board(x_val, block_one, new_board)
             else:
                 heights = self.get_heights(new_board)
                 block_one = self.rotate(queue_blocks[item - 1], thelist[item][1])
-                xval = thelist[item][0]
-                if np.amax(heights[xval:xval + width]) > 16:
+                x_val = thelist[item][0]
+                if np.amax(heights[x_val:x_val + width]) > 16:
                     continue
-                new_board = self.get_new_board(xval, block_one, new_board)
+                new_board = self.get_new_board(x_val, block_one, new_board)
         new_block = queue_blocks[len(thelist) - 1]
         heights = self.get_heights(new_board)
-        good_board = lBoard
+        # good_board = lBoard
         for r1 in range(4):
             block_one = self.rotate(new_block, r1)
             width = self.get_width(block_one)
@@ -147,7 +148,7 @@ class DataHandler:
                 if  fit > fitness:
                     fitness = fit
                     move = (r1, 0 ,x1)
-                    good_board = np.copy(theboard)
+                    # good_board = np.copy(theboard)
         return move
 
     def get_best_moves(self, queue, last_board, moving_block, node_net):
