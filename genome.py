@@ -30,7 +30,7 @@ class Genome:
     def get_buttons(self, capture, block_change):
         self.handle_moves(capture, block_change)
         arr = np.zeros(self.output_nodes)
-        yikes = False
+        self.yikes = False
         if len(self.moves) > 0:
             info = self.moves[0]
             if info[0] != 0:
@@ -46,9 +46,9 @@ class Genome:
                 info2 = [info[0], info[1], (info[2] - 1)]
                 info = info2
             else:
-                yikes = True
+                self.yikes = True
                 self.moves.pop(0)
                 arr[0] = 1
-        if len(self.moves) > 0 and not yikes:
+        if len(self.moves) > 0 and not self.yikes:
             self.moves[0] = info
         return arr

@@ -26,7 +26,7 @@ while True:
     if block_change:
         capture.update_last_board()
 
-    if capture.exists_controllable_piece():
+    if capture.exists_controllable_piece() and not neat.has_placed():
         btnArr = neat.get_movements(capture, block_change)
         emulator.emulate_tetris(btnArr)
         neat.print_fitness()
