@@ -26,6 +26,7 @@ while True:
     if block_change:
         capture.update_last_board()
         neat.stop_yikes()
+        neat.update_genome_moves(capture)
 
     if capture.exists_controllable_piece() and (not neat.has_placed()) and capture.queue_filled():
         btnArr = neat.get_movements(capture, block_change)

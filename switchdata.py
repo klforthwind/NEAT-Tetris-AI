@@ -51,7 +51,7 @@ class SwitchData:
         self.__make_queue(frame[80:390, 815:880])
         
     def __make_board(self, frame):
-        board = self.__handleCanvas(frame)
+        board = np.copy(self.__handleCanvas(frame))
         boardMat = np.zeros((640, 320), dtype = uint8)
         tempArr = np.zeros((20,10), dtype = uint8)
         last_board = np.copy(self.last_board)
@@ -69,7 +69,7 @@ class SwitchData:
                 tempArr[y][x] = val
                 
                 colorVal = val * 255
-                if val == 1 and last_board[y][x] == 0:
+                if val == 1 and last_board[y][x] == 0 and len(xyVals[0]) < 4:
                     xyVals = np.append(xyVals, [[19-y],[x]], 1)
                     colorVal = 128
                 if val == 0:

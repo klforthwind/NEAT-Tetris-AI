@@ -42,6 +42,9 @@ class NEAT:
         self.genomes[self.current_genome].yikes = False
         self.genomes[self.current_genome].rotating = False
 
+    def update_genome_moves(self, capture):
+        self.genomes[self.current_genome].update_genome_moves(capture)
+
     def get_movements(self, capture, block_change):
         return self.genomes[self.current_genome].get_buttons(capture, block_change)
 

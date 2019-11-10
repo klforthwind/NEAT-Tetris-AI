@@ -125,6 +125,7 @@ class DataHandler:
             if  fit > self.gfitness:
                 self.gfitness = fit
                 tmp = list(temp)
+                # print(tmp)
                 for i in range(len(tmp)):
                     move_array[i] = tmp[i]
         else:
@@ -143,6 +144,7 @@ class DataHandler:
                     self.rec_get_moves(first_block, queue_blocks, new_board, node_net, move_array, count - 1, tmp)
         
     def get_best_moves(self, queue, last_board, moving_block, node_net):
+        print(moving_block)
         heights = self.get_heights(last_board)
         queue_blocks = self.get_queue_blocks(queue)
         first_block = self.zero(moving_block)

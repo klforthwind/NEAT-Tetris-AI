@@ -21,24 +21,24 @@ class Genome:
             if random() < self.mutate_rate:
                 self.node_net[node] += (random()-0.5) * self.mutate_step
 
+    def update_genome_moves(self, capture):
+        self.handle_moves(capture, True)
+
     def handle_moves(self, capture, block_change):
         if len(self.moves) == 0 and block_change:
             data = capture.get_best_moves(self.node_net)
             self.moves.append(data[0])
             self.moves.append(data[1])
-            self.moves.append(data[2])
-            self.moves.append(data[3])
 
     def get_buttons(self, capture, block_change):
         moving_block = np.copy(capture.moving_block)
         left_most = np.amin(moving_block[1])
-        self.handle_moves(capture, block_change)
         arr = np.zeros(self.output_nodes)
         self.yikes = False
         if len(self.moves) > 0:
             info = self.moves[0]
             if info[1] == -1 and info[0] == 0:
-                info2 = [info, left_most, info[2]]
+                info2 = [info[0], left_most, info[2]]
                 info = info2
             # print(info)
             if info[0] != 0:
