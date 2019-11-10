@@ -125,6 +125,7 @@ class DataHandler:
             if  fit > self.gfitness:
                 self.gfitness = fit
                 tmp = list(temp)
+                print(board)
                 for i in range(len(tmp)):
                     move_array[i] = tmp[i]
         else:
