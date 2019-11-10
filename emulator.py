@@ -86,7 +86,7 @@ class Emulator:
         # Successfully connected if we've reached this line
         print('Successful Connection!')
 
-    def next_genome(self):
+    def press_a(self):
         tt = time.time()
         while(time.time() - tt < 3):
             self.send_input(BTN_A)

@@ -4,7 +4,7 @@ from time import time
 if __name__ == '__main__':
 
     emulator = Emulator("COM3")
-    # emulator.next_genome()
+    # emulator.press_a()
     for i in range(400):
         print(time())
         em = ([0,1,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0,0,0], [0,0,0,1,0,0,0,0,0,0], [0,0,0,1,0,0,0,0,0,0])[i%4]
