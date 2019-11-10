@@ -139,7 +139,7 @@ class DataHandler:
                         continue
                     new_board = self.get_new_board(x, cool_block, board)
                     tmp = list(temp)
-                    tmp[2-count] = (r, 0, x)
+                    tmp[2-count] = (r, -1, x)
                     self.rec_get_moves(first_block, queue_blocks, new_board, node_net, move_array, count - 1, tmp)
         
     def get_best_moves(self, queue, last_board, moving_block, node_net):
@@ -147,6 +147,6 @@ class DataHandler:
         queue_blocks = self.get_queue_blocks(queue)
         first_block = self.zero(moving_block)
         self.gfitness = -100000
-        move_array = [(0,0,0),(0,0,0)]
+        move_array = [(0,-1,0),(0,-1,0)]
         self.rec_get_moves(first_block, queue_blocks, last_board, node_net, move_array, 2)
         return move_array

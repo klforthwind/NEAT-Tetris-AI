@@ -30,25 +30,39 @@ class Genome:
             self.moves.append(data[3])
 
     def get_buttons(self, capture, block_change):
+        moving_block = np.copy(capture.moving_block)
+        left_most = np.amin(moving_block[1])
         self.handle_moves(capture, block_change)
         arr = np.zeros(self.output_nodes)
         self.yikes = False
         if len(self.moves) > 0:
             info = self.moves[0]
+            if info[1] == -1 and info[0] == 0:
+                info2 = [info, left_most, info[2]]
+                info = info2
             # print(info)
             if info[0] != 0:
                 self.rotating = True
                 arr[6] = 1
                 info2 = [(info[0] - 1), info[1], info[2]]
                 info = info2
-            elif info[1] < 8:
+            elif info[1] < 8 and self.rotating:
                 arr[3] = 1
                 info2 = [info[0], (info[1] + 1), info[2]]
                 info = info2
-            elif (info[1] > 7) and info[2] > 0:
+            elif (info[1] > 7 and  self.rotating) and (info[2] > 0):
                 arr[1] = 1
                 info2 = [info[0], info[1], (info[2] - 1)]
                 info = info2
+            elif not self.rotating and info[2] != info[1]:
+                if info[2] > info[1]:
+                    arr[1] = 1
+                    info2 = [info[0], info[1], (info[2] - 1)]
+                    info = info2
+                else:
+                    arr[3] = 1
+                    info2 = [info[0], info[1], (info[2] + 1)]
+                    info = info2
             else:
                 self.yikes = True
                 self.rotating = False
