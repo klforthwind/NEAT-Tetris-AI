@@ -62,13 +62,12 @@ class DataHandler:
         oldtile_count = np.sum(last_queue)
         for i in range(17):
             for j in range(4):
-                if i < 2:
-                    next_block[i][j] = last_queue[i][j]
-                if i % 3 == 2:
-                    continue
-                if queue[i][j] != last_queue[i][j]:
-                    last_queue[i][j] = queue[i][j]
-                    queue_change += 1
+                if i % 3 != 2:
+                    if i < 2:
+                        next_block[i][j] = last_queue[i][j]
+                    if queue[i][j] != last_queue[i][j]:
+                        last_queue[i][j] = queue[i][j]
+                        queue_change += 1
         tile_count = np.sum(last_queue)
         return (queue_change > 5 and
             22 < tile_count < 26 and

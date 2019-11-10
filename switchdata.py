@@ -5,7 +5,7 @@ import threading
 import cv2
 
 class SwitchData:
-    
+
     def __init__(self, src=0, width=1280, height=720):
         self.src = src
         self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)
@@ -132,7 +132,10 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def did_block_change(self):
-        return self.dh.did_block_change(self.last_queue, self.queue_array, self.next_block)
+        self.temp_block = np.copy(self.next_block)
+        did_change = self.dh.did_block_change(self.last_queue, self.queue_array, self.temp_block)
+        self.next_block = self.next_block if not did_change else self.temp_block
+        return did_change
 
     def get_next_best_move(self, thelist, node_net):
         return self.dh.get_next_best_move(thelist, self.queue_array, self.last_board, self.moving_block, node_net)
