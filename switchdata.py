@@ -5,6 +5,7 @@ import threading
 import cv2
 
 class SwitchData:
+    
     def __init__(self, src=0, width=1280, height=720):
         self.src = src
         self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)

@@ -3,6 +3,7 @@ from time import time
 import numpy as np
 
 class Genome:
+    
     def __init__(self):
         self.node_count = 4
         self.node_net = np.zeros((self.node_count))
