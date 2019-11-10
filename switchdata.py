@@ -140,9 +140,6 @@ class SwitchData:
     def queue_filled(self):
         return self.dh.is_queue_filled(self.queue_array)
 
-    def get_next_best_move(self, thelist, node_net):
-        return self.dh.get_next_best_move(thelist, self.queue_array, self.last_board, self.moving_block, node_net)
-
     def get_best_moves(self, node_net):
         return self.dh.get_best_moves(self.queue_array, self.last_board, self.moving_block, node_net)
 

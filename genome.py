@@ -26,8 +26,8 @@ class Genome:
             data = capture.get_best_moves(self.node_net)
             self.moves.append(data[0])
             self.moves.append(data[1])
-        elif len(self.moves) < 7:
-            self.moves.append(capture.get_next_best_move(self.moves, self.node_net))
+            self.moves.append(data[2])
+            self.moves.append(data[3])
 
     def get_buttons(self, capture, block_change):
         self.handle_moves(capture, block_change)

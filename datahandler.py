@@ -118,75 +118,35 @@ class DataHandler:
             fitness += node_net[stat_num] * stats[stat_num]
         
         return fitness
-        
-    def get_next_best_move(self, thelist, queue, lBoard, moving_block, node_net):
-        heights = self.get_heights(lBoard)
-        queue_blocks = self.get_queue_blocks(queue)
-        zeroed = self.zero(moving_block)
-        fitness = -1
-        move = (0, 0, 0)
-        
-        new_board = np.copy(lBoard)
-        for item in range(len(thelist)):
-            if item == 0:
-                block_one = self.rotate(zeroed, thelist[item][1])
-                width = self.get_width(block_one)
-                x_val = thelist[item][0]
-                if np.amax(heights[x_val:x_val + width]) > 16:
-                    continue
-                new_board = self.get_new_board(x_val, block_one, new_board)
-            else:
-                heights = self.get_heights(new_board)
-                block_one = self.rotate(queue_blocks[item - 1], thelist[item][1])
-                x_val = thelist[item][0]
-                if np.amax(heights[x_val:x_val + width]) > 16:
-                    continue
-                new_board = self.get_new_board(x_val, block_one, new_board)
-        new_block = queue_blocks[len(thelist) - 1]
-        heights = self.get_heights(new_board)
-        # good_board = lBoard
-        for r1 in range(4):
-            block_one = self.rotate(new_block, r1)
-            width = self.get_width(block_one)
-            for x1 in range(int(11 - width)):
-                if np.amax(heights[x1:x1 + width]) > 16:
-                    continue
-                theboard = self.get_new_board(x1, block_one, new_board)
-                fit = self.get_fitness(theboard, node_net)
-                if  fit > fitness:
-                    fitness = fit
-                    move = (r1, 0 ,x1)
-                    # good_board = np.copy(theboard)
-        return move
 
+    def rec_get_moves(self, first_block, queue_blocks, board, node_net, move_array, count, temp=[(0,0,0),(0,0,0)]):
+        if count == 0:
+            fit = self.get_fitness(board, node_net)
+            if  fit > self.gfitness:
+                self.gfitness = fit
+                tmp = list(temp)
+                for i in range(len(tmp)):
+                    move_array[i] = tmp[i]
+        else:
+            block = first_block if count == 4 else queue_blocks[3-count]
+            heights = self.get_heights(board)
+            r_range = 2 if sum(block[0]) == 2 else 4
+            for r in range(r_range):
+                cool_block = self.rotate(block, r)
+                width = self.get_width(cool_block)
+                for x in range(int(11 - width)):
+                    if np.amax(heights[x:x + width]) > 18:
+                        continue
+                    new_board = self.get_new_board(x, cool_block, board)
+                    tmp = list(temp)
+                    tmp[2-count] = (r, 0, x)
+                    self.rec_get_moves(first_block, queue_blocks, new_board, node_net, move_array, count - 1, tmp)
+        
     def get_best_moves(self, queue, last_board, moving_block, node_net):
         heights = self.get_heights(last_board)
         queue_blocks = self.get_queue_blocks(queue)
         first_block = self.zero(moving_block)
-        fitness = -100000
-        move_array = []
-        
-        for r1 in range(4):
-            block_one = self.rotate(first_block, r1)
-            width = self.get_width(block_one)
-            for x1 in range(int(11 - width)):
-                if np.amax(heights[x1:x1 + width]) > 18:
-                    continue
-                new_board = self.get_new_board(x1, block_one, last_board)
-                new_heights = self.get_heights(new_board)
-                for r2 in range(4):
-                    block_two = self.rotate(queue_blocks[0], r2)
-                    width2 = self.get_width(block_two)
-                    for x2 in range(int(11 - width2)):
-                        if np.amax(new_heights[x2:x2 + width2]) > 18:
-                            continue
-                        new_board2 = self.get_new_board(x2, block_two, new_board)
-                        fit = self.get_fitness(new_board2, node_net)
-                        if  fit > fitness:
-                            fitness = fit
-                            move_array = []
-                            tup1 = (r1, 0, x1)
-                            move_array.append(tup1)
-                            tup2 = (r2, 0, x2)
-                            move_array.append(tup2)
+        self.gfitness = -100000
+        move_array = [(0,0,0),(0,0,0)]
+        self.rec_get_moves(first_block, queue_blocks, last_board, node_net, move_array, 2)
         return move_array

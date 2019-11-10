@@ -439,12 +439,12 @@ getBM1mb = np.array(
     [[19,18,18,17],
     [6,5,6,5]], uint8)
 
-getBM1nn1 = np.array([0,0,0,0], uint8)
+getBM1nn1 = np.array([0,0,0,0])
 
-getBM1nn2 = np.array([1,1,1,1], uint8)
+getBM1nn2 = np.array([0,0,-1,2])
 
 getBM1C = [(0,0,0),(0,0,0)]
-getBM2C = [(0,0,0),(2,0,1)]
+getBM2C = [(1, 0, 8), (0, 0, 6)]
 
 getNBM1C = (0,0,0)
 
