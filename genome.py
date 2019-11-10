@@ -10,6 +10,7 @@ class Genome:
         self.output_nodes = 7
 
         self.yikes = False
+        self.rotating = False
         self.mutate_rate = 0.2
         self.mutate_step = 0.1
         self.fitness = 0
@@ -34,7 +35,9 @@ class Genome:
         self.yikes = False
         if len(self.moves) > 0:
             info = self.moves[0]
+            # print(info)
             if info[0] != 0:
+                self.rotating = True
                 arr[6] = 1
                 info2 = [(info[0] - 1), info[1], info[2]]
                 info = info2
@@ -42,12 +45,13 @@ class Genome:
                 arr[3] = 1
                 info2 = [info[0], (info[1] + 1), info[2]]
                 info = info2
-            elif info[1] > 7 and info[2] > 0:
+            elif (info[1] > 7) and info[2] > 0:
                 arr[1] = 1
                 info2 = [info[0], info[1], (info[2] - 1)]
                 info = info2
             else:
                 self.yikes = True
+                self.rotating = False
                 self.moves.pop(0)
                 arr[0] = 1
                 self.fitness += 3

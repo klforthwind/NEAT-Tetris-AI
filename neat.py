@@ -40,6 +40,7 @@ class NEAT:
 
     def stop_yikes(self):
         self.genomes[self.current_genome].yikes = False
+        self.genomes[self.current_genome].rotating = False
 
     def get_movements(self, capture, block_change):
         return self.genomes[self.current_genome].get_buttons(capture, block_change)
@@ -76,7 +77,7 @@ class NEAT:
         past_gen = self.genomes[0:int(self.pop_size / 2)]
         past_gen[0].fitness = 0
         self.genomes = []
-        self.genomes.append(self.past_gen[0])
+        self.genomes.append(past_gen[0])
         for g in range(self.pop_size - 1):
             mom = self.rand_genome(past_gen)
             dad = self.rand_genome(past_gen)
