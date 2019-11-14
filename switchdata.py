@@ -54,7 +54,6 @@ class SwitchData:
         board = np.copy(self.__handleCanvas(frame))
         boardMat = np.zeros((640, 320), dtype = uint8)
         tempArr = np.zeros((20,10), dtype = uint8)
-        last_board = np.copy(self.last_board)
         xyVals = np.zeros((2,0), dtype = uint8)
         
         for y in range(20):
@@ -67,9 +66,11 @@ class SwitchData:
                             val = 0
                             break
                 tempArr[y][x] = val
+                if self.last_board[y][x] == 1 and val == 0:
+                    self.last_board[y][x] = 0 
                 
                 colorVal = val * 255
-                if val == 1 and last_board[y][x] == 0 and len(xyVals[0]) < 4:
+                if val == 1 and self.last_board[y][x] == 0 and len(xyVals[0]) < 4:
                     xyVals = np.append(xyVals, [[19-y],[x]], 1)
                     colorVal = 128
                 if val == 0:
@@ -120,8 +121,8 @@ class SwitchData:
         self.last_board = np.zeros((20, 10), dtype = uint8)
         self.last_queue = np.zeros((17,4), dtype = uint8)
         self.next_block = np.zeros((2,4), dtype = uint8)
-        self.moving_block = np.zeros((2,4), dtype = uint8)
-        
+        self.moving_block = np.zeros((2,0), dtype = uint8)
+
     def update_last_board(self):
         self.last_board = np.copy(self.board_array)
         for i in range(2):
