@@ -24,6 +24,7 @@ while True:
 
     block_change = capture.did_block_change()
     if block_change:
+        emulator.wait(0.3)
         capture.update_last_board()
         neat.stop_yikes()
         neat.update_genome_moves(capture)
