@@ -7,7 +7,7 @@ emulator = Emulator("COM3")
 capture = SwitchData()
 capture.start()
 
-population_size = 50
+population_size = 16
 file_manager = FileManager()
 loadable = file_manager.loadable()
 neat = NEAT(population_size, loadable)
