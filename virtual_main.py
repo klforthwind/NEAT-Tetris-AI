@@ -1,5 +1,5 @@
 from node_manager import *
-from filemanager import *
+from file_manager import *
 from graphics import *
 from tetris import *
 from neat import *
