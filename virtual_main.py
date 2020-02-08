@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
         best_node = node_manager.analyze(tetris, neat.get_current_nn())
 
-        if best_node != NULL:
+        if best_node != None:
             moves = best_node.movement 
             for move in moves:
                 tetris.perform_movement(move)
