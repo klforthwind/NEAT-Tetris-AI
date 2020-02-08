@@ -1,5 +1,6 @@
 from numpy import uint8
 from datahandler import DataHandler
+from tetris import *
 import numpy as np
 import threading
 import cv2
@@ -17,8 +18,9 @@ class SwitchData:
 
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
-        self.board_array = np.zeros((20, 10), dtype = uint8)
-        self.queue_array = np.zeros((17, 4), dtype = uint8)
+        self.tetris = Tetris()
+        # self.board_array = np.zeros((20, 10), dtype = uint8)
+        # self.queue_array = np.zeros((17, 4), dtype = uint8)
         self.hold_array = np.zeros((2, 4), dtype = uint8)
         self.dh = DataHandler()
         self.clear()
@@ -53,7 +55,8 @@ class SwitchData:
     def __make_board(self, frame):
         board = np.copy(self.__handleCanvas(frame))
         boardMat = np.zeros((640, 320), dtype = uint8)
-        tempArr = np.zeros((20,10), dtype = uint8)
+        temp_tetris = Tetris()
+        temp_arr = temp_tetris.board
         xyVals = np.zeros((2,0), dtype = uint8)
         
         for y in range(20):
@@ -65,7 +68,7 @@ class SwitchData:
                         if board[32 * y + i][32 * x + j] == 0:
                             val = 0
                             break
-                tempArr[y][x] = val
+                temp_arr.board[temp_tetris.board_pos(x, y)] = val
                 if self.last_board[y][x] == 1 and val == 0:
                     self.last_board[y][x] = 0 
                 
@@ -80,7 +83,7 @@ class SwitchData:
                         boardMat[y * 32 + m][x * 32 + n] = colorVal
         
         self.moving_block = np.copy(xyVals)
-        self.board_array = np.copy(tempArr)
+        self.tetris.board = list(temp_arr)
         cv2.imshow('Board', boardMat)
 
     def __make_hold(self, frame):
@@ -96,19 +99,20 @@ class SwitchData:
         queue = self.__handleCanvas(frame)
         
         queueMat = np.zeros((310, 65), dtype = uint8)
-        tempArr = np.zeros((17, 4), dtype = uint8)
+        temp_tetris = Tetris()
+        temp_arr = temp_tetris.queue
         for i in range(17):
             for j in range(4):
                 if i % 3 == 2:
                     continue
                 val = (0,1)[queue[self.arr2[i] + 8][16 * j + 8] > 0]
-                tempArr[i][j] = val
+                temp_arr.queue[temp_arr.queue_pos(j, i)] = val
                 if val == 0:
                     continue
                 for m in range(self.arr[i]):
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
-        self.queue_array = np.copy(tempArr)
+        self.tetris.queue = list(temp_arr)
         cv2.imshow('Queue', queueMat)
 
     def __handleCanvas(self, canvas):
@@ -124,25 +128,22 @@ class SwitchData:
         self.moving_block = np.zeros((2,0), dtype = uint8)
 
     def update_last_board(self):
-        self.last_board = np.copy(self.board_array)
+        self.last_board = list(self.tetris.board)
         for i in range(2):
             for j in range(4):
-                if self.next_block[i][j] == 1 and self.last_board[i][j + 3] == 1:
-                    self.last_board[i][j + 3] = 0
+                if self.next_block[i][j] == 1 and self.last_board[self.tetris.board_pos(j + 3, i)] == 1:
+                    self.last_board[self.tetris.board_pos(j + 3, i)] = 0
                     
 # --------------------------------------------------------------------
 
     def did_block_change(self):
         self.temp_block = np.copy(self.next_block)
-        did_change = self.dh.did_block_change(self.last_queue, self.queue_array, self.temp_block)
+        did_change = self.dh.did_block_change(self.last_queue, self.tetris.queue, self.temp_block)
         self.next_block = self.next_block if not did_change else self.temp_block
         return did_change
 
     def queue_filled(self):
-        return self.dh.is_queue_filled(self.queue_array)
-
-    def get_best_moves(self, node_net):
-        return self.dh.get_best_moves(self.queue_array, self.last_board, self.moving_block, node_net)
+        return self.dh.is_queue_filled(self.tetris.queue)
 
 # --------------------------------------------------------------------
 
@@ -150,7 +151,7 @@ class SwitchData:
         return len(self.moving_block[0]) == 4
 
     def game_over(self):
-        return np.amin(self.board_array[5]) == 1 and np.amin(self.board_array[10]) == 1
+        return max(self.tetris.board[4:8]) != 0
     
     def should_quit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')

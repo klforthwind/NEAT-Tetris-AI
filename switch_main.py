@@ -29,12 +29,10 @@ if __name__ == "__main__":
         block_change = capture.did_block_change()
         if block_change:
             emulator.wait(0.2)
-            
-            
             capture.update_last_board()
 
         if capture.exists_controllable_piece() and capture.queue_filled():
-            best_node = node_manager.analyze(capture, neat.get_current_nn())
+            best_node = node_manager.analyze_switch(capture, neat.get_current_nn())
 
             if best_node != None:
                 moves = best_node.movement 

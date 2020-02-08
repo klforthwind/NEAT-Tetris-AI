@@ -19,6 +19,11 @@ class NodeManager:
         temp.queue = list(tetris.queue)
         tetris.apply_shape()
 
+    def analyze_switch(capture, node_net):
+        tetris = Tetris()
+        tetris.board = list()
+        return analyze(self, tetris, node_net)
+
     def analyze(self, tetris, node_net):
         self.create_copy(tetris)
         tetris = self.tetris

@@ -59,14 +59,14 @@ class DataHandler:
         
     def did_block_change(self, last_queue, queue, next_block):
         queue_change = 0
-        oldtile_count = np.sum(last_queue)
+        oldtile_count = sum(last_queue)
         for i in range(17):
             for j in range(4):
                 if i % 3 != 2:
                     if i < 2:
                         next_block[i][j] = last_queue[i][j]
-                    if queue[i][j] != last_queue[i][j]:
-                        last_queue[i][j] = queue[i][j]
+                    if queue[j + i * 4] != last_queue[i][j]:
+                        last_queue[i][j] = queue[j + i * 4]
                         queue_change += 1
         tile_count = np.sum(last_queue)
         return (queue_change > 5 and
@@ -78,77 +78,6 @@ class DataHandler:
         for i in range(17):
             for j in range(4):
                 if i % 3 != 2:
-                    if queue[i][j] == 1 and (j == 1 or j == 2):
+                    if queue[j + i * 4] == 1 and (j == 1 or j == 2):
                         middle_count += 1
         return (middle_count >= 12)
-    
-    def get_new_board(self, x_val, block, board):
-        block_data = self.zero(block)
-        highest = np.amax(block_data[0])
-        heights = self.get_heights(board)
-        temp_board = np.copy(board)
-        lowest_blocks = self.get_lowest_blocks(block_data)
-        invert_blocks = np.subtract(highest, lowest_blocks)
-        high, height = 0, 0
-        for col in range(len(lowest_blocks)):
-            val = heights[x_val + col] + invert_blocks[col]
-            if val > high:
-                high = val
-                height = heights[x_val + col] - lowest_blocks[col]
-        for i in range(len(block_data[0])):
-            yAxis = int(block_data[0][i] + height)
-            xAxis = int(x_val + self.zero(block_data)[1][i])
-            temp_board[19 - yAxis][xAxis] = 1
-        return temp_board
-        
-    def get_fitness(self, board, node_net):
-        fitness = 0
-        heights = self.get_heights(board)
-
-        total_height = np.sum(heights)
-        holes = total_height - np.sum(board)
-        lines = np.sum(np.amin(board, axis=1))
-        
-        bump = 0
-        for i in range(len(heights)-1):
-            bump += abs(heights[i] - heights[i + 1])
-        
-        stats = [total_height, holes, bump, lines]
-        for stat_num in range(len(stats)):
-            fitness += node_net[stat_num] * stats[stat_num]
-        
-        return fitness
-
-    def rec_get_moves(self, first_block, queue_blocks, board, node_net, move_array, count, temp=[(0,0,0),(0,0,0)]):
-        if count == 0:
-            fit = self.get_fitness(board, node_net)
-            if  fit > self.gfitness:
-                self.gfitness = fit
-                tmp = list(temp)
-                # print(tmp)
-                for i in range(len(tmp)):
-                    move_array[i] = tmp[i]
-        else:
-            block = first_block if count == 4 else queue_blocks[3-count]
-            heights = self.get_heights(board)
-            r_range = 2 if sum(block[0]) == 2 else 4
-            for r in range(r_range):
-                cool_block = self.rotate(block, r)
-                width = self.get_width(cool_block)
-                for x in range(int(11 - width)):
-                    if np.amax(heights[x:x + width]) > 18:
-                        continue
-                    new_board = self.get_new_board(x, cool_block, board)
-                    tmp = list(temp)
-                    tmp[2-count] = (r, -1, x)
-                    self.rec_get_moves(first_block, queue_blocks, new_board, node_net, move_array, count - 1, tmp)
-        
-    def get_best_moves(self, queue, last_board, moving_block, node_net):
-        # print(moving_block)
-        heights = self.get_heights(last_board)
-        queue_blocks = self.get_queue_blocks(queue)
-        first_block = self.zero(moving_block)
-        self.gfitness = -100000
-        move_array = [(0,-1,0),(0,-1,0)]
-        self.rec_get_moves(first_block, queue_blocks, last_board, node_net, move_array, 2)
-        return move_array
