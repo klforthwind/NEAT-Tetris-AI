@@ -100,6 +100,34 @@ class Emulator:
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
 
+    def perform_movement(self, move):
+        self.send_input(DPAD_CENTER)
+        self.send_input(NO_INPUT)
+        self.wait(0.05)
+
+        if move == "RL":
+            self.run_button(arr[6], BTN_B)
+        elif move == "RR":
+            self.run_button(arr[5], BTN_Y)
+        elif move == "L":
+            self.run_button(arr[3], DPAD_L)
+        elif move == "R":
+            self.run_button(arr[1], DPAD_R)
+        elif move == "SD":
+            self.run_button(arr[2], DPAD_D)
+        elif move == "HD":
+            self.run_button(arr[0], DPAD_U)
+        elif move == "H":
+            self.run_button(arr[4], BTN_L)
+        
+        # self.run_button(arr[7], self.rstick_angle(0, 0xFF))
+        # self.run_button(arr[8], self.rstick_angle(90, 0xFF))
+        # self.run_button(arr[9], self.rstick_angle(180, 0xFF))
+        # self.run_button(arr[10], self.rstick_angle(270, 0xFF))
+        self.wait(0.05)
+        self.send_input(DPAD_CENTER)
+        self.send_input(NO_INPUT)
+
     def emulate_tetris(self, arr):
         self.send_input(DPAD_CENTER)
         self.send_input(NO_INPUT)
