@@ -25,8 +25,6 @@ class NodeManager:
         board_state = tetris.get_game_state()
 
         node_list = self.get_node_list()
-        for node in node_list:
-            lst_data = ",".join([str(x) for x in node.movement])
 
         score = -1000
         sel_node = None
