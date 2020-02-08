@@ -29,9 +29,10 @@ if __name__ == "__main__":
 
         best_node = node_manager.analyze(tetris, neat.get_current_nn())
 
-        moves = best_node.movement 
-        for move in moves:
-            tetris.perform_movement(move)
-            view.refresh(tetris.board, moves, [move])
+        if best_node != NULL:
+            moves = best_node.movement 
+            for move in moves:
+                tetris.perform_movement(move)
+                view.refresh(tetris.board, moves, [move])
 
         tetris.update()
