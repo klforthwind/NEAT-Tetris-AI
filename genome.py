@@ -6,7 +6,7 @@ class Genome:
     
     def __init__(self):
         self.node_count = 4
-        self.node_net = np.zeros((self.node_count))
+        self.node_net = [0] * self.node_count
         self.output_nodes = 7
 
         self.yikes = False

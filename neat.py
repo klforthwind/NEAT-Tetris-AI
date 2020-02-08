@@ -35,18 +35,21 @@ class NEAT:
                     genome.node_net[line_num] = float(lines[line_num])
             self.genomes.append(genome)
 
-    def has_placed(self):
-        return self.genomes[self.current_genome].yikes
+    def get_current_nn(self):
+        return self.genomes[self.current_genome].node_net
 
-    def stop_yikes(self):
-        self.genomes[self.current_genome].yikes = False
-        self.genomes[self.current_genome].rotating = False
+    # def has_placed(self):
+    #     return self.genomes[self.current_genome].yikes
 
-    def update_genome_moves(self, capture):
-        self.genomes[self.current_genome].update_genome_moves(capture)
+    # def stop_yikes(self):
+    #     self.genomes[self.current_genome].yikes = False
+    #     self.genomes[self.current_genome].rotating = False
 
-    def get_movements(self, capture, block_change):
-        return self.genomes[self.current_genome].get_buttons(capture, block_change)
+    # def update_genome_moves(self, capture):
+    #     self.genomes[self.current_genome].update_genome_moves(capture)
+
+    # def get_movements(self, capture, block_change):
+    #     return self.genomes[self.current_genome].get_buttons(capture, block_change)
 
     def print_fitness(self):
         self.genomes[self.current_genome].fitness += time() - self.t

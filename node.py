@@ -1,8 +1,8 @@
 
 class Node:
     x = y = rot = 0
-    shape, hexcode = None, None
-    height = holes = completed_lines = rating = 0
+    shape = None
+    height = holes = completed_lines = bumpiness = 0
     movement = []
 
     def __eq__(self, other):
