@@ -68,7 +68,7 @@ class SwitchData:
                         if board[32 * y + i][32 * x + j] == 0:
                             val = 0
                             break
-                temp_arr.board[temp_tetris.board_pos(x, y)] = val
+                temp_arr[temp_tetris.board_pos(x, y)] = val
                 if self.last_board[y][x] == 1 and val == 0:
                     self.last_board[y][x] = 0 
                 
@@ -106,7 +106,8 @@ class SwitchData:
                 if i % 3 == 2:
                     continue
                 val = (0,1)[queue[self.arr2[i] + 8][16 * j + 8] > 0]
-                temp_arr.queue[temp_arr.queue_pos(j, i)] = val
+                tmp_i = int(i - i // 3)
+                temp_arr[temp_tetris.queue_pos(j, tmp_i)] = val
                 if val == 0:
                     continue
                 for m in range(self.arr[i]):

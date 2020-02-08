@@ -8,6 +8,7 @@ from neat import *
 if __name__ == "__main__":
 
     emulator = Emulator("COM3")
+    print("AWda")
     capture = SwitchData()
     capture.start()
 
@@ -15,6 +16,8 @@ if __name__ == "__main__":
     file_manager = FileManager()
     loadable = file_manager.loadable()
     neat = NEAT(population_size, loadable)
+
+    node_manager = NodeManager()
 
     while True:
         if (capture.should_quit()):

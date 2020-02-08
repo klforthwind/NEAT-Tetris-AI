@@ -13,36 +13,36 @@ class DataHandler:
         xy_vals = np.nonzero(block_data)
         return (np.subtract(1, xy_vals[0]), xy_vals[1])
         
-    def get_queue_blocks(self, queue):
-        blocks = np.zeros((6, 2, 4), dtype = uint8)
-        if np.sum(queue) == 24:
-            for i in range(17):
-                row = i % 3
-                if row != 2:
-                    for j in range(4):
-                        block = int((i - row) / 3)
-                        blocks[block][row][j] = queue[i][j]
-            for board in range(6):
-                blocks[board] = self.get_xy_vals(blocks[board])
-        return blocks
+    # def get_queue_blocks(self, queue):
+    #     blocks = np.zeros((6, 2, 4), dtype = uint8)
+    #     if np.sum(queue) == 24:
+    #         for i in range(17):
+    #             row = i % 3
+    #             if row != 2:
+    #                 for j in range(4):
+    #                     block = int((i - row) / 3)
+    #                     blocks[block][row][j] = queue[i][j]
+    #         for board in range(6):
+    #             blocks[board] = self.get_xy_vals(blocks[board])
+    #     return blocks
 
-    def zero(self, block_data):
-        data = np.copy(block_data)
-        lows = np.amin(data, axis=1)
-        data[0] -= lows[0]
-        data[1] -= lows[1]
-        return data
+    # def zero(self, block_data):
+    #     data = np.copy(block_data)
+    #     lows = np.amin(data, axis=1)
+    #     data[0] -= lows[0]
+    #     data[1] -= lows[1]
+    #     return data
     
-    def get_lowest_blocks(self, xy_data):
-        xy_zeroed = self.zero(xy_data)
-        width = self.get_width(xy_zeroed)
-        lowest = np.array([20]*(width), uint8)
+    # def get_lowest_blocks(self, xy_data):
+    #     xy_zeroed = self.zero(xy_data)
+    #     width = self.get_width(xy_zeroed)
+    #     lowest = np.array([20]*(width), uint8)
         
-        for i in range(min(len(xy_zeroed[0]),4)):
-            x = xy_zeroed[1][i]
-            y = xy_zeroed[0][i]
-            lowest[x] = min(y, lowest[x])
-        return lowest
+    #     for i in range(min(len(xy_zeroed[0]),4)):
+    #         x = xy_zeroed[1][i]
+    #         y = xy_zeroed[0][i]
+    #         lowest[x] = min(y, lowest[x])
+    #     return lowest
         
     def get_width(self, xy_data):
         right_most = np.amax(xy_data[1])
@@ -65,8 +65,9 @@ class DataHandler:
                 if i % 3 != 2:
                     if i < 2:
                         next_block[i][j] = last_queue[i][j]
-                    if queue[j + i * 4] != last_queue[i][j]:
-                        last_queue[i][j] = queue[j + i * 4]
+                        tmp_i = int(i - i//3)
+                    if queue[j + tmp_i * 4] != last_queue[i][j]:
+                        last_queue[i][j] = queue[j + tmp_i * 4]
                         queue_change += 1
         tile_count = np.sum(last_queue)
         return (queue_change > 5 and
@@ -78,6 +79,7 @@ class DataHandler:
         for i in range(17):
             for j in range(4):
                 if i % 3 != 2:
-                    if queue[j + i * 4] == 1 and (j == 1 or j == 2):
+                    tmp_i = int(i - i//3)
+                    if queue[j + tmp_i * 4] == 1 and (j == 1 or j == 2):
                         middle_count += 1
         return (middle_count >= 12)
