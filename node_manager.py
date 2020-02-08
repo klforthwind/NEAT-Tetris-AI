@@ -17,10 +17,10 @@ class NodeManager:
         temp.current["shape"] = deepcopy(tetris.current["shape"])
         temp.hold = list(tetris.hold)
         temp.queue = list(tetris.queue)
+        tetris.apply_shape()
 
     def analyze(self, tetris, node_net):
         self.create_copy(tetris)
-
         tetris = self.tetris
         board_state = tetris.get_game_state()
 
@@ -31,14 +31,11 @@ class NodeManager:
         score = -1000
         sel_node = None
         for n in node_list:
-            temp_score = n.completed_lines + n.rating - int(n.holes // 10)
+            temp_score = (n.completed_lines * node_net[0] + n.bumpiness * node_net[1] + 
+                n.height * node_net[2] + n.holes * node_net[3])
             if temp_score > score:
                 score = temp_score
                 sel_node = n
-            if n.rating == -1:
-                sel_node = n
-                break
-        
         return sel_node
 
     def get_node_list(self):
@@ -94,10 +91,9 @@ class NodeManager:
                     if not self.tetris.exists_collision() and self.tetris.can_place():
                         self.tetris.apply_shape()
                         new_board_state = self.tetris.get_next_game_state()
-                        new_hexcode = self.file_manager.get_hexcode(new_board_state)
-                        nn.hexcode = new_hexcode
                         nn.height = self.tetris.get_height()
                         nn.holes = self.tetris.get_holes()
+                        nn.bumpiness = self.tetris.get_bumpiness()
                         nn.completed_lines = self.tetris.get_completed_lines()
                         self.tetris.remove_shape()
                         nn.rating = -1
@@ -107,15 +103,3 @@ class NodeManager:
                     visited[nn].movement = list(nn.movement)
 
         return list(final_nodes)
-    
-    def update_rankings(node_list)
-        node_count = len(node_list)
-        for i in range(node_count-1,-1,-1):
-            node_file = open(node_list[i])
-            lines = node_file.readlines()
-            node_file.close()
-
-            node_file = open(node_list[i], "w")
-            lines[4] = min(i, 200)
-
-            node_file.close()

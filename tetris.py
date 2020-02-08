@@ -296,6 +296,20 @@ class Tetris:
                     break
         return total
 
+    def get_bumpiness(self):
+        total = 0
+        left_col = -1
+        for x in range(10):
+            col_height = 0
+            for y in range(20):
+                if self.board[self.board_pos(x, y)]:
+                    col_height = 20 - y
+                    break
+            if left_col != -1:
+                total += abs(left_col - col_height)
+            left_col = col_height
+        return total
+
     def get_holes(self):
         total = 0
         for x in range(10):
