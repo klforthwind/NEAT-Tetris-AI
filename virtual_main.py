@@ -1,9 +1,8 @@
-from filemanager import FileManager
-from tetris import Tetris
-from neat import NEAT
-import os
-
-clear = lambda: os.system('clear')
+from node_manager import *
+from filemanager import *
+from graphics import *
+from tetris import *
+from neat import *
 
 if __name__ == "__main__":
 
@@ -12,11 +11,29 @@ if __name__ == "__main__":
     loadable = file_manager.loadable()
     neat = NEAT(population_size, loadable)
 
+    node_manager = NodeManager()
+    # view = AsciimaticView()
+
     max_score = 0
     scores = []
 
     tetris = Tetris()
 
+    for x in range(1):
+        tetris = Tetris()
+        node_list = []
+        
+        while not tetris.game_over:
+            best_node = node_manager.analyze(tetris)
+            node_list.append(best_node.hexcode)
+
+            moves = best_node.movement 
+            for move in moves:
+                tetris.perform_movement(move)
+                # view.refresh(tetris.board, moves, [move])
+
+            tetris.update()
+        
     while True:
         # print("Max score:", max_score)
         # print("Scores: ",end = "")
