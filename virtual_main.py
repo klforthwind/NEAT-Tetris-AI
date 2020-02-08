@@ -6,7 +6,7 @@ from neat import *
 
 if __name__ == "__main__":
 
-    population_size = 16
+    population_size = 32
     file_manager = FileManager()
     loadable = file_manager.loadable()
     neat = NEAT(population_size, loadable)
