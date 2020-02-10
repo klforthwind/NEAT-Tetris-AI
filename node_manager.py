@@ -34,8 +34,8 @@ class NodeManager:
             Piece([[1,1,0,0],[1,2,0,1]]) : "S",
             Piece([[1,1,0,0],[0,1,1,2]]) : "Z"
         }
-        print(p.data)
         try:
+            print(p.hush)
             key = dct[p]
             temp_tetris.current = {
             "x": 5 - int((len(temp_tetris.shapes[key]) + 1) / 2), 
@@ -50,6 +50,7 @@ class NodeManager:
         self.create_copy(tetris)
         tetris = self.tetris
         board_state = tetris.get_game_state()
+
 
         node_list = self.get_node_list()
 

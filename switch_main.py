@@ -38,7 +38,7 @@ if __name__ == "__main__":
                 moves = best_node.movement 
                 for move in moves:
                     emulator.perform_movement(move)
-            neat.print_fitness()
+            # neat.pint_fitness()
 
     capture.stop()
     emulator.close()
