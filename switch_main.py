@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     node_manager = NodeManager()
 
-    while not capture.should_quite():
+    while not capture.should_quit():
 
         capture.process_capture()
         if capture.should_press_a() or capture.game_over():

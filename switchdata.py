@@ -127,13 +127,31 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def did_block_change(self):
-        self.temp_block = np.copy(self.next_block)
-        did_change = self.dh.did_block_change(self.last_queue, self.tetris.queue, self.temp_block)
-        self.next_block = self.next_block if not did_change else self.temp_block
-        return did_change
+        queue_change = 0
+        oldtile_count = sum(self.past_tetris.queue)
+        for i in range(17):
+            for j in range(4):
+                if i % 3 != 2:
+                    if i < 2:
+                        self.next_block[i][j] = self.past_tetris.queue[i * 4 + j]
+                    tmp_i = int(i - i//3)
+                    if self.tetris.queue[j + tmp_i * 4] != self.past_tetris.queue[i][j]:
+                        self.past_tetris.queue[i][j] = queue[j + tmp_i * 4]
+                        queue_change += 1
+        tile_count = np.sum(last_queue)
+        return (queue_change > 5 and
+            22 < tile_count < 26 and
+            22 < oldtile_count < 26)
 
     def queue_filled(self):
-        return self.dh.is_queue_filled(self.tetris.queue)
+        middle_count = 0
+        for i in range(17):
+            for j in range(4):
+                if i % 3 != 2:
+                    tmp_i = int(i - i//3)
+                    if self.tetris.queue[j + tmp_i * 4] == 1 and (j == 1 or j == 2):
+                        middle_count += 1
+        return (middle_count >= 12)
 
 # --------------------------------------------------------------------
 
@@ -141,7 +159,7 @@ class SwitchData:
         return len(self.moving_block[0]) == 4
 
     def game_over(self):
-        return max(self.tetris.board[4:8]) != 0
+        return max(self.tetris.board[2:12] + self.tetris.board[72:82]) != 0
     
     def should_quit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
