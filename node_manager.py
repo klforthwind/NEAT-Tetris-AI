@@ -23,25 +23,28 @@ class NodeManager:
     def analyze_switch(self, capture, node_net):
         temp_tetris = capture.tetris
 
-        p = Piece(temp_tetris.moving_block)
+        p = Piece(capture.moving_block)
 
         dct = {
-            Piece([[19,19,19,19],[3,4,5,6]]) : "I",
-            Piece([[19,19,18,18],[4,5,4,5]]) : "O",
-            Piece([[19,18,18,18],[5,3,4,5]]) : "L",
-            Piece([[19,18,18,18],[3,3,4,5]]) : "J",
-            Piece([[19,18,18,18],[4,3,4,5]]) : "T",
-            Piece([[19,19,18,18],[4,5,3,4]]) : "S",
-            Piece([[19,19,18,18],[3,4,4,5]]) : "Z"
+            Piece([[0,0,0,0],[0,1,2,3]]) : "I",
+            Piece([[1,1,0,0],[0,1,0,1]]) : "O",
+            Piece([[1,0,0,0],[2,0,1,2]]) : "L",
+            Piece([[1,0,0,0],[0,0,1,2]]) : "J",
+            Piece([[1,0,0,0],[1,0,1,2]]) : "T",
+            Piece([[1,1,0,0],[1,2,0,1]]) : "S",
+            Piece([[1,1,0,0],[0,1,1,2]]) : "Z"
         }
-        key = dct[p]
-
-        temp_tetris.current = {
+        print(p.data)
+        try:
+            key = dct[p]
+            temp_tetris.current = {
             "x": 5 - int((len(temp_tetris.shapes[key]) + 1) / 2), 
             "y": 0, "r": 0, "key": key, 
             "shape": temp_tetris.shapes[key] }
 
-        return self.analyze(capture.tetris, node_net)
+            return self.analyze(capture.tetris, node_net)
+        except:
+            return None
 
     def analyze(self, tetris, node_net):
         self.create_copy(tetris)

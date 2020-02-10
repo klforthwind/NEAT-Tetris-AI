@@ -1,5 +1,4 @@
 from numpy import uint8
-from datahandler import DataHandler
 from tetris import *
 import numpy as np
 import threading
@@ -20,7 +19,6 @@ class SwitchData:
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
         self.tetris = Tetris()
         self.past_tetris = Tetris()
-        self.dh = DataHandler()
         self.clear()
 
     def start(self):
@@ -70,7 +68,7 @@ class SwitchData:
                 color_val = val * 255
                 if val == 0:
                     continue
-                if self.past_tetris[loc] == 0 and len(xy_vals[0]) < 4:
+                if self.past_tetris.board[loc] == 0 and len(xy_vals[0]) < 4:
                     xy_vals = np.append(xy_vals, [[19-y],[x]], 1)
                     color_val = 128
                 for m in range(32):
@@ -103,8 +101,8 @@ class SwitchData:
                     continue
                 for m in range(self.arr[i]):
                     for n in range(16):
-                        queueMat[self.arr2[i] + m][j * 16 + n] = 255
-        cv2.imshow('Queue', queueMat)
+                        queue_mat[self.arr2[i] + m][j * 16 + n] = 255
+        cv2.imshow('Queue', queue_mat)
 
     def __handleCanvas(self, canvas):
         temp = cv2.cvtColor(canvas, cv2.COLOR_BGR2HLS)
@@ -130,11 +128,11 @@ class SwitchData:
         past_block = np.copy(self.next_block)
         queue_change = 0
         oldtile_count = sum(self.past_tetris.queue)
-        for i in range(17 * 4):
+        for i in range(12 * 4):
             if i < 8:
-                self.next_block[int(i/4)][j%4] = self.past_tetris.queue[i]
+                self.next_block[int(i/4)][i%4] = self.past_tetris.queue[i]
                 if self.tetris.queue[i] != self.past_tetris.queue[i]:
-                    self.past_tetris.queue[i] = queue[i]
+                    self.past_tetris.queue[i] = self.tetris.queue[i]
                     queue_change += 1
         tile_count = sum(self.tetris.queue)
         if queue_change < 6:
@@ -145,7 +143,7 @@ class SwitchData:
 
     def queue_filled(self):
         middle_count = 0
-        for i in range(17 * 4):
+        for i in range(12 * 4):
             if self.tetris.queue[i] == 1 and (i%4==1 or i%4==2):
                 middle_count += 1
         return (middle_count >= 12)
