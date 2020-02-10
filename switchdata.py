@@ -19,9 +19,7 @@ class SwitchData:
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
         self.tetris = Tetris()
-        # self.board_array = np.zeros((20, 10), dtype = uint8)
-        # self.queue_array = np.zeros((17, 4), dtype = uint8)
-        self.hold_array = np.zeros((2, 4), dtype = uint8)
+        self.past_tetris = Tetris()
         self.dh = DataHandler()
         self.clear()
 
@@ -54,66 +52,58 @@ class SwitchData:
         
     def __make_board(self, frame):
         board = np.copy(self.__handleCanvas(frame))
-        boardMat = np.zeros((640, 320), dtype = uint8)
-        temp_tetris = Tetris()
-        temp_arr = temp_tetris.board
-        xyVals = np.zeros((2,0), dtype = uint8)
+        board_mat = np.zeros((640, 320), dtype = uint8)
+        xy_vals = np.zeros((2,0), dtype = uint8)
         
         for y in range(20):
             for x in range(10):
                 val = 1
-                valArr = [4, 16, 28]
-                for i in valArr:
-                    for j in valArr:
+                pixel_check = [4, 16, 28]
+                for i in pixel_check:
+                    for j in pixel_check:
                         if board[32 * y + i][32 * x + j] == 0:
                             val = 0
                             break
-                temp_arr[temp_tetris.board_pos(x, y)] = val
-                if self.last_board[y][x] == 1 and val == 0:
-                    self.last_board[y][x] = 0 
+                loc = self.tetris.board_pos(x, y)
+                self.tetris.board[loc] = val
                 
-                colorVal = val * 255
-                if val == 1 and self.last_board[y][x] == 0 and len(xyVals[0]) < 4:
-                    xyVals = np.append(xyVals, [[19-y],[x]], 1)
-                    colorVal = 128
+                color_val = val * 255
                 if val == 0:
                     continue
+                if self.past_tetris[loc] == 0 and len(xy_vals[0]) < 4:
+                    xy_vals = np.append(xy_vals, [[19-y],[x]], 1)
+                    color_val = 128
                 for m in range(32):
                     for n in range(32):
-                        boardMat[y * 32 + m][x * 32 + n] = colorVal
+                        board_mat[y * 32 + m][x * 32 + n] = color_val
         
-        self.moving_block = np.copy(xyVals)
-        self.tetris.board = list(temp_arr)
-        cv2.imshow('Board', boardMat)
+        self.moving_block = np.copy(xy_vals)
+        cv2.imshow('Board', board_mat)
 
     def __make_hold(self, frame):
         hold = self.__handleCanvas(frame)
         
-        tempArr = np.zeros((2, 4))
         for y in range(2):
             for x in range(4):
-                tempArr[y][x] = (0, 1)[hold[20 * y + 10][18 * x + 9] > 0]
-                self.hold_array = np.copy(tempArr)
+                self.tetris.hold[y * 4 + x] = (0, 1)[hold[20 * y + 10][18 * x + 9] > 0]
 
     def __make_queue(self, frame):
         queue = self.__handleCanvas(frame)
         
-        queueMat = np.zeros((310, 65), dtype = uint8)
-        temp_tetris = Tetris()
-        temp_arr = temp_tetris.queue
+        queue_mat = np.zeros((310, 65), dtype = uint8)
         for i in range(17):
             for j in range(4):
                 if i % 3 == 2:
                     continue
                 val = (0,1)[queue[self.arr2[i] + 8][16 * j + 8] > 0]
                 tmp_i = int(i - i // 3)
-                temp_arr[temp_tetris.queue_pos(j, tmp_i)] = val
+                loc = self.tetris.queue_pos(j, tmp_i)
+                self.tetris.queue[loc] = val
                 if val == 0:
                     continue
                 for m in range(self.arr[i]):
                     for n in range(16):
                         queueMat[self.arr2[i] + m][j * 16 + n] = 255
-        self.tetris.queue = list(temp_arr)
         cv2.imshow('Queue', queueMat)
 
     def __handleCanvas(self, canvas):
@@ -123,17 +113,16 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def clear(self):
-        self.last_board = np.zeros((20, 10), dtype = uint8)
-        self.last_queue = np.zeros((17,4), dtype = uint8)
         self.next_block = np.zeros((2,4), dtype = uint8)
         self.moving_block = np.zeros((2,0), dtype = uint8)
 
     def update_last_board(self):
-        self.last_board = list(self.tetris.board)
+        self.past_tetris.board = list(self.tetris.board)
         for i in range(2):
             for j in range(4):
-                if self.next_block[i][j] == 1 and self.last_board[self.tetris.board_pos(j + 3, i)] == 1:
-                    self.last_board[self.tetris.board_pos(j + 3, i)] = 0
+                loc = self.tetris.board_pos(j + 3, i)
+                if self.next_block[i][j] == 1:
+                    self.last_board[loc] = 0
                     
 # --------------------------------------------------------------------
 
