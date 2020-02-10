@@ -38,7 +38,6 @@ if __name__ == "__main__":
                 moves = best_node.movement 
                 for move in moves:
                     emulator.perform_movement(move)
-            emulator.emulate_tetris(btnArr)
             neat.print_fitness()
 
     capture.stop()

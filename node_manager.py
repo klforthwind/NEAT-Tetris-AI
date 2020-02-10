@@ -2,6 +2,7 @@ from file_manager import *
 from copy import deepcopy
 from tetris import Tetris
 from node import Node
+from piece import *
 
 class NodeManager:
 
@@ -20,11 +21,27 @@ class NodeManager:
         tetris.apply_shape()
 
     def analyze_switch(self, capture, node_net):
-        tetris = Tetris()
-        tetris.board = list(capture.board)
-        tetris.queue = list(capture.queue)
+        temp_tetris = capture.tetris
 
-        return self.analyze(tetris, node_net)
+        p = Piece(temp_tetris.moving_block)
+
+        dct = {
+            Piece([[19,19,19,19],[3,4,5,6]]) : "I",
+            Piece([[19,19,18,18],[4,5,4,5]]) : "O",
+            Piece([[19,18,18,18],[5,3,4,5]]) : "L",
+            Piece([[19,18,18,18],[3,3,4,5]]) : "J",
+            Piece([[19,18,18,18],[4,3,4,5]]) : "T",
+            Piece([[19,19,18,18],[4,5,3,4]]) : "S",
+            Piece([[19,19,18,18],[3,4,4,5]]) : "Z"
+        }
+        key = dct[p]
+
+        temp_tetris.current = {
+            "x": 5 - int((len(temp_tetris.shapes[key]) + 1) / 2), 
+            "y": 0, "r": 0, "key": key, 
+            "shape": temp_tetris.shapes[key] }
+
+        return self.analyze(capture.tetris, node_net)
 
     def analyze(self, tetris, node_net):
         self.create_copy(tetris)
