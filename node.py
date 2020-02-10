@@ -4,6 +4,7 @@ class Node:
     shape = None
     height = holes = completed_lines = bumpiness = 0
     movement = []
+    board = []
 
     def __eq__(self, other):
         return (isinstance(other, Node) and (self.x == other.x) 

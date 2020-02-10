@@ -35,7 +35,6 @@ class NodeManager:
             Piece([[1,1,0,0],[0,1,1,2]]) : "Z"
         }
         try:
-            print(p.hush)
             key = dct[p]
             temp_tetris.current = {
             "x": 5 - int((len(temp_tetris.shapes[key]) + 1) / 2), 
@@ -51,6 +50,7 @@ class NodeManager:
         tetris = self.tetris
         board_state = tetris.get_game_state()
 
+        print(sum(board_state[0:200]))
 
         node_list = self.get_node_list()
 
@@ -121,9 +121,8 @@ class NodeManager:
                         nn.holes = self.tetris.get_holes()
                         nn.bumpiness = self.tetris.get_bumpiness()
                         nn.completed_lines = self.tetris.get_completed_lines()
+                        nn.board = self.tetris.board
                         self.tetris.remove_shape()
-                        nn.rating = -1
-
                         final_nodes.append(nn)
                 elif len(nn.movement) < len(visited[nn].movement):
                     visited[nn].movement = list(nn.movement)

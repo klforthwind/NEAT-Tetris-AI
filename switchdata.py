@@ -17,8 +17,6 @@ class SwitchData:
 
         self.arr = [16,16,26,15,15,26,15,15,26,15,15,26,14,14,26,14,14]
         self.arr2 = [0,16,32,58,73,88,114,129,144,170,185,200,226,240,254,280,294]
-        self.tetris = Tetris()
-        self.past_tetris = Tetris()
         self.clear()
 
     def start(self):
@@ -113,6 +111,8 @@ class SwitchData:
     def clear(self):
         self.next_block = np.zeros((2,4), dtype = uint8)
         self.moving_block = np.zeros((2,0), dtype = uint8)
+        self.tetris = Tetris()
+        self.past_tetris = Tetris()
 
     def update_last_board(self):
         self.past_tetris.board = list(self.tetris.board)
@@ -154,7 +154,7 @@ class SwitchData:
         return len(self.moving_block[0]) == 4
 
     def game_over(self):
-        return max(self.tetris.board[2:12] + self.tetris.board[72:82]) != 0
+        return min(self.tetris.board[72:82] + self.tetris.board[142:152]) != 0
     
     def should_quit(self):
         return cv2.waitKey(1) & 0xFF == ord('q')
