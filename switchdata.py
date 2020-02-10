@@ -127,30 +127,27 @@ class SwitchData:
 # --------------------------------------------------------------------
 
     def did_block_change(self):
+        past_block = np.copy(self.next_block)
         queue_change = 0
         oldtile_count = sum(self.past_tetris.queue)
-        for i in range(17):
-            for j in range(4):
-                if i % 3 != 2:
-                    if i < 2:
-                        self.next_block[i][j] = self.past_tetris.queue[i * 4 + j]
-                    tmp_i = int(i - i//3)
-                    if self.tetris.queue[j + tmp_i * 4] != self.past_tetris.queue[i][j]:
-                        self.past_tetris.queue[i][j] = queue[j + tmp_i * 4]
-                        queue_change += 1
-        tile_count = np.sum(last_queue)
+        for i in range(17 * 4):
+            if i < 8:
+                self.next_block[int(i/4)][j%4] = self.past_tetris.queue[i]
+                if self.tetris.queue[i] != self.past_tetris.queue[i]:
+                    self.past_tetris.queue[i] = queue[i]
+                    queue_change += 1
+        tile_count = sum(self.tetris.queue)
+        if queue_change < 6:
+            self.next_block = past_block
         return (queue_change > 5 and
             22 < tile_count < 26 and
             22 < oldtile_count < 26)
 
     def queue_filled(self):
         middle_count = 0
-        for i in range(17):
-            for j in range(4):
-                if i % 3 != 2:
-                    tmp_i = int(i - i//3)
-                    if self.tetris.queue[j + tmp_i * 4] == 1 and (j == 1 or j == 2):
-                        middle_count += 1
+        for i in range(17 * 4):
+            if self.tetris.queue[i] == 1 and (i%4==1 or i%4==2):
+                middle_count += 1
         return (middle_count >= 12)
 
 # --------------------------------------------------------------------
