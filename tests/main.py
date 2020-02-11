@@ -1,5 +1,8 @@
+import sys
+sys.path.append("../shared")
 from numpy import array_equal as aequal
 from file_manager import FileManager
+from node_manager import NodeManager
 from genome import Genome
 from testarrays import *
 from numpy import uint8
@@ -10,6 +13,7 @@ import unittest
 class UnitTesting(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(UnitTesting, self).__init__(*args, **kwargs)
+        self.node_manager = NodeManager()
 
     def equality(self, expected, actual):
         self.assertEqual(aequal(expected, actual), True, 
@@ -36,10 +40,10 @@ class UnitTesting(unittest.TestCase):
         genome = Genome()
         genome.mutate()
 
-    # def test_file_manager(self):
-    #     file_manager = FileManager()
-    #     loadable = file_manager.loadable()
-    #     self.tup_equal((True, 2), loadable)
+    def test_file_manager(self):
+        file_manager = FileManager()
+        loadable = file_manager.loadable()
+        self.tup_equal((True, 0), loadable)
 
 if __name__ == '__main__':
     unittest.main()

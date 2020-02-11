@@ -1,3 +1,5 @@
+import sys
+sys.path.append("../shared")
 from node_manager import *
 from file_manager import *
 from graphics import *
