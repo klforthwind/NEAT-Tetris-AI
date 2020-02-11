@@ -13,17 +13,13 @@ if __name__ == "__main__":
 
     node_manager = NodeManager()
     view = AsciimaticView()
-
-    # max_score = 0
     tetris = Tetris()
 
     while True:
 
         if tetris.game_over:
             score = tetris.score
-            # max_score = max(score, max_score)
             neat.genomes[neat.current_genome].fitness = score
-            # print("Max score:", max_score)
             tetris = Tetris()
             neat.loop()
 
