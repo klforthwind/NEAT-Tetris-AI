@@ -1,11 +1,9 @@
 from os.path import isfile
 
 class FileManager:
-    
-    def __init__(self):
-        self.suffix = '-0.txt'
-        print("File Manager initialized!")
 
+    suffix = '-0.txt'
+    
     def loadable(self):
         gen = 0
         is_loadable = isfile('data/0'+self.suffix)
