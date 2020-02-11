@@ -116,11 +116,17 @@ class SwitchData:
 
     def update_last_board(self):
         self.past_tetris.board = list(self.tetris.board)
-        for i in range(2):
-            for j in range(4):
-                loc = self.tetris.board_pos(j + 3, i)
-                if self.next_block[i][j] == 1:
-                    self.last_board[loc] = 0
+        for i in range(19,-1,-1):
+            still_going = False
+            for j in range(10):
+                loc = self.past_tetris.board_pos(j, i)
+                if self.past_tetris.board[loc]:
+                    still_going = True
+            if not still_going:
+                for a in range(i * 14):
+                    self.past_tetris.pop(0)
+                for a in range(i):
+                    self.past_tetris.board = [99,99] + [0] * 10 + [99,99] + self.past_tetris.board
                     
 # --------------------------------------------------------------------
 
