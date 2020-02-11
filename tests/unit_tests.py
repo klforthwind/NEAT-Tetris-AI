@@ -2,6 +2,7 @@ import sys
 sys.path.append("..")
 from numpy import array_equal as aequal
 from file_manager import FileManager
+from node_manager import NodeManager
 from genome import Genome
 from testarrays import *
 from numpy import uint8
@@ -12,6 +13,7 @@ import unittest
 class UnitTesting(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(UnitTesting, self).__init__(*args, **kwargs)
+        self.node_manager = NodeManager()
 
     def equality(self, expected, actual):
         self.assertEqual(aequal(expected, actual), True, 
