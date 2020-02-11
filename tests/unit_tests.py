@@ -38,10 +38,10 @@ class UnitTesting(unittest.TestCase):
         genome = Genome()
         genome.mutate()
 
-    # def test_file_manager(self):
-    #     file_manager = FileManager()
-    #     loadable = file_manager.loadable()
-    #     self.tup_equal((True, 2), loadable)
+    def test_file_manager(self):
+        file_manager = FileManager()
+        loadable = file_manager.loadable()
+        self.tup_equal((True, 0), loadable)
 
 if __name__ == '__main__':
     unittest.main()
