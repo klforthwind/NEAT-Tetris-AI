@@ -21,14 +21,14 @@ class NEAT:
             genome = Genome()
             genome.mutate()
             self.genomes.append(genome)
-            txt = "data/"+str(self.generation)+"-"+str(genome_num)+".txt"
+            txt = "../data/"+str(self.generation)+"-"+str(genome_num)+".txt"
             savetxt(txt, genome.node_net, fmt="%f")
 
     def repopulate(self, generation):
         self.generation = generation
         for genome_num in range(self.pop_size):
             genome = Genome()
-            file_name = "data/"+str(generation)+"-"+str(genome_num)+".txt"
+            file_name = "../data/"+str(generation)+"-"+str(genome_num)+".txt"
             with open(file_name) as file_data:
                 lines = file_data.read().splitlines()
                 for line_num in range(genome.node_count):
