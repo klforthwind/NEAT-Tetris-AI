@@ -27,7 +27,6 @@ if __name__ == "__main__":
 
         capture.process_capture()
         if capture.should_press_a() or capture.game_over():
-            print('wdawd')
             emulator.press_a()
             neat.loop()
             capture.clear()
