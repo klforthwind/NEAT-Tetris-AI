@@ -48,8 +48,8 @@ if __name__ == "__main__":
                 print(move_set)
 
         if len(move_set):
-            move = move_set.pop(0)
-            emulator.perform_movement(move)
+            for move in move_set:
+                emulator.perform_movement(move)
             # neat.print_fitness()
 
     capture.stop()
