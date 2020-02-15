@@ -35,7 +35,7 @@ if __name__ == "__main__":
         if block_change:
             emulator.wait(0.4)
             
-            # capture.update_last_board()
+            capture.update_last_board()
 
         if len(move_set) == 0 and capture.exists_controllable_piece() and capture.queue_filled():
             if len(new_board):

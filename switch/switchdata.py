@@ -45,6 +45,14 @@ class SwitchData:
         self.__make_board(frame[40:680, 480:800])
         self.__make_hold(frame[80:120, 396:468])
         self.__make_queue(frame[80:390, 815:880])
+
+    def __get_val(self, board, x, y):
+        pixel_check = [4, 16, 28]
+        for i in pixel_check:
+            for j in pixel_check:
+                if board[32 * y + i][32 * x + j] == 0:
+                    return 0
+        return 1
         
     def __make_board(self, frame):
         board = np.copy(self.__handleCanvas(frame))
@@ -53,19 +61,13 @@ class SwitchData:
         
         for y in range(20):
             for x in range(10):
-                val = 1
-                pixel_check = [4, 16, 28]
-                for i in pixel_check:
-                    for j in pixel_check:
-                        if board[32 * y + i][32 * x + j] == 0:
-                            val = 0
-                            break
+                val = self.__get_val(board, x, y)
                 loc = self.tetris.board_pos(x, y)
                 self.tetris.board[loc] = val
                 
-                color_val = val * 255
                 if val == 0:
                     continue
+                color_val = val * 255
                 if self.past_tetris.board[loc] == 0 and len(xy_vals[0]) < 4:
                     xy_vals = np.append(xy_vals, [[19-y],[x]], 1)
                     color_val = 128
