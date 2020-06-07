@@ -16,19 +16,25 @@ class NEAT:
             self.create_population()
 
     def create_population(self):
+        """
+        Creates a genome population using self.pop_size
+        """
         self.generation = 0
         for genome_num in range(self.pop_size):
             genome = Genome()
             genome.mutate()
             self.genomes.append(genome)
-            txt = "../data/"+str(self.generation)+"-"+str(genome_num)+".txt"
+            txt = f"../data/%d-%d.txt"%(self.generation, genome_num)
             savetxt(txt, genome.node_net, fmt="%f")
 
     def repopulate(self, generation):
+        """
+        Repopulates genomes
+        """
         self.generation = generation
         for genome_num in range(self.pop_size):
             genome = Genome()
-            file_name = "../data/"+str(generation)+"-"+str(genome_num)+".txt"
+            file_name = f"../data/%d-%d.txt" % (generation, genome_num)
             with open(file_name) as file_data:
                 lines = file_data.read().splitlines()
                 for line_num in range(genome.node_count):
@@ -40,7 +46,7 @@ class NEAT:
 
     def print_fitness(self):
         self.genomes[self.current_genome].fitness += time() - self.t
-        print(" {} - {} - {}".format(
+        print(f" %d - %d - %d" % (
             self.generation, self.current_genome, 
             self.genomes[self.current_genome].fitness))
         self.t = time()
@@ -63,7 +69,7 @@ class NEAT:
         self.create_next_gen()
 
         for g in range(len(self.genomes)):
-            txt = "data/"+str(self.generation)+"-"+str(g)+".txt"
+            txt = "../data/"+str(self.generation)+"-"+str(g)+".txt"
             savetxt(txt, self.genomes[g].node_net, fmt="%f")
 
     def create_next_gen(self):
