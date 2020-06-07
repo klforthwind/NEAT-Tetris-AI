@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../shared")
+sys.path.append("../../shared/src/")
 from node_manager import *
 from file_manager import *
 from graphics import *

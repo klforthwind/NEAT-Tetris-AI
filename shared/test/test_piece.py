@@ -1,3 +1,11 @@
+from inspect import getfile, currentframe
+from os.path import dirname, abspath
+import sys
+
+currentdir = dirname(abspath(getfile(currentframe())))
+srcdir = dirname(currentdir) + "/src/"
+sys.path.insert(0, srcdir) 
+
 from piece import *
 import pytest
 

@@ -15,6 +15,9 @@ class NEAT:
         else:
             self.create_population()
 
+    def data_loc(self, generation, genome_num):
+        return f"../../data/%d-%d.txt"%(generation, genome_num)
+
     def create_population(self):
         """
         Creates a genome population using self.pop_size
@@ -24,7 +27,7 @@ class NEAT:
             genome = Genome()
             genome.mutate()
             self.genomes.append(genome)
-            txt = f"../data/%d-%d.txt"%(self.generation, genome_num)
+            txt = self.data_loc(self.generation, genome_num)
             savetxt(txt, genome.node_net, fmt="%f")
 
     def repopulate(self, generation):
@@ -34,7 +37,7 @@ class NEAT:
         self.generation = generation
         for genome_num in range(self.pop_size):
             genome = Genome()
-            file_name = f"../data/%d-%d.txt" % (generation, genome_num)
+            file_name = self.data_loc(generation, genome_num)
             with open(file_name) as file_data:
                 lines = file_data.read().splitlines()
                 for line_num in range(genome.node_count):
@@ -69,7 +72,7 @@ class NEAT:
         self.create_next_gen()
 
         for g in range(len(self.genomes)):
-            txt = "../data/"+str(self.generation)+"-"+str(g)+".txt"
+            txt = self.data_loc(self.generation, g)
             savetxt(txt, self.genomes[g].node_net, fmt="%f")
 
     def create_next_gen(self):
