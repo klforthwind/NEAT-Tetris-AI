@@ -16,7 +16,7 @@ class NEAT:
             self.create_population()
 
     def data_loc(self, generation, genome_num):
-        return f"../../data/%d-%d.txt"%(generation, genome_num)
+        return f"../data/%d-%d.txt"%(generation, genome_num)
 
     def create_population(self):
         """
